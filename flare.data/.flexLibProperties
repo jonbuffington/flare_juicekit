@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties version="1">
+  <includeClasses>
+    <classEntry path="flare.data.DataField"/>
+    <classEntry path="flare.data.DataUtil"/>
+    <classEntry path="flare.data.converters.JSONConverter"/>
+    <classEntry path="flare.data.converters.DelimitedTextConverter"/>
+    <classEntry path="flare.data.DataSchema"/>
+    <classEntry path="flare.data.DataSource"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

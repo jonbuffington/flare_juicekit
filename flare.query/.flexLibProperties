@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties version="1">
+  <includeClasses>
+    <classEntry path="flare.query.Or"/>
+    <classEntry path="flare.query.Average"/>
+    <classEntry path="flare.query.Match"/>
+    <classEntry path="flare.query.Minimum"/>
+    <classEntry path="flare.query.Comparison"/>
+    <classEntry path="flare.query.Distinct"/>
+    <classEntry path="flare.query.Sum"/>
+    <classEntry path="flare.query.StringUtil"/>
+    <classEntry path="flare.query.Expression"/>
+    <classEntry path="flare.query.Query"/>
+    <classEntry path="flare.query.Range"/>
+    <classEntry path="flare.query.Maximum"/>
+    <classEntry path="flare.query.Variable"/>
+    <classEntry path="flare.query.Literal"/>
+    <classEntry path="flare.query.ExpressionIterator"/>
+    <classEntry path="flare.query.Not"/>
+    <classEntry path="flare.query.And"/>
+    <classEntry path="flare.query.If"/>
+    <classEntry path="flare.query.Func"/>
+    <classEntry path="flare.query.Arithmetic"/>
+    <classEntry path="flare.query.DateUtil"/>
+    <classEntry path="flare.query.Count"/>
+    <classEntry path="flare.query.Variance"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

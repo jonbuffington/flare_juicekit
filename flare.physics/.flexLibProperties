@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties version="1">
+  <includeClasses>
+    <classEntry path="flare.physics.DragForce"/>
+    <classEntry path="flare.physics.EulerIntegrator"/>
+    <classEntry path="flare.physics.GravityForce"/>
+    <classEntry path="flare.physics.IForce"/>
+    <classEntry path="flare.physics.IIntegrator"/>
+    <classEntry path="flare.physics.NBodyForce"/>
+    <classEntry path="flare.physics.Particle"/>
+    <classEntry path="flare.physics.RK4Integrator"/>
+    <classEntry path="flare.physics.Simulation"/>
+    <classEntry path="flare.physics.Spring"/>
+    <classEntry path="flare.physics.SpringForce"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
