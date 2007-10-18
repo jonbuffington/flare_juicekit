@@ -4,9 +4,16 @@
   <!-- =================================================================== -->
   <!-- Import Flex Ant Tasks, Set Flex Home and asdoc                      -->
   <!-- =================================================================== -->
-  <taskdef resource="flexTasks.tasks" classpath="${basedir}/etc/flexTasks.jar" />
-  <property name="FLEX_HOME" value="C:/pkg/flex/"/>
-  <property name="asdoc" value="${FLEX_HOME}bin/asdoc.exe"/>
+  <taskdef resource="flexTasks.tasks" 
+    classpath="${basedir}/etc/flexTasks.jar" />
+
+  <!-- Update this property to point to your Flex SDK folder               -->
+  <property name="FLEX_HOME" value="/usr/local/flex/"/>
+
+  <!-- Update this propery to point to the asdoc program. Windows users    -->
+  <!-- should include the ".exe" extension.                                -->
+  <property name="asdoc" value="${FLEX_HOME}bin/asdoc"/>
+
 
   <!-- =================================================================== -->
   <!-- Properties                                                          -->
@@ -46,11 +53,11 @@
     <echo message=""/>
     <echo message=" available targets are:"/>
     <echo message=""/>
-    <echo message="   all        --> builds flare and demos in ${build.dir}"/>
+    <echo message="   all        --> builds flare and demos in ./build"/>
     <echo message="   flare      --> builds the flare libraries in ./build"/>
     <echo message="   demos      --> builds the demos app in ./build"/>
     <echo message="   tests      --> builds the tests app in ./build"/>
-    <echo message="   docs       --> builds reference documentation in ${docs.dir}"/>
+    <echo message="   docs       --> builds reference documentation in ./docs/api"/>
     <echo message="   dist       --> creates the distribution in ./dist"/>
     <echo message="   clean      --> restores distribution to original state"/>
     <echo message="   usage      --> (default) displays this build menu"/>
@@ -68,6 +75,7 @@
   <target name="prepare">
     <mkdir dir="${build.dir}"/>
   </target>
+
 
   <!-- =================================================================== -->
   <!-- Compile flare.util                                                  -->
@@ -96,6 +104,7 @@
     </compc>
   </target>
 
+
   <!-- =================================================================== -->
   <!-- Compile flare.physics                                               -->
   <!-- =================================================================== -->
@@ -122,6 +131,7 @@
         <source-path path-element="${physics.dir}/"/>      
     </compc>
   </target>
+
 
   <!-- =================================================================== -->
   <!-- Compile flare.animate                                               -->
@@ -153,6 +163,7 @@
     </compc>
   </target>
 
+
   <!-- =================================================================== -->
   <!-- Compile flare.data                                                  -->
   <!-- =================================================================== -->
@@ -183,6 +194,7 @@
     </compc>
   </target>
 
+
   <!-- =================================================================== -->
   <!-- Compile flare.query                                                 -->
   <!-- =================================================================== -->
@@ -212,6 +224,7 @@
       </compiler.library-path>   
     </compc>
   </target>
+
 
   <!-- =================================================================== -->
   <!-- Compile flare.vis                                                   -->
@@ -244,6 +257,7 @@
       </compiler.library-path>   
     </compc>
   </target>
+
 
   <!-- =================================================================== -->
   <!-- Compile demos                                                       -->
@@ -279,21 +293,22 @@
   <!-- =================================================================== -->
   <!-- Compile tests                                                       -->
   <!-- =================================================================== -->
-  <!--
   <target name="tests" depends="prepare,flare">
     <mxmlc file="${tests.dir}/tests.as" output="${build.dir}/flare.tests.swf">
       <compiler.library-path dir="${build.dir}">
+        <include name="flare.data.swc"/>
         <include name="flare.util.swc"/>
         <include name="flare.animate.swc"/>
         <include name="flare.physics.swc"/>
         <include name="flare.vis.swc"/>
+        <include name="flare.query.swc"/>
       </compiler.library-path>
       <compiler.library-path dir="${tests.dir}/lib">
         <include name="unitest.swc"/>
       </compiler.library-path>
     </mxmlc>
   </target>
-  -->
+
   
   <!-- =================================================================== -->
   <!-- Build flare libraries in ./build                                    -->
@@ -303,7 +318,8 @@
   <!-- =================================================================== -->
   <!-- Build all in ./build                                                -->
   <!-- =================================================================== -->
-  <target name="all" depends="flare,demos"/>
+  <target name="all" depends="flare,demos,tests"/>
+
 
   <!-- =================================================================== -->
   <!-- Build reference documentation in docs                               -->
@@ -344,6 +360,7 @@
       <arg value="-package=flare.vis.util.heap,${doc.flare.vis.util.heap}"/>
      </exec>
   </target>
+
 
   <!-- =================================================================== -->
   <!-- Build distribution in ./dist                                        -->
