@@ -1,5 +1,7 @@
 package flare.util
-{	
+{
+	import flash.display.DisplayObjectContainer;
+		
 	/**
 	 * Utility methods for sorting and creating sorting functions.
 	 */
@@ -18,20 +20,56 @@ package flare.util
 		 * choice of comparators.
 		 * @param list the array to sort
 		 * @param cmp an optional comparator Function or comparison
-		 * specification. A specification is an array containing a set of data
-		 * field names to sort on, in priority order. In addition, an optional
-		 * boolean argument can follow each name, indicating whether sorting on
-		 * the preceding field should be done in ascending (true) or descending
-		 * (false) order.
+		 *  specification. A specification is an array containing a set of data
+		 *  field names to sort on, in priority order. In addition, an optional
+		 *  boolean argument can follow each name, indicating whether sorting
+		 *  on the preceding field should be done in ascending (true) or
+		 *  descending (false) order.
 		 */
 		public static function sort(list:Array, cmp:*=null):void
 		{
+			mergeSort(list, getComparator(cmp), 0, list.length-1);
+		}
+		
+		/**
+		 * Sorts the children of the given DisplayObjectContainer using
+		 * an optional comparator function.
+		 * @param d a display object container to sort. The sort may change the
+		 *  rendering order in which the contained display objects are drawn.
+		 * @param cmp an optional comparator Function or comparison
+		 *  specification. A specification is an array containing a set of data
+		 *  field names to sort on, in priority order. In addition, an optional
+		 *  boolean argument can follow each name, indicating whether sorting
+		 *  on the preceding field should be done in ascending (true) or
+		 *  descending (false) order.
+		 */
+		public static function sortChildren(
+			d:DisplayObjectContainer, cmp:*=null):void
+		{
+			if (d==null) return;
+			var a:Array = new Array(d.numChildren);
+			for (var i:int=0; i<a.length; ++i) {
+				a[i] = d.getChildAt(i);
+			}
+			if (cmp==null) a.sort() else a.sort(getComparator(cmp));
+			for (i=0; i<a.length; ++i) {
+				d.setChildIndex(a[i], i);
+			}
+		}
+		
+		private static function getComparator(cmp:*):Function
+		{
 			var c:Function;
-			if (cmp is Function) c = cmp as Function;
-			else if (cmp is Array) c = sorter(cmp as Array);
-			else throw new ArgumentError("Unknown parameter type: "+cmp);
-
-			mergeSort(list, c, 0, list.length-1);
+			if (cmp is Function) {
+				c = cmp as Function;
+			} else if (cmp is Array) {
+				c = sorter(cmp as Array);
+			} else if (cmp == null) {
+				c = function(a:*, b:*):int { return a<b ? -1 : a>b ? 1 : 0; }
+			} else {
+				throw new ArgumentError("Unknown parameter type: "+cmp);	
+			}
+			return c;
 		}
 		
 		/**
