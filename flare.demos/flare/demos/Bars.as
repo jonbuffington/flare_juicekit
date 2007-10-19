@@ -18,13 +18,15 @@ package flare.demos
 			
 			var vis:Visualization = new Visualization(getData(50,20));
 			vis.bounds.width = 700;
-			vis.data.setProperty("shape", Shapes.HORIZONTAL_BAR);
-			vis.data.setProperty("lineAlpha", 0);
-			vis.data.setProperty("size", 1.5);
+			vis.data.nodes.setProperties({
+				shape: Shapes.HORIZONTAL_BAR,
+				lineAlpha: 0,
+				size: 1.5
+			});
 
 			vis.operators.add(new AxisLayout("data.x","data.y",true,false));
 			vis.operators.add(new ColorEncoder("data.s",1,"fillColor",
-						ColorPalette.category(vis.data.stats("data.s").unique)));
+						ColorPalette.category(vis.data.nodes.stats("data.s").unique)));
 			vis.xyAxes.yAxis.showLines = false;
 			vis.update();
 
@@ -60,7 +62,7 @@ package flare.demos
 		
 		public static function updateData(data:Data):void
 		{
-			data.visitNodes(function(d:DataSprite):Boolean {
+			data.nodes.visit(function(d:DataSprite):Boolean {
 				d.data.x = int(1 + 10*Math.random());
 				return true;
 			});

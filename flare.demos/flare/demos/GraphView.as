@@ -53,7 +53,7 @@ package flare.demos
 			vis.marks.y = anchors[1].y;
 
 			vis.operators.add(os);
-			vis.tree.visitNodes(function(n:NodeSprite):Boolean {
+			vis.tree.nodes.visit(function(n:NodeSprite):Boolean {
 				n.fillColor = 0xaaaaaa; n.fillAlpha = 0.5;
 				n.lineColor = 0xdddddd; n.lineAlpha = 0.8;
 				n.lineWidth = 1;
@@ -104,10 +104,10 @@ package flare.demos
 				t0.$(vis.marks).y = h/2;
 				new Sequence(
 					vis.update(t0),
-					vis.data.setProperties({lineColor:0}, Data.EDGES, t1),
-					vis.data.setProperties({scaleX:0, scaleY:0}, Data.NODES, t2),
-					vis.data.setProperties({shape:Shapes.WEDGE, lineColor:0xffffffff}, Data.NODES, t3),
-					vis.data.setProperties({scaleX:1, scaleY:1}, Data.NODES, t4)
+					vis.data.edges.setProperties({lineColor:0}, t1),
+					vis.data.nodes.setProperties({scaleX:0, scaleY:0}, t2),
+					vis.data.nodes.setProperties({shape:Shapes.WEDGE, lineColor:0xffffffff}, t3),
+					vis.data.nodes.setProperties({scaleX:1, scaleY:1}, t4)
 				).play();
 			});
 			

@@ -44,9 +44,9 @@ package flare.demos
 			vis.update();
 			addChild(vis);
 			
-			vis.data.setProperty("lineWidth", 2, Data.EDGES);
-			vis.data.setProperty("lineAlpha", 0, Data.NODES);
-			vis.data.setProperty("size", 0.5, Data.NODES);
+			vis.data.edges.setProperty("lineWidth", 2);
+			vis.data.nodes.setProperty("lineAlpha", 0);
+			vis.data.nodes.setProperty("size", 0.5);
 			
 			vis.x = vis.y = 40;
 			

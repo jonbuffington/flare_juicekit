@@ -42,8 +42,8 @@ package flare.demos
 			
 			var field1:String = "data.value1";
 			var field2:String = "data.value2";
-			var stats1:Stats = vis.data.stats(field1);
-			var stats2:Stats = vis.data.stats(field2);
+			var stats1:Stats = vis.data.nodes.stats(field1);
+			var stats2:Stats = vis.data.nodes.stats(field2);
 			
 			vis.data.visit(function(d:DataSprite):Boolean {
 				d.fillColor = 0x018888ff;
