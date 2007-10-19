@@ -21,6 +21,8 @@ package flare.vis.operator.encoder
 		/** Flag indicating which data group (NODES, EDGES, or ALL) should
 		 *  be processed by this encoder. */
 		protected var _which:int;
+		/** Boolean function indicating which items to process. */
+		protected var _filter:Function;
 		/** The source property. */
 		protected var _source:Property;
 		/** The target property. */
@@ -41,6 +43,12 @@ package flare.vis.operator.encoder
 		 *  be processed by this encoder. */
 		public function get which():int { return _which; }
 		public function set which(w:int):void { _which = w; }
+		
+		/** Boolean function indicating which items to process. Only items
+		 *  for which this function return true will be considered by the
+		 *  Encoder. If the function is null, all items will be considered. */
+		public function get filter():Function { return _filter; }
+		public function set filter(f:Function):void { _filter = f; }
 		
 		/** The source property. */
 		public function get sourceProperty():String { return _source.name; }
@@ -81,10 +89,12 @@ package flare.vis.operator.encoder
 		 * @param which flag indicating which group of visual object to process
 		 */		
 		public function Encoder(source:String=null, target:String=null,
-								which:int=1/*Data.NODES*/) {
+							which:int=1/*Data.NODES*/, filter:Function=null)
+		{
 			_source = new Property(source);
 			_target = target;
 			_which = which;
+			_filter = filter;
 		}
 		
 		/** @inheritDoc */
@@ -104,7 +114,7 @@ package flare.vis.operator.encoder
 			visualization.data.visit(function(d:DataSprite):Boolean {
 				_t.$(d)[_target] = encode(_source.getValue(d));
 				return true;
-			}, _which);
+			}, _which, _filter);
 			
 			_t = null;
 		}

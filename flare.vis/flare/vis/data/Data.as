@@ -39,38 +39,21 @@ package flare.vis.data
 		/** Flag indicating a reverse traversal should be performed. */
 		public static const REVERSE:int = 4;
 		
-		/** Hashed set of nodes in the data set. */
-		protected var _nmap:Dictionary = new Dictionary();
-		/** Hashed set of edges in the data set. */
-		protected var _emap:Dictionary = new Dictionary();
-		/** Array of nodes in the data set. */
-		protected var _nodes:Array = new Array();
-		/** Array of edges in the data set. */
-		protected var _edges:Array = new Array();
-		/** Default property values to be applied to new nodes. */
-		protected var _ndefs:Object = null;
-		/** Default property values to be applied to new edges. */
-		protected var _edefs:Object = null;
-		/** The default directedness of new edges. */
-		protected var _directed:Boolean = false;
-		
-		/** Cache of Stats objects for nodes. */
-		protected var _nstats:Object = new Object();
-		/** Cache of Stats objects for edges. */
-		protected var _estats:Object = new Object();
-		
-		private var _visiting:int = 0; // which visitors are running
+		/** Internal list of NodeSprites. */
+		protected var _nodes:DataList = new DataList();
+		/** Internal list of EdgeSprites. */
+		protected var _edges:DataList = new DataList();
 		
 		/** The total number of items (nodes and edges) in the data. */
-		public function get numItems():uint { return _nodes.length + _edges.length; }
-		/** The total number of nodes in the data. */
-		public function get numNodes():uint { return _nodes.length; }
-		/** The total number of edges in the data. */
-		public function get numEdges():uint { return _edges.length; }
+		public function get size():int { return _nodes.size + _edges.size; }
+		
+		/** The collection of NodeSprites. */
+		public function get nodes():DataList { return _nodes; }
+		/** The collection of EdgeSprites. */
+		public function get edges():DataList { return _edges; }
 		
 		/** The default directedness of new edges. */
-		public function get directedEdges():Boolean { return _directed; }
-		public function set directedEdges(b:Boolean):void { _directed = b; }
+		public var directedEdges:Boolean;
 		
 		
 		// -- Methods ---------------------------------------------------------
@@ -80,24 +63,13 @@ package flare.vis.data
 		 * @param directedEdges the default directedness of new edges
 		 */
 		public function Data(directedEdges:Boolean=false) {
-			_directed = directedEdges;
+			this.directedEdges = directedEdges;
 		}
 
 		// -- Operations ---------------------------------------
 		
 		/**
 		 * Sort DataSprites according to their properties.
-		 * <ul>
-		 * <li><code>sort("val")</code> sorts nodes in ascending order
-		 *     according to the field "val"</li>
-		 * <li><code>sort("val1", "val2")</code> sorts nodes in ascending
-		 *     order according to the fields "val1" and "val2". "val2" is only
-		 *     used when data values for field "val1" are equal</li>
-		 * <li><code>sort("val1", false", "val2")</code> sorts nodes in
-		 *     descending order according to field "val1" and in ascending
-		 *     order by field "val2" when data values for field "val1" are
-		 *     equal</li>
-		 * </ul>
 		 * @param a the sort arguments.
 		 * 	If a String is provided, the data will be sorted in ascending order
 		 *   according to the data field named by the string.
@@ -117,119 +89,11 @@ package flare.vis.data
 			else throw new ArgumentError("Illegal input: "+a);
 			
 			var f:Function = Sort.sorter(args);
-			if (which & NODES) _nodes.sort(f);
-			if (which & EDGES) _edges.sort(f);
+			if (which & NODES) _nodes.list.sort(f);
+			if (which & EDGES) _edges.list.sort(f);
 		}
 		
-		/**
-		 * Sets a default property value for newly created nodes and/or edges.
-		 * @param name the name of the property
-		 * @param value the value of the property
-		 * @param which the data group(s) the default applies to
-		 * (e.g., NODES or EDGES). The default is NODES.
-		 */
-		public function setDefault(name:String, value:*, which:int=NODES):void
-		{
-			if (which & NODES) {
-				if (_ndefs == null) _ndefs = new Object();
-				_ndefs[name] = value;
-			}
-			if (which & EDGES) {
-				if (_edefs == null) _edefs = new Object();
-				_edefs[name] = value;
-			}
-		}
 		
-		/**
-		 * Removes a default value for newly created nodes and/or edges.
-		 * @param name the name of the property
-		 * @param which the data group(s) the default applies to
-		 * (e.g., NODES or EDGES). The default is NODES.
-		 */
-		public function removeDefault(name:String, which:int=NODES):void
-		{
-			if (which & NODES && _ndefs != null) {
-				delete _ndefs[name];
-			}
-			if (which & EDGES && _edefs != null) {
-				delete _edefs[name];
-			}
-		}
-		
-		/**
-		 * Sets default values for newly created nodes and/or edges.
-		 * @param values the default properties to set
-		 * @param which the data group(s) the defaults apply to
-		 * (e.g., NODES or EDGES). The default is NODES.
-		 */
-		public function setDefaults(values:Object, which:int=NODES):void
-		{
-			var name:String;
-			if (which & NODES) {
-				if (_ndefs == null) _ndefs = new Object();
-				for (name in values) _ndefs[name] = values[name];
-			}
-			if (which & EDGES) {
-				if (_edefs == null) _edefs = new Object();
-				for (name in values) _edefs[name] = values[name];
-			}
-		}
-		
-		/**
-		 * Clears all default value settings for the specified group.
-		 * @param which the data group(s) for which the defaults should be
-		 *  cleared (e.g., NODES or EDGES). The default is NODES.
-		 */
-		public function clearDefaults(which:int=NODES):void
-		{
-			if (which & NODES) _ndefs = null;
-			if (which & EDGES) _edefs = null;
-		}
-		
-		/**
-		 * Sets a property value on all sprites in a given group.
-		 * @param name the name of the property
-		 * @param value the value of the property
-		 * @param which the data group(s) the default applies to
-		 * (e.g., NODES or EDGES). The default is NODES.
-		 * @param trans an optional Transitioner for collecting value updates
-		 * @return the input transitioner
-		 */
-		public function setProperty(name:String, value:*, which:int=NODES,
-			trans:Transitioner=null):Transitioner
-		{
-			var t:Transitioner = (trans==null ? Transitioner.DEFAULT : trans);
-			var i:uint;
-			if (which & NODES) {
-				for (i=0; i<_nodes.length; ++i)
-					t.setValue(_nodes[i], name, value);
-			}
-			if (which & EDGES) {
-				for (i=0; i<_edges.length; ++i)
-					t.setValue(_edges[i], name, value);
-			}
-			return trans;
-		}
-		
-		/**
-		 * Sets property values on all sprites in a given group.
-		 * @param vals an object containing the properties and values to set.
-		 * @param which the data group(s) the default applies to
-		 * (e.g., NODES or EDGES). The default is NODES.
-		 * @param trans an optional Transitioner for collecting value updates
-		 * @return the input transitioner
-		 */
-		public function setProperties(vals:Object, which:int=NODES,
-			trans:Transitioner=null):Transitioner
-		{
-			var t:Transitioner = (trans==null ? Transitioner.DEFAULT : trans);
-			for (var name:String in vals) {
-				if (which & NODES) setProperty(name, vals[name], NODES, t);
-				if (which & EDGES) setProperty(name, vals[name], EDGES, t);
-			}
-			return trans;
-		}
-
 		// -- Containment --------------------------------------
 		
 		/**
@@ -240,53 +104,7 @@ package flare.vis.data
 		 */
 		public function contains(d:DataSprite):Boolean
 		{
-			if (d is NodeSprite) return containsNode(d as NodeSprite);
-			if (d is EdgeSprite) return containsEdge(d as EdgeSprite);
-			return false;
-		}
-		
-		/**
-		 * Indicates if this Data object contains the input NodeSprite.
-		 * @param n the NodeSprite to check for containment
-		 * @return true if the node is in this data collection, false
-		 *  otherwise.
-		 */
-		public function containsNode(n:NodeSprite):Boolean
-		{
-			return _nmap[n] != undefined;
-		}
-		
-		/**
-		 * Indicates if this Data object contains the input EdgeSprite.
-		 * @param e the EdgeSprite to check for containment
-		 * @return true if the edge is in this data collection, false
-		 *  otherwise.
-		 */
-		public function containsEdge(e:EdgeSprite):Boolean
-		{
-			return _emap[e] != undefined;
-		}
-		
-		// -- Access -------------------------------------------
-		
-		/**
-		 * Retreives the node at the given position in the node list.
-		 * @param idx the position in the node list
-		 * @return the node at the given position
-		 */
-		public function getNodeAt(idx:int):NodeSprite
-		{
-			return _nodes[idx];
-		}
-		
-		/**
-		 * Retreives the edge at the given position in the edge list.
-		 * @param idx the position in the edge list
-		 * @return the node at the given position
-		 */
-		public function getEdgeAt(idx:int):EdgeSprite
-		{
-			return _edges[idx];
+			return (_nodes.contains(d) || _edges.contains(d));
 		}
 		
 		// -- Add ----------------------------------------------
@@ -301,14 +119,8 @@ package flare.vis.data
 		 */
 		public function addNode(d:Object=null):NodeSprite
 		{
-			var ns:NodeSprite;
-			if (d is NodeSprite) {
-				ns = d as NodeSprite;
-			} else {
-				ns = newNode(d);
-			}
-			_nodes.push(ns);
-			_nmap[ns] = _nodes.length - 1;
+			var ns:NodeSprite = NodeSprite(d is NodeSprite ? d : newNode(d));
+			_nodes.add(ns);
 			fireEvent(DataEvent.DATA_ADDED, ns);
 			return ns;
 		}
@@ -323,9 +135,8 @@ package flare.vis.data
 		 */
 		public function addEdge(e:EdgeSprite):EdgeSprite
 		{
-			if (containsNode(e.source) && containsNode(e.target)) {
-				_edges.push(e);
-				_emap[e] = _edges.length - 1;
+			if (_nodes.contains(e.source) && _nodes.contains(e.target)) {
+				_edges.add(e);
 				fireEvent(DataEvent.DATA_ADDED, e);
 				return e;
 			} else {
@@ -354,7 +165,7 @@ package flare.vis.data
 		public function createEdges(sortBy:*=null, groupBy:*=null):void
 		{
 			// create arrays and sort criteria
-			var a:Array = Arrays.copy(_nodes);
+			var a:Array = Arrays.copy(_nodes.list);
 			var g:Array = groupBy is Array ? groupBy as Array : [groupBy];
 			var len:int = g.length;
 			if (sortBy is Array) {
@@ -379,7 +190,7 @@ package flare.vis.data
 			// connect all items who match on the last group by field
 			for (i=1; i<a.length; ++i) {
 				if (f.getValue(a[i-1]) == f.getValue(a[i])) {
-					var e:EdgeSprite = addEdgeFor(a[i-1], a[i], _directed);
+					var e:EdgeSprite = addEdgeFor(a[i-1], a[i], directedEdges);
 					// add data values from nodes
 					for (var j:uint=0; j<p.length; ++j) {
 						p[j].setValue(e, p[j].getValue(a[i]));
@@ -403,10 +214,10 @@ package flare.vis.data
 		public function addEdgeFor(source:NodeSprite, target:NodeSprite,
 			directed:Object=null, data:Object=null):EdgeSprite
 		{
-			if (!containsNode(source) || !containsNode(target)) {
+			if (!_nodes.contains(source) || !_nodes.contains(target)) {
 				return null;
 			}
-			var d:Boolean = directed==null ? _directed : Boolean(directed);
+			var d:Boolean = directed==null ? directedEdges : Boolean(directed);
 			var e:EdgeSprite = newEdge(source, target, d, data);
 			if (data != null) e.data = data;
 			source.addOutEdge(e);
@@ -424,7 +235,7 @@ package flare.vis.data
 		{
 			var ns:NodeSprite = new NodeSprite();
 			if (data != null) { ns.data = data; }
-			applyDefaults(ns, _ndefs);
+			_nodes.applyDefaults(ns);
 			return ns;
 		}
 		
@@ -442,21 +253,8 @@ package flare.vis.data
 		{
 			var es:EdgeSprite = new EdgeSprite(s,t,d);
 			if (data != null) { es.data = data; }
-			applyDefaults(es, _edefs);
+			_edges.applyDefaults(es);
 			return es;
-		}
-		
-		/**
-		 * Internal function for applying default values to a DataSprite.
-		 * @param d the DataSprite on which to set the default values
-		 * @param vals the set of default property values
-		 */
-		protected function applyDefaults(d:DataSprite, vals:Object):void
-		{
-			if (vals == null) return;
-			for (var name:String in vals) {
-				Property.$(name).setValue(d, vals[name]);
-			}
 		}
 		
 		// -- Remove -------------------------------------------
@@ -470,13 +268,10 @@ package flare.vis.data
 			clearEdges();
 			
 			// now remove all the nodes
-			var na:Array = _nodes, i:uint;
-			_nodes = new Array();
-			_nmap = new Dictionary();
-			_nstats = new Object();
-			
-			for (i=0; i<na.length; ++i) {
-				fireEvent(DataEvent.DATA_REMOVED, na[i], false);
+			var na:Array = _nodes.list;
+			_nodes.clear();
+			for (var i:int=0; i<na.length; ++i) {
+				fireEvent(DataEvent.DATA_REMOVED, na[i]);
 			}
 		}
 		
@@ -485,66 +280,33 @@ package flare.vis.data
 		 */
 		public function clearEdges():void
 		{
-			var ea:Array = _edges, i:uint;
-			_edges = new Array();
-			_emap = new Dictionary();
-			_estats = new Object();
+			var ea:Array = _edges.list, i:uint;
+			_edges.clear();
 			
 			for (i=0; i<ea.length; ++i) {
-				fireEvent(DataEvent.DATA_REMOVED, ea[i], false);
+				fireEvent(DataEvent.DATA_REMOVED, ea[i]);
 				ea[i].source = null;
 				ea[i].target = null;
 			}
-			for (i=0; i<_nodes.length; ++i) {
-				_nodes[i].removeAllEdges();
+			var nodes:Array = _nodes.list
+			for (i=0; i<_nodes.size; ++i) {
+				_nodes.list[i].removeAllEdges();
 			}
 		}
 		
 		/**
-		 * Internal method for removing a node from the node list. Removes the
-		 * node in an iteration-safe fashion and fires a removal event.
-		 * @param n the node to remove
-		 * @return true if removed successfully, false if the node is not found
+		 * Internal method for removing an item from the data set. Removes the
+		 * item in an iteration-safe fashion and fires a removal event.
+		 * @param o the object to remove
+		 * @param list the list to remove the object from
+		 * @return true if removed successfully, false if the item is not found
 		 */
-		protected function removeNodeInternal(n:NodeSprite):Boolean
+		protected function removeInternal(o:DataSprite, list:DataList):Boolean
 		{
-			if (_nmap[n] == undefined) return false;
-			
-			// remove from array and index map
-			delete _nmap[n];
-			if (_visiting & NODES) {
-				// if called from a visitor, use a copy-on-write strategy
-				_nodes = Arrays.copy(_nodes);	
-				_visiting &= ~NODES;	
-			}
-			Arrays.remove(_nodes, n);
-			
-			// fire event and return
-			fireEvent(DataEvent.DATA_REMOVED, n);
-			return true;
-		}
-		
-		/**
-		 * Internal method for removing an edge from the edge list. Removes the
-		 * edge in an iteration-safe fashion and fires a removal event.
-		 * @param e the edge to remove
-		 * @return true if removed successfully, false if the edge is not found
-		 */
-		protected function removeEdgeInternal(e:EdgeSprite):Boolean
-		{
-			if (_emap[e] == undefined) return false;
-			
-			// remove from array and index map
-			delete _emap[e];
-			if (_visiting & EDGES) {
-				// if called from a visitor, use a copy-on-write strategy
-				_edges = Arrays.copy(_edges);	
-				_visiting &= ~EDGES;	
-			}
-			Arrays.remove(_edges, e);
-
-			// fire event and return
-			fireEvent(DataEvent.DATA_REMOVED, e);
+			if (!list.contains(o)) return false;
+			// remove edge, fire event, and return
+			list.remove(o);
+			fireEvent(DataEvent.DATA_REMOVED, o);
 			return true;
 		}
 		
@@ -569,7 +331,7 @@ package flare.vis.data
 		 */
 		public function removeNode(n:NodeSprite):Boolean
 		{
-			if (_nmap[n] == undefined) return false;
+			if (!_nodes.contains(n)) return false;
 			
 			var base:Data = this;
 			n.visitEdges(function(e:EdgeSprite):Boolean {
@@ -578,7 +340,7 @@ package flare.vis.data
 			}, NodeSprite.GRAPH_LINKS | NodeSprite.REVERSE);
 			
 			// finally, remove this node from the data set
-			return removeNodeInternal(n);
+			return removeInternal(n, _nodes);
 		}
 		
 		/**
@@ -589,10 +351,10 @@ package flare.vis.data
 		 */
 		public function removeEdge(e:EdgeSprite):Boolean
 		{
-			if (_emap[e] == undefined) return false;
+			if (!_edges.contains(e)) return false;
 			e.source.removeOutEdge(e);
 			e.target.removeInEdge(e);
-			return removeEdgeInternal(e);
+			return removeInternal(e, _edges);
 		}
 				
 		// -- Events -------------------------------------------
@@ -604,19 +366,8 @@ package flare.vis.data
 		 * @param clearCache flag indicating if the statistics cache
 		 *  should be cleared in response to the update
 		 */
-		protected function fireEvent(type:String, d:DataSprite,
-									 clearCache:Boolean=true):void
-		{
-			// clear appropriate stats cache
-			// TODO: incremental stats update?
-			if (clearCache) {
-				if (d is EdgeSprite) {
-					_estats = new Object();
-				} else {
-					_nstats = new Object();
-				}
-			}
-			
+		protected function fireEvent(type:String, d:DataSprite):void
+		{			
 			// reset the spanning tree on adds and removals
 			if (type != DataEvent.DATA_UPDATED)
 				_tree = null;
@@ -631,67 +382,27 @@ package flare.vis.data
 		
 		/**
 		 * Visit items, invoking a function on all visited elements.
-		 * @param f the function to invoke on each element. If the function
+		 * @param v the function to invoke on each element. If the function
 		 *  return false, the visitation is ended with an early exit
 		 * @param opt visit options flag, indicating the data group(s) to visit
 		 *  (e.g., NODES or EDGES) and if the visitation traversal should be
 		 *  done in reverse (the REVERSE flag). The default is a forwards
 		 *  traversal over both nodes and edges.
+		 * @param filter an optional predicate function indicating which
+		 *  elements should be visited. Only items for which this function
+		 *  returns true will be visited.
 		 * @return true if the visitation ended without an early exit
 		 */
-		public function visit(f:Function, opt:int=ALL):Boolean
+		public function visit(v:Function, opt:int=ALL, filter:Function=null):Boolean
 		{
-			_visiting = opt;
-			var b:Boolean=true, rev:uint = opt & REVERSE;
-			if (opt & EDGES && _edges.length > 0) {
-				b = visitArray(f, _edges, rev);
+			var b:Boolean=true, rev:Boolean = (opt & REVERSE) > 0;
+			if (opt & EDGES && _edges.size > 0) {
+				b = _edges.visit(v, rev, filter);
 			}
-			if (b && opt & NODES && _nodes.length > 0) {
-				b = visitArray(f, _nodes, rev);
+			if (b && opt & NODES && _nodes.size > 0) {
+				b = _nodes.visit(v, rev, filter);
 			}
-			_visiting = 0;
 			return b;
-		}
-		
-		private function visitArray(f:Function, a:Array, rev:uint):Boolean
-		{
-			var i:uint;
-			if (rev) {
-				for (i=a.length; --i>=0;)
-					if (!f(a[i])) return false;
-			} else {
-				for (i=0; i<a.length; ++i)
-					if (!f(a[i])) return false;
-			}
-			return true;
-		}
-		
-		/**
-		 * Visit nodes, invoking a function on all visited elements.
-		 * @param f the function to invoke on each element. If the function
-		 *  return false, the visitation is ended with an early exit
-		 * @param opt visit options flag, indicating if the visitation
-		 *  traversal should be done in reverse (the REVERSE flag). The default
-		 *  is a forwards traversal.
-		 * @return true if the visitation ended without an early exit
-		 */
-		public function visitNodes(f:Function, opt:int=0):Boolean
-		{
-			return visit(f, NODES|opt);
-		}
-		
-		/**
-		 * Visit edges, invoking a function on all visited elements.
-		 * @param f the function to invoke on each element. If the function
-		 *  return false, the visitation is ended with an early exit
-		 * @param opt visit options flag, indicating if the visitation
-		 *  traversal should be done in reverse (the REVERSE flag). The default
-		 *  is a forwards traversal.
-		 * @return true if the visitation ended without an early exit
-		 */
-		public function visitEdges(f:Function, opt:int=0):Boolean
-		{
-			return visit(f, EDGES|opt);	
 		}
 		
 		
@@ -718,7 +429,7 @@ package flare.vis.data
 		/** The root node of the spanning tree. */
 		public function get root():NodeSprite { return _root; }
 		public function set root(n:NodeSprite):void {
-			if (n != null && !containsNode(n))
+			if (n != null && !_nodes.contains(n))
 				throw new ArgumentError("Spanning tree root must be within the graph.");
 			if (_root != n) {
 				_tree = null;
@@ -753,45 +464,11 @@ package flare.vis.data
 			var ok:Boolean;
 			ok = t.root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
 				if (n.parentEdge != null) {
-					if (!containsEdge(n.parentEdge)) return false;
+					if (!_edges.contains(n.parentEdge)) return false;
 				}
-				return containsNode(n);
+				return _nodes.contains(n);
 			});
 			if (ok) _tree = t;
-		}
-		
-		// -- Statistics ------------------------------------------------------
-				
-		/**
-		 * Computes and caches statistics for a data field. The resulting
-		 * <code>Stats</code> object is cached, so that later access does not
-		 * require any re-calculation. The cache of statistics objects may be
-		 * cleared, however, if changes to the data set are made.
-		 * @param field the property name
-		 * @param which the data group (either NODES or EDGES) in which to look
-		 * @return a <code>Stats</code> object with the computed statistics
-		 */
-		public function stats(field:String, which:int=NODES):Stats
-		{
-			if (which != NODES && which != EDGES)
-				throw new ArgumentError("NODES and EDGES are the only allowed types");
-			
-			var comparator:Function = null; // TODO allow this to be set externally
-			if (comparator != null) {
-				// currently no caching with custom comparators
-				return new Stats((which==NODES?_nodes:_edges), field, comparator);	
-			}
-			
-			// check cache for stats
-			var cache:Object = which==NODES ? _nstats : _estats;
-			if (cache[field] != undefined) {
-				return cache[field] as Stats;
-			} else {
-				var a:Array = which==NODES ? _nodes : _edges;
-				var s:Stats = new Stats(a, field, comparator);
-				cache[field] = s;
-				return s;
-			}
 		}
 		
 		// -- Scale Factory ---------------------------------------------------
@@ -807,11 +484,12 @@ package flare.vis.data
 		public function scale(field:String, which:int=NODES, 
 							  scaleType:int=1, ...rest):Scale
 		{
-			var stats:Stats = stats(field, which);
+			var list:DataList = (which==NODES ? _nodes : _edges);
+			var stats:Stats = list.stats(field);
 			var scale:Scale = Scales.scale(stats, scaleType);
 			// TODO: lookup formatting info (?)
 			return scale;
 		}
-		
+
 	} // end of class Data
 }

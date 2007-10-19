@@ -24,11 +24,18 @@ package flare.vis.operator.filter
 	 */
 	public class VisibilityFilter extends Operator
 	{
-		/** Predicate function for filtering items. */
+		/** Predicate function determining item visibility. */
 		public var predicate:Function;
 		/** Flag indicating which data group (NODES, EDGES, or ALL) should
 		 *  be processed by this filter. */
 		public var which:int;
+		/** Boolean function indicating which items to process. This function
+		 *  <strong>does not</strong> determine which items will be visible, it
+		 *  only determines which items are visited by this operator. Only
+		 *  items for which this function return true will be considered by the
+		 *  VisibilityFilter. If the function is null, all items will be
+		 *  considered. */
+		public var filter:Function;
 		
 		/**
 		 * Creates a new VisibilityFilter.
@@ -39,10 +46,11 @@ package flare.vis.operator.filter
 		 *  should be processed by this filter.
 		 */
 		public function VisibilityFilter(predicate:Function,
-										 which:int=1/*Data.NODES*/)
+						which:int=1/*Data.NODES*/, filter:Function=null)
 		{
 			this.predicate = predicate;
 			this.which = which;
+			this.filter = filter;
 		}
 
 		/** @inheritDoc */
@@ -55,7 +63,7 @@ package flare.vis.operator.filter
 				t.$(d).alpha = visible ? 1 : 0;
 				t.$(d).visible = visible;
 				return true;
-			}, which);
+			}, which, filter);
 		}
 		
 	} // end of class VisibilityFilter

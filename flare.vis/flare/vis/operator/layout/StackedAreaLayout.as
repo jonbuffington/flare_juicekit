@@ -144,7 +144,7 @@ package flare.vis.operator.layout
 	        }
 	        
 	        // perform second walk to compute polygon layout
-	        visualization.data.visitNodes(function(d:NodeSprite):Boolean
+	        visualization.data.nodes.visit(function(d:NodeSprite):Boolean
 	        {
 	        	var height:Number = 0, i:uint;
 	        	var visible:Boolean = d.visible && d.alpha>0;
@@ -195,7 +195,7 @@ package flare.vis.operator.layout
 	        
 	        // first, compute max value of the current data
 	        Arrays.fill(_peaks, 0);
-	        visualization.data.visitNodes(function(d:NodeSprite):Boolean {
+	        visualization.data.nodes.visit(function(d:NodeSprite):Boolean {
 	        	if (!d.visible || d.alpha <= 0 || !_t.$(d).visible)
 	        		return true;
 	        	

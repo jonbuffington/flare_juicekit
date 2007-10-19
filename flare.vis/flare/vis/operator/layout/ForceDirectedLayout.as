@@ -99,8 +99,8 @@ package flare.vis.operator.layout
 			
 			// populate simulation
 			var data:Data = visualization.data;
-			data.visitNodes(populateNode);
-			data.visitEdges(populateEdge);
+			data.nodes.visit(populateNode);
+			data.edges.visit(populateEdge);
 			
 			// clean-up unused items
 			for each (var p:Particle in _sim.particles)
@@ -114,7 +114,7 @@ package flare.vis.operator.layout
 			}
 			
 			// update positions
-			data.visitNodes(update);
+			data.nodes.visit(update);
 			
 			updateEdgePoints(_t);
 			_t = null;

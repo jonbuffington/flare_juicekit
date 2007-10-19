@@ -19,8 +19,10 @@ package flare.vis.operator.encoder
 		/** Flag indicating which data group (NODES, EDGES, or ALL) should
 		 *  be processed by this encoder. */
 		protected var _which:int;
+		/** Boolean function indicating which items to process. */
+		protected var _filter:Function;
 		/** The properties to set on each invocation. */
-		protected var _props:Object;
+		protected var _values:Object;
 		/** A transitioner for collecting value updates. */
 		protected var _t:Transitioner;
 		
@@ -29,36 +31,44 @@ package flare.vis.operator.encoder
 		public function get which():int { return _which; }
 		public function set which(w:int):void { _which = w; }
 		
+		/** Boolean function indicating which items to process. Only items
+		 *  for which this function return true will be considered by the
+		 *  Encoder. If the function is null, all items will be considered. */
+		public function get filter():Function { return _filter; }
+		public function set filter(f:Function):void { _filter = f; }
+		
 		/** The properties to set on each invocation. */
-		public function get props():Object { return _props; }
-		public function set props(o:Object):void { _props = o; }
+		public function get values():Object { return _values; }
+		public function set values(o:Object):void { _values = o; }
 		
 		// --------------------------------------------------------------------
 		
 		/**
 		 * Creates a new PropertyEncoder
-		 * @param props The properties to set on each invocation
+		 * @param values The properties to set on each invocation. The input
+		 *  should be an object with a set of name/value pairs.
 		 * @param which Flag indicating which data group (NODES, EDGES, or ALL)
 		 *  should be processed by this encoder.
 		 */		
-		public function PropertyEncoder(props:Object=null, which:int=1)
+		public function PropertyEncoder(values:Object=null, which:int=1,
+			filter:Function=null)
 		{
-			_props = props==null ? {} : props;
+			_values = values==null ? {} : values;
 			_which = which;
+			_filter = filter;
 		}
 		
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
 			t = (t==null ? Transitioner.DEFAULT : t);
-			if (_props == null) return;
+			if (_values == null) return;
 			
 			visualization.data.visit(function(d:DataSprite):Boolean {
-				var obj:Object = t.$(d);
-				for (var p:String in _props)
-					obj[p] = _props[p];
+				for (var p:String in _values)
+					t.setValue(d, p, _values[p]);
 				return true;
-			}, _which);
+			}, _which, _filter);
 		}
 		
 	} // end of class PropertyEncoder

@@ -49,11 +49,11 @@ package flare.vis.data
 		 */
 		public function addChild(p:NodeSprite, c:NodeSprite=null):NodeSprite
 		{			
-			if (!containsNode(p)) {
+			if (!_nodes.contains(p)) {
 				throw new ArgumentError("Parent node must be in the tree!");
 			}
 			c = super.addNode(c);
-			var e:EdgeSprite = newEdge(p, c, _directed, null);
+			var e:EdgeSprite = newEdge(p, c, directedEdges, null);
 			c.parentIndex = p.addChildEdge(e);
 			c.parentEdge = e;
 			super.addEdge(e);
@@ -68,8 +68,8 @@ package flare.vis.data
 		 */
 		public function addChildEdge(e:EdgeSprite):EdgeSprite
 		{
-			var n1:NodeSprite = e.source, b1:Boolean = containsNode(n1);
-			var n2:NodeSprite = e.target, b2:Boolean = containsNode(n2);
+			var n1:NodeSprite = e.source, b1:Boolean = _nodes.contains(n1);
+			var n2:NodeSprite = e.target, b2:Boolean = _nodes.contains(n2);
 			
 			if (b1 && b2)
 				throw new ArgumentError("One node must not be in the tree");
@@ -117,7 +117,7 @@ package flare.vis.data
 		 */
 		public override function removeEdge(e:EdgeSprite):Boolean
 		{
-			if (e==null || _emap[e]==undefined) return false;
+			if (e==null || !_edges.contains(e)) return false;
 			
 			// disconnect tree
 			var c:NodeSprite = (e.target.parentNode==e.source ? e.target : e.source);
@@ -125,11 +125,11 @@ package flare.vis.data
 			
 			// walk disconnected segment to fire updates
 			c.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
-				removeEdgeInternal(n.parentEdge);
-				removeNodeInternal(n);
+				removeInternal(n.parentEdge, _edges);
+				removeInternal(n, _nodes);
 				return true;
 			});
-			removeEdgeInternal(e);
+			removeInternal(e, _edges);
 			return true;	
 		}
 

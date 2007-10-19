@@ -42,12 +42,12 @@ package flare.vis.operator.layout
 			_t = (t!=null ? t : Transitioner.DEFAULT);
 			
 			var d:Data = visualization.data;
-			var nn:uint = d.numNodes, i:int = 0;
+			var nn:uint = d.nodes.size, i:int = 0;
 	        var items:Array = new Array(nn);
-	        for (i=0; i<nn; ++i) items[i] = d.getNodeAt(i);
+	        for (i=0; i<nn; ++i) items[i] = d.nodes[i];
 	        
 	        // sort by barycenter
-	        if (_barysort && d.numEdges > 0) {
+	        if (_barysort && d.edges.size > 0) {
 		         barysort(items);
 			}
 			

@@ -99,7 +99,7 @@ package flare.vis.operator.layout
 			var xmap:Object = _xStacks ? new Object() : null;
 			var ymap:Object = _yStacks ? new Object() : null;
 			
-			visualization.data.visitNodes(function(d:DataSprite):Boolean {
+			visualization.data.nodes.visit(function(d:DataSprite):Boolean {
 				var dx:Object, dy:Object, x:Number, y:Number, s:Number, z:Number;
 				var o:Object = _t.$(d);
 				dx = _xField.getValue(d); dy = _yField.getValue(d);
@@ -142,7 +142,7 @@ package flare.vis.operator.layout
 			var xmax:Number = 0;
 			var ymax:Number = 0;
 			
-			visualization.data.visitNodes(function(d:DataSprite):Boolean {
+			visualization.data.nodes.visit(function(d:DataSprite):Boolean {
 					var x:Object = _xField.getValue(d);
 					var y:Object = _yField.getValue(d);
 					var v:Number;

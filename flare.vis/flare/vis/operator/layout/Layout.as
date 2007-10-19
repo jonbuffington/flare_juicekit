@@ -136,7 +136,7 @@ package flare.vis.operator.layout
 				var clear:Boolean = false;
 				
 				// set end points to mid-points
-				visualization.data.visitEdges(function(e:EdgeSprite):Boolean {
+				visualization.data.edges.visit(function(e:EdgeSprite):Boolean {
 					if (e.points == null) return true;
 					
 					var src:NodeSprite = e.source;
@@ -170,7 +170,7 @@ package flare.vis.operator.layout
 		 */
 		public function clearEdgePoints():void
 		{
-			visualization.data.visitEdges(clearPoints);
+			visualization.data.edges.visit(clearPoints);
 		}
 		
 		/**

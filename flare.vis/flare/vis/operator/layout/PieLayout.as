@@ -62,7 +62,7 @@ package flare.vis.operator.layout
 			var cy:Number = (b.top + b.bottom) / 2;
 			var r:Number = isNaN(_radius) ? Math.min(b.width, b.height)/2 : _radius;
 			var a:Number = _a0, aw:Number;
-			var sum:Number = visualization.data.stats(_field.name).sum;
+			var sum:Number = visualization.data.nodes.stats(_field.name).sum;
 			
 			with (_t.$(visualization.marks)) {
 				x = cx;
