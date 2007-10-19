@@ -72,10 +72,9 @@ package flare.animate
 		 * @param easing the easing function to use
 		 */
 		public function Tween(target:Object, duration:Number=1,
-			delay:Number=0, values:Object=null, remove:Boolean=false,
-			easing:Function=null)
+			values:Object=null, remove:Boolean=false, easing:Function=null)
 		{
-			super(duration, delay, easing);
+			super(duration, 0, easing);
 			
 			_target = target;
 			_remove = remove;

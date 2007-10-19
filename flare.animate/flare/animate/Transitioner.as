@@ -137,8 +137,8 @@ package flare.animate
 		 * @param easing the easing function to use for this transition. If
 		 *  null, the function Easing.none will be used.
 		 */
-		public function Transitioner(duration:Number=1, delay:Number=0,
-							easing:Function=null, optimize:Boolean=false)
+		public function Transitioner(duration:Number=1, easing:Function=null,
+									 optimize:Boolean=false)
 		{
 			super.launchOnly = false;
 			super.duration = duration;
