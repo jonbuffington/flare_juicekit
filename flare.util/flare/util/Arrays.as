@@ -123,5 +123,33 @@ package flare.util
 			}
 		}
 		
+		/**
+		 * Performs a binary search over the input array for the given key
+		 * using the provided comparison function.
+		 * @param a the array to search over
+		 * @param key the key value to search for
+		 * @param cmp the comparison function
+		 * @return the index of the given key if it exists in the array,
+         *  otherwise -1 times the index value at the insertion point that
+         *  would be used if the key were added to the array.
+         */
+		public static function binarySearch(a:Array, key:Object,
+											cmp:Function) : int
+		{
+			var x1:int = 0, x2:int = a.length, i:int = (x2>>1);
+        	while (x1 < x2) {
+        		var c:int = cmp(a[i], key);
+            	if (c == 0) {
+                	return i;
+            	} else if (c < 0) {
+                	x1 = i + 1;
+            	} else {
+                	x2 = i;
+            	}
+            	i = x1 + ((x2 - x1)>>1);
+        	}
+        	return -1*(i+1);
+		}
+		
 	} // end of class Arrays
 }

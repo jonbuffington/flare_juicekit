@@ -3,16 +3,72 @@ package flare.util
 	import flash.display.DisplayObjectContainer;
 		
 	/**
-	 * Utility methods for sorting and creating sorting functions.
+	 * Utility class for sorting and creating sorting functions. This class
+	 * provides static methods for sorting and creating sorting comparison
+	 * functions. Instances of this class can be used to encapsulate a set of
+	 * sort criteria and retrieve a corresponding sorting function.
+	 * 
+	 * <p>Sort criteria are generally expressed as an array of property names
+	 * to sort on. These properties are accessed by sorting functions using the
+	 * <code>Property</code> class. Additionally, each property name may be
+	 * followed in the array by an optional Boolean value indicating the sort
+	 * order. A value of <code>true</code> indicates an ascending sort order,
+	 * while a value of <code>false</code> indicates a descending sort order.
+	 * </p>
 	 */
 	public class Sort
 	{
-		/**
-		 * Constructor, throws an error if called, as this is an abstract class.
-		 */
-		public function Sort() {
-			throw new Error("This is an abstract class.");
+		private var _comp:Function;
+		private var _crit:Array;
+		
+		/** Gets the sorting comparison function for this Sort instance. */
+		public function get comparator():Function { return _comp; }
+		
+		/** The sorting criteria. Sort criteria are expressed as an
+		 *  array of property names to sort on. These properties are accessed
+		 *  by sorting functions using the <code>Property</code> class.
+		 *  Additionally, each property name may be followed in the array by an
+		 *  optional Boolean value indicating the sort order. A value of
+		 *  <code>true</code> indicates an ascending sort order, while a value
+		 *  of <code>false</code> indicates a descending sort order. */
+		public function get criteria():Array { return Arrays.copy(_crit); }
+		public function set criteria(crit:*):void {
+			if (crit is String) {
+				_crit = [crit];
+			} else if (crit is Array) {
+				_crit = Arrays.copy(crit as Array);
+			} else {
+				throw new ArgumentError("Invalid Sort specification type. " +
+					"Input must be either a String or Array");
+			}
+			_comp = sorter(_crit);
 		}
+		
+		/**
+		 * Creates a new Sort instance to encapsulate sorting criteria.
+		 * @param crit the sorting criteria. Sort criteria are expressed as an
+		 *  array of property names to sort on. These properties are accessed
+		 *  by sorting functions using the <code>Property</code> class.
+		 *  Additionally, each property name may be followed in the array by an
+		 *  optional Boolean value indicating the sort order. A value of
+		 *  <code>true</code> indicates an ascending sort order, while a value
+		 *  of <code>false</code> indicates a descending sort order.
+		 */
+		public function Sort(crit:*) {
+			this.criteria = crit;
+		}
+		
+		/**
+		 * Sorts the input array according to the sort criteria.
+		 * @param list an array to sort
+		 */
+		public function sort(list:Array):void
+		{
+			mergeSort(list, comparator, 0, list.length-1);
+		}
+		
+		// --------------------------------------------------------------------
+		// Static Methods
 		
 		/**
 		 * Sorts the input array using an optional comparator function. This
@@ -26,10 +82,11 @@ package flare.util
 		 *  on the preceding field should be done in ascending (true) or
 		 *  descending (false) order.
 		 */
+		/*
 		public static function sort(list:Array, cmp:*=null):void
 		{
 			mergeSort(list, getComparator(cmp), 0, list.length-1);
-		}
+		}*/
 		
 		/**
 		 * Sorts the children of the given DisplayObjectContainer using
