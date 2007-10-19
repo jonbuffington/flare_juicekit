@@ -66,8 +66,8 @@ package flare.tests
 			data.root = f;
 			var tree:Tree = data.tree;
 			
-			assertEquals(7, tree.numNodes);
-			assertEquals(6, tree.numEdges);
+			assertEquals(7, tree.nodes.size);
+			assertEquals(6, tree.edges.size);
 			assertEquals(f, tree.root);
 			assertEquals(f, e.parentNode);
 			assertEquals(f, g.parentNode);
@@ -94,8 +94,8 @@ package flare.tests
 			data.treeBuilder = TreeUtil.breadthFirstTree;
 			var tree:Tree = data.tree;
 
-			assertEquals(7, tree.numNodes);
-			assertEquals(6, tree.numEdges);			
+			assertEquals(7, tree.nodes.size);
+			assertEquals(6, tree.edges.size);			
 			assertEquals(a, tree.root);
 			assertEquals(a, b.parentNode);
 			assertEquals(a, e.parentNode);
@@ -120,8 +120,8 @@ package flare.tests
 			data.treeBuilder = TreeUtil.depthFirstTree;
 			var tree:Tree = data.tree;
 			
-			assertEquals(7, tree.numNodes);
-			assertEquals(6, tree.numEdges);
+			assertEquals(7, tree.nodes.size);
+			assertEquals(6, tree.edges.size);
 			assertEquals(a, tree.root);
 			assertEquals(a, b.parentNode);
 			assertEquals(b, c.parentNode);

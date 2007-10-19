@@ -3,6 +3,7 @@ package flare.tests
 	import flare.vis.data.Data;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
+	import flare.vis.util.Filters;
 	import unitest.TestCase;
 	
 	public class DataTests extends TestCase
@@ -16,6 +17,7 @@ package flare.tests
 			addTest("removeNodes");
 			addTest("removeEdges");
 			addTest("createWithDefaults");
+			addTest("visit");
 		}
 		
 		// --------------------------------------------------------------------
@@ -27,8 +29,8 @@ package flare.tests
 		{
 			data = new Data();
 			for (var i:uint=0; i<N; ++i) {
-				data.addNode();
-				assertEquals(data.numNodes, i+1);
+				data.addNode({id:i});
+				assertEquals(data.nodes.size, i+1);
 			}
 		}
 		
@@ -36,14 +38,14 @@ package flare.tests
 		{
 			data = new Data();
 			for (var i:uint=0; i<N; ++i) {
-				data.addNode();
-				assertEquals(data.numNodes, i+1);
+				data.addNode({id:i});
+				assertEquals(data.nodes.size, i+1);
 					
 				if (i > 0) {
-					var s:NodeSprite = data.getNodeAt(i-1);
-					var t:NodeSprite = data.getNodeAt(i);
+					var s:NodeSprite = data.nodes[i-1];
+					var t:NodeSprite = data.nodes[i];
 					var e:EdgeSprite = data.addEdgeFor(s, t);
-					assertEquals(data.numEdges, i);
+					assertEquals(data.edges.size, i);
 					assertEquals(e.source, s);
 					assertEquals(e.target, t);
 				}
@@ -55,36 +57,36 @@ package flare.tests
 			var _x:Number = 10, _y:Number = 20, _lw:Number = 3;
 			var _na:Number = 1, _ea:Number = 0, _t:String = "hello";
 			data = new Data();
-			data.setDefaults({x:_x, y:_y}, Data.NODES);
-			data.setDefaults({lineWidth: _lw}, Data.EDGES);
-			data.setDefault("alpha", _na, Data.NODES);
-			data.setDefault("props.temp", _t, Data.NODES);
-			data.setDefault("alpha", _ea, Data.EDGES);
+			data.nodes.setDefaults({x:_x, y:_y});
+			data.edges.setDefaults({lineWidth: _lw});
+			data.nodes.setDefault("alpha", _na);
+			data.nodes.setDefault("props.temp", _t);
+			data.edges.setDefault("alpha", _ea);
 
 			
 			var prev:NodeSprite = null, curr:NodeSprite;
 			for (var i:uint=0; i<10; ++i) {
-				curr = data.addNode();
+				curr = data.addNode({id:i});
 				if (prev != null) data.addEdgeFor(prev, curr);
 				prev = curr;
 			}
 			
-			for (i=0; i<data.numNodes; ++i) {
-				curr = data.getNodeAt(i);
+			for (i=0; i<data.nodes.size; ++i) {
+				curr = data.nodes[i];
 				assertEquals(_x, curr.x);
 				assertEquals(_y, curr.y);
 				assertEquals(_t, curr.props.temp);
 				assertEquals(_na, curr.alpha);
 			}
-			for (i=0; i<data.numEdges; ++i) {
-				var e:EdgeSprite = data.getEdgeAt(i);
+			for (i=0; i<data.edges.size; ++i) {
+				var e:EdgeSprite = data.edges[i];
 				assertEquals(_lw, e.lineWidth);
 				assertEquals(_ea, e.alpha);
 			}
 			
 			// test default removal
-			data.removeDefault("props.temp", Data.NODES);
-			data.removeDefault("alpha", Data.EDGES);
+			data.nodes.removeDefault("props.temp");
+			data.edges.removeDefault("alpha");
 			curr = data.addNode();
 			e = data.addEdgeFor(prev, curr);
 			assertNotEquals(_t, curr.props.temp);
@@ -95,12 +97,12 @@ package flare.tests
 		{
 			createNodes();
 			for (var i:uint=0; i<N; ++i) {
-				assertTrue(data.contains(data.getNodeAt(i)));
-				assertTrue(data.containsNode(data.getNodeAt(i)));
+				assertTrue(data.contains(data.nodes[i]));
+				assertTrue(data.nodes.contains(data.nodes[i]));
 			}
-			data.visitNodes(function(n:NodeSprite):Boolean {
+			data.nodes.visit(function(n:NodeSprite):Boolean {
 				assertTrue(data.contains(n));
-				assertTrue(data.containsNode(n));
+				assertTrue(data.nodes.contains(n));
 				return true;
 			});
 		}
@@ -108,13 +110,13 @@ package flare.tests
 		public function containsEdges():void
 		{
 			createEdges();
-			for (var i:uint=0; i<data.numEdges; ++i) {
-				assertTrue(data.contains(data.getEdgeAt(i)));
-				assertTrue(data.containsEdge(data.getEdgeAt(i)));
+			for (var i:uint=0; i<data.edges.size; ++i) {
+				assertTrue(data.contains(data.edges[i]));
+				assertTrue(data.edges.contains(data.edges[i]));
 			}
-			data.visitEdges(function(e:EdgeSprite):Boolean {
+			data.edges.visit(function(e:EdgeSprite):Boolean {
 				assertTrue(data.contains(e));
-				assertTrue(data.containsEdge(e));
+				assertTrue(data.edges.contains(e));
 				return true;
 			});
 		}
@@ -125,28 +127,28 @@ package flare.tests
 			
 			createNodes();
 			for (var i:uint=N; --i>=0;) {
-				n = data.getNodeAt(i);
+				n = data.nodes[i];
 				data.removeNode(n);
-				assertEquals(i, data.numNodes);
-				assertFalse(data.containsNode(n));
+				assertEquals(i, data.nodes.size);
+				assertFalse(data.nodes.contains(n));
 			}
 			
 			createNodes(); i=N;
-			data.visitNodes(function(n:NodeSprite):Boolean {
+			data.nodes.visit(function(n:NodeSprite):Boolean {
 				data.removeNode(n); --i;
-				assertEquals(data.numNodes, i);
+				assertEquals(data.nodes.size, i);
 				return true;
 			});
 			assertEquals(0, i);
 			
 			createEdges(); i=N;
-			data.visitNodes(function(n:NodeSprite):Boolean {
+			data.nodes.visit(function(n:NodeSprite):Boolean {
 				data.removeNode(n); --i;
-				assertEquals(data.numNodes, i);
+				assertEquals(data.nodes.size, i);
 				return true;
 			});
 			assertEquals(0, i);
-			assertEquals(0, data.numEdges);
+			assertEquals(0, data.edges.size);
 		}
 		
 		public function removeEdges():void
@@ -155,22 +157,49 @@ package flare.tests
 						
 			createEdges();
 			for (var i:uint=N-1; --i>=0;) {
-				e = data.getEdgeAt(i);
+				e = data.edges[i];
 				data.removeEdge(e);
-				assertEquals(i, data.numEdges);
-				assertFalse(data.containsEdge(e));
+				assertEquals(i, data.edges.size);
+				assertFalse(data.edges.contains(e));
 			}
-			assertEquals(N, data.numNodes);
+			assertEquals(N, data.nodes.size);
 			
 			createEdges(); i=N-1;
-			data.visitEdges(function(e:EdgeSprite):Boolean {
+			data.edges.visit(function(e:EdgeSprite):Boolean {
 				data.removeEdge(e); --i;
-				assertEquals(data.numEdges, i);
+				assertEquals(data.edges.size, i);
 				return true;
 			});
 			assertEquals(0, i);
-			assertEquals(0, data.numEdges);
-			assertEquals(N, data.numNodes);
+			assertEquals(0, data.edges.size);
+			assertEquals(N, data.nodes.size);
+		}
+		
+		public function visit():void
+		{
+			createEdges();
+			
+			var id10:Function = function(o:Object):Boolean {
+				return o.data.id >= 10;
+			};
+			var counter:Function = function(o:Object):Boolean {
+				++count; return true;
+			};
+			var count:int = 0;
+			
+			// visit nodes, count filtered on id
+			data.nodes.visit(counter, false, id10);
+			assertEquals(data.nodes.size-10, count);
+			
+			// visit all, count nodes only
+			count = 0;
+			data.visit(counter, Data.ALL, Filters.isNodeSprite);
+			assertEquals(data.nodes.size, count);
+			
+			// visit all, count edges only
+			count = 0;
+			data.visit(counter, Data.ALL, Filters.isEdgeSprite);
+			assertEquals(data.edges.size, count);
 		}
 		
 	} // end of class DataTests
