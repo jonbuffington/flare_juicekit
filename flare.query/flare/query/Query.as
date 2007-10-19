@@ -12,8 +12,7 @@ package flare.query
 		private var _orderby:Array;
 		private var _groupby:Array;
 		private var _where:Expression;
-		
-		private var _sorter:Function;
+		private var _sort:Sort;
 		private var _aggrs:Array;
 		
 		/**
@@ -37,11 +36,11 @@ package flare.query
 			_where = where;
 			_orderby = orderby;
 			_groupby = groupby;
-			_sorter = sorter();
+			_sort = sorter();
 			_aggrs = aggregates();
 		}
 		
-		private function sorter():Function
+		private function sorter():Sort
 		{
 			var s:Array = [], i:int;
 			if (_groupby != null) {
@@ -52,7 +51,7 @@ package flare.query
 				for (i=0; i<_orderby.length; ++i)
 					s.push(_orderby[i]);
 			}
-			return s.length==0 ? null : Sort.sorter(s);
+			return s.length==0 ? null : new Sort(s);
 		}
 		
 		private function aggregates():Array
@@ -101,8 +100,8 @@ package flare.query
 				});
 			}
 			// sort the result set
-			if (_sorter != null) {
-				Sort.sort(results, _sorter);
+			if (_sort != null) {
+				_sort.sort(results);
 			}
 			
 			if (_select == null) return results;
