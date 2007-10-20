@@ -45,7 +45,8 @@
 			x = WIDTH/2;
 			y = HEIGHT/2;
 				
-			trans = new Transitioner(2.5, 0.5);
+			trans = new Transitioner(2.5);
+			trans.delay = 0.5;
 			var o:Object;
 			with (trans) {
 				// the $() function returns an object for setting target values
