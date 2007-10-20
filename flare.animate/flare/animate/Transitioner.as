@@ -163,7 +163,7 @@ package flare.animate
 			
 			var tw:Tween = _lookup[o];
 			if (tw == null) {
-				add(tw = getTween(o, duration, delay));
+				add(tw = getTween(o, duration));
 				tw.easing = Easing.none;
 				_lookup[o] = tw;
 			}
@@ -314,17 +314,15 @@ package flare.animate
 		private static var _tweenPool:Array = [];
 		private static var _count:int = 0;
 		
-		private static function getTween(o:Object, duration:Number,
-			delay:Number):Tween
+		private static function getTween(o:Object, duration:Number):Tween
 		{
 			var tw:Tween;
 			if (_tweenPool.length > 0) {
 				tw = _tweenPool.pop();
 				tw.target = o;
 				tw.duration = duration;
-				tw.delay = delay;
 			} else {
-				tw = new Tween(o, duration, delay);
+				tw = new Tween(o, duration);
 			}
 			return tw;
 		}
