@@ -46,15 +46,15 @@ package
 			var seq:Sequence = new Sequence(
 				new Pause(6),
 				layoutT(con, new Transitioner(3), linc),
-				layoutY(con, new Transitioner(2,0,Easing.easeOutBounce), linc),
+				layoutY(con, new Transitioner(2,Easing.easeOutBounce), linc),
 				new Pause(1),
-				layoutC(con, new Transitioner(3,0,Easing.easeInPoly(3)), linc),
-				new Tween(con, 6, 0, {rotation:180}, false, Easing.easeInPoly(3)),
+				layoutC(con, new Transitioner(3,Easing.easeInPoly(3)), linc),
+				new Tween(con, 6, {rotation:180}, false, Easing.easeInPoly(3)),
 				new Parallel(
-					new Tween(con, 6, 0, {rotation:360}, false, Easing.easeOutPoly(3)),
-					layoutX(con, new Transitioner(3), linc)
+					new Tween(con, 6, {rotation:360}, false, Easing.easeOutPoly(3)),
+					layoutX(con, new Transitioner(6), linc)
 				),
-				new Tween(con, 0, 0, {rotation:0}),
+				new Tween(con, 0, {rotation:0}),
 				layoutT(con, new Transitioner(3), linc),
 				layoutT(con, new Transitioner(3), 0),
 				new Pause(21)
@@ -64,8 +64,8 @@ package
 			
 			// do the glow...
 			con.filters = [new GlowFilter(0xff0000, 0.5, 0, 0)];
-			var g1:Tween = new Tween(con,3,0,{"filters[0].blurX":15,"filters[0].blurY":15});
-			var g2:Tween = new Tween(con,3,0,{"filters[0].blurX":0,"filters[0].blurY":0});
+			var g1:Tween = new Tween(con,3,{"filters[0].blurX":15,"filters[0].blurY":15});
+			var g2:Tween = new Tween(con,3,{"filters[0].blurX":0,"filters[0].blurY":0});
 			g1.easing = g2.easing = Easing.none;
 			
 			var glow:Sequence = new Sequence(g1,g2);

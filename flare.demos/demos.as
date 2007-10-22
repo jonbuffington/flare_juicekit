@@ -140,7 +140,8 @@ package {
 			};
 			t.play();
 						
-			t = new Transitioner(1, 0.5);
+			t = new Transitioner(1);
+			t.delay = 0.5;
 			t.onStart = function():void {
 				_demos[_cur].play();
 			}
@@ -165,7 +166,8 @@ package {
 			}
 			t.play();
 			
-			t = new Transitioner(1, 0.5);
+			t = new Transitioner(1);
+			t.delay = 0.5;
 			t.$(_buttons).alpha = 1;
 			t.$(_logo).alpha = 1;
 			t.play();
