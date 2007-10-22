@@ -1,5 +1,7 @@
 package flare.animate
-{	
+{
+	import flare.util.Maths;
+		
 	/**
 	 * Base class representing an animated transition. Provides support for
 	 * tracking animation progress over a time duration. The Transition class
@@ -46,19 +48,28 @@ package flare.animate
 		 *  Even when playing in reverse, this function is called last. */
 		public var onEnd:Function = null;
 		
+		/** The total duration, including both delay and active duration. */
+		public function get totalDuration():Number { return duration + delay; }
+		
 		/** The duration (length) of this Transition, in seconds. */
 		public function get duration():Number { return _duration; }
-		public function set duration(d:Number):void { _duration = d; }
+		public function set duration(d:Number):void {
+			if (d<0) throw new ArgumentError("Negative duration not allowed.");
+			_duration = d;
+		}
 
 		/** The delay between a call to play and the actual start
 		 *  of the transition, in seconds. */
 		public function get delay():Number { return _delay; }
-		public function set delay(d:Number):void { _delay = d; }
+		public function set delay(d:Number):void {
+			if (d<0) throw new ArgumentError("Negative delay not allowed.");
+			_delay = d;
+		}
 		
 		/** Fraction between 0 and 1 indicating the current progress
 		 *  of this transition. */
 		public function get progress():Number { return _frac; }
-		public function set progress(f:Number):void { _frac = f; }
+		internal function set progress(f:Number):void { _frac = f; }
 		
 		/** Easing function used to pace this Transition. */
 		public function get easing():Function { return _easing; }
@@ -132,7 +143,7 @@ package flare.animate
 			if (_state == SETUP) doSetup();
 			if (_state == RUN) {
 				var f:Number = _reverse ? (1-_frac) : _frac;
-				_start = new Date().time - f*1000*duration - 1000*_delay;
+				_start = new Date().time - f * 1000 * (duration + delay);
 			} else {
 				_start = new Date().time;
 				doStart(_reverse);
@@ -157,7 +168,9 @@ package flare.animate
 		internal function doStep(frac:Number):void
 		{
 			_frac = frac;
-			step(_easing(_frac));
+			var f:Number = delay==0 ? frac
+				 : Maths.invLinearInterp(frac, delay/totalDuration, 1);
+			if (f >= 0) { step(_easing(f)); }
 			if (onStep != null) onStep();
 		}
 		
@@ -177,13 +190,13 @@ package flare.animate
 		 * false if it should continue to be run.
 		 */
 		public function evaluate(time:Number):Boolean
-		{			
-			// exit early if we're being delayed
-			var t:Number = time - (_start + (1000*_delay));
+		{
+			var t:Number = time - _start;
 			if (t < 0) return false;
 			
 			// step the transition forward
-			t = duration==0 ? 1.0 : t/(1000*duration);
+			var d:Number = 1000 * (duration + delay);
+			t = (d==0 ? 1.0 : t/d);
 			if (t > 1) t = 1; // clamp
 			doStep(_reverse ? 1-t : t);
 			
@@ -200,7 +213,7 @@ package flare.animate
 		 */
 		public function dispose():void
 		{
-			
+			// for sub-classes to implement
 		}
 		
 		// -- abstract methods ------------------------------------------------

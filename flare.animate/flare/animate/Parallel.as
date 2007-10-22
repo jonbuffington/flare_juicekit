@@ -1,43 +1,28 @@
 package flare.animate
 {
 	import flare.util.Arrays;
+	import flare.util.Maths;
 	
 	/**
 	 * Transition that runs multiple transitions simultaneously (in parallel).
-	 * The delay settings for sub-transitions are ignored, and the total 
-	 * duration determined for this parallel transition can potentially
-	 * override sub-transition's duration settings.
-	 * 
-	 * <p>The exception to these rules is when a parallel transition is in
-	 * <code>launchOnly</code> mode, in which case this transition launches
-	 * each sub-transition independently with the <code>Scheduler</code>,
-	 * rather than overseeing the entire duration of the transition. When in
-	 * <code>launchOnly</code> mode, calling the <code>pause</code> or
-	 * <code>stop</code> methods will result in an error being thrown.</p>
+	 * The duration of this parallel transition is computed as the maximum
+	 * total duration (duration + delay) among the sub-transitions. If the
+	 * duration is explicitly set, the sub-transition lengths will be
+	 * uniformly scaled to fit within the new time span.
 	 */
 	public class Parallel extends Transition
 	{
 		// -- Properties ------------------------------------------------------
 		
 		/** Array of parallel transitions */
-		protected var _trans:/*Transition*/Array = new Array();
-		
-		private var _launch:Boolean = false;
+		protected var _trans:/*Transition*/Array = [];
+		private var _equidur:Boolean;
+		private var _dirty:Boolean = false;
 		private var _autodur:Boolean = true;
-		
-		/** Launch only mode causes sub-transitions to be independently
-		 *  launched with the <code>Scheduler</code>, rather than managed by
-		 *  this class throughout the transition. */
-		public function get launchOnly():Boolean { return _launch; }
-		public function set launchOnly(b:Boolean):void
-		{
-			_launch = b;
-		}
 
 		/**
 		 * If true, the duration of this sequence is automatically determined
-		 * by the longest sub-transition transition. This is the default
-		 * behavior.
+		 * by the longest sub-transition. This is the default behavior.
 		 */
 		public function get autoDuration():Boolean { return _autodur; }
 		public function set autoDuration(b:Boolean):void {
@@ -45,15 +30,15 @@ package flare.animate
 			computeDuration();
 		}
 		
-		/**
-		 * Sets the total duration for the sequence. The durations of
-		 * sub-transitions will be automatically scaled to match the
-		 * new duration. When this happens, the <code>autoDuration</code>
-		 * property will be set to true.
-		 */
+		/** @inheritDoc */
+		public override function get duration():Number {
+			if (_dirty) computeDuration();
+			return super.duration;
+		}
 		public override function set duration(dur:Number):void {
 			_autodur = false;
 			super.duration = dur;
+			_dirty = true;
 		}
 		
 		// -- Methods ---------------------------------------------------------
@@ -67,7 +52,7 @@ package flare.animate
 			for each (var t:Transition in transitions) {
 				_trans.push(t);
 			}
-			computeDuration();
+			_dirty = true;
 		}
 		
 		/**
@@ -77,7 +62,7 @@ package flare.animate
 		public function add(t:Transition):void {
 			if (running) throw new Error("Transition is running!");
 			_trans.push(t);
-			computeDuration();
+			_dirty = true;
 		}
 		
 		/**
@@ -89,7 +74,7 @@ package flare.animate
 		public function remove(t:Transition):Boolean {
 			if (running) throw new Error("Transition is running!");
 			var rem:Boolean = Arrays.remove(_trans, t) >= 0;
-			if (rem) computeDuration();
+			if (rem) _dirty = true;
 			return rem;
 		}
 		
@@ -97,13 +82,16 @@ package flare.animate
 		 * Computes the duration of this parallel transition.
 		 */
 		protected function computeDuration():void {
-			var d:Number = 0;
+			var d:Number, td:Number;
+			if (_trans.length > 0) d = _trans[0].totalDuration;
+			_equidur = true;	
 			for each (var t:Transition in _trans) {
-				if (t.duration > d) {
-					d = t.duration + (_launch? t.delay : 0);
-				}
+				td = t.totalDuration;
+				if (_equidur && td != d) _equidur = false;
+				d = Math.max(d, t.totalDuration);
 			}
-			duration = d;
+			if (_autodur) super.duration = d;
+			_dirty = false;
 		}
 		
 		/** @inheritDoc */
@@ -112,52 +100,14 @@ package flare.animate
 		}
 		
 		// -- Transition Handlers ---------------------------------------------
-		
-		/**
-		 * Starts running the transition. If the <code>launchOnly</code>
-		 * property is true, each sub-transition is launched indepdently.
-		 * Otherwise, this parallel instance oversees the entire transition.
-		 * @param reverse if true, the transition is played in reverse,
-		 *  if false (the default), it is played normally.
-		 */
-		public override function play(reverse:Boolean = false):void
+
+		/** @inheritDoc */
+		public override function play(reverse:Boolean=false):void
 		{
-			if (_launch) {
-				for each (var t:Transition in _trans)
-					t.play(reverse);
-			} else {
-				super.play(reverse);
-			}
+			if (_dirty) computeDuration();
+			super.play(reverse);
 		}
-		
-		/**
-		 * Stops the transition and completes it.
-		 * Any end-of-transition actions will still be taken.
-		 * Calling play() after stop() will result in the transition
-		 * starting over from the beginning.
-		 * 
-		 * <p>This method only applies if <code>launchOnly</code> is false.
-		 * Otherwise, this method will throw an error.</p>
-		 */
-		public override function stop():void
-		{
-			if (_launch) throw new Error("Can't stop when in launchOnly mode.");
-			super.stop();
-		}
-		
-		/**
-		 * Pauses the transition at its current position.
-		 * Calling play() after pause() will resume the transition.
-		 * 
-		 * <p>This method only applies if <code>launchOnly</code> is false.
-		 * Otherwise, this method will throw an error.</p>
-		 */
-		public override function pause():void
-		{
-			if (_launch) throw new Error("Can't pause when in launchOnly mode.");
-			super.pause();
-		}
-		
+
 		/**
 		 * Sets up each sub-transition.
 		 */
@@ -180,7 +130,19 @@ package flare.animate
 		 */
 		internal override function step(ef:Number):void
 		{
-			for each (var t:Transition in _trans) { t.doStep(ef); }
+			var t:Transition;
+			if (_equidur) {
+				// if all durations are the same, we can skip some calculations
+				for each (t in _trans) { t.doStep(ef); }
+			} else {
+				// otherwise, make sure we respect the different lengths
+				var d:Number = duration;
+				for each (t in _trans) {
+					var td:Number = t.totalDuration;
+					var f:Number = d==0 || td==d ? 1 : td/d;
+					t.doStep(ef>f ? 1 : f==1 ? ef : ef/f);
+				}
+			}
 		}
 		
 		/**

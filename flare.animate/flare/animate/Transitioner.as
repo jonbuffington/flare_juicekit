@@ -87,6 +87,7 @@ package flare.animate
 		
 		private var _proxy:ValueProxy;
 		private var _optimize:Boolean = false;
+		private var _subdur:Number;
 		
 		/** Immediate mode flag, used to bypass tween generation and perform
 		 *  immediate updates of target object values. */
@@ -140,10 +141,8 @@ package flare.animate
 		public function Transitioner(duration:Number=1, easing:Function=null,
 									 optimize:Boolean=false)
 		{
-			super.launchOnly = false;
-			super.duration = duration;
-			super.delay = delay;
 			super.easing = easing==null ? DEFAULT_EASING : easing;
+			_subdur = duration;
 			_optimize = optimize;
 			_immediate = isNaN(duration);
 			if (!_immediate) _proxy = new ValueProxy(this);
@@ -163,7 +162,7 @@ package flare.animate
 			
 			var tw:Tween = _lookup[o];
 			if (tw == null) {
-				add(tw = getTween(o, duration));
+				add(tw = getTween(o, _subdur));
 				tw.easing = Easing.none;
 				_lookup[o] = tw;
 			}
@@ -245,6 +244,33 @@ package flare.animate
 				}
 			}
 			return Property.$(name).getValue(o);
+		}
+		
+		/**
+		 * Sets the delay of the tween for the given object. If the
+		 * transitioner is in immediate mode, this method has no effect.
+		 * @param o the object to set the delay for
+		 * @param delay the delay, in seconds
+		 */		
+		public function setDelay(o:Object, delay:Number):void
+		{
+			if (!_immediate) {
+				_(o).delay = delay;
+			}
+		}
+				
+		/**
+		 * Gets the delay of the tween for the given object. If the
+		 * transitioner is in immediate mode or no tween has been created for
+		 * the input object, this method returns zero.
+		 * @param o the object to get the delay for
+		 * @return the delay of the tween, or zero if there is no tween
+		 */
+		public function getDelay(o:Object):Number
+		{
+			if (_immediate) return 0;
+			var tw:Tween = _lookup[o];
+			return tw==null ? 0 : tw.delay;
 		}
 		
 		/**

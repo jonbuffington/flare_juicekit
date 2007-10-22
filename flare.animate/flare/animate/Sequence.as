@@ -5,9 +5,11 @@ package flare.animate
 	
 	/**
 	 * Transition that runs multiple transitions one after the other in
-	 * sequence. The delay settings for sub-transitions are ignored, and the
-	 * total duration determined for this sequence transition can potentially
-	 * override sub-transition's duration settings.
+	 * sequence. By default, the total duration of the sequence is the sum of
+	 * the durations and delays of the sub-transitions. If the duration
+	 * of the sequence is set explicitly, the duration and delay for
+	 * sub-transitions will be uniformly scaled to fit within in the new
+	 * time span.
 	 */
 	public class Sequence extends Transition
 	{
@@ -16,7 +18,7 @@ package flare.animate
 		private var _trans:/*Transition*/Array = [];
 		private var _fracs:/*Number*/Array = [];
 		private var _autodur:Boolean = true;
-		private var _scaledur:Number = 0;
+		private var _dirty:Boolean = false;
 		private var _idx:int = 0;
 		
 		/**
@@ -29,16 +31,15 @@ package flare.animate
 			computeDuration();
 		}
 		
-		/**
-		 * Sets the total duration for the sequence. The durations of
-		 * sub-transitions will be automatically scaled to fit within the
-		 * new duration. When this happens, the <code>autoDuration</code>
-		 * property will be set to true.
-		 */
+		/** @inheritDoc */
+		public override function get duration():Number {
+			if (_dirty) computeDuration();
+			return super.duration;
+		}
 		public override function set duration(dur:Number):void {
 			_autodur = false;
 			super.duration = dur;
-			computeDuration();
+			_dirty = true;
 		}
 		
 		// -- Methods ---------------------------------------------------------
@@ -52,7 +53,7 @@ package flare.animate
 			for each (var t:Transition in transitions) {
 				_trans.push(t);
 			}
-			computeDuration();
+			_dirty = true;
 		}
 		
 		/**
@@ -63,7 +64,7 @@ package flare.animate
 		{
 			if (running) throw new Error("Transition is running!");
 			_trans.push(t);
-			computeDuration();
+			_dirty = true;
 		}
 		
 		/**
@@ -76,7 +77,7 @@ package flare.animate
 		{
 			if (running) throw new Error("Transition is running!");
 			var rem:Boolean = Arrays.remove(_trans, t) >= 0;
-			if (rem) computeDuration();
+			if (rem) _dirty = true;
 			return rem;
 		}
 		
@@ -88,13 +89,13 @@ package flare.animate
 			var d:Number = 0; _fracs = [0];
 			// collect durations and compute sum
 			for each (var t:Transition in _trans)
-				_fracs.push(d += t.duration);
+				_fracs.push(d += t.totalDuration);
 			// normalize durations to create progress fractions
 			for (var i:int=1; i<=_trans.length; ++i)
-				_fracs[i] = _fracs[i] / d;
+				_fracs[i] = (d==0 ? 0 : _fracs[i] / d);
 			// set duration and scale
 			if (_autodur) super.duration = d;
-			_scaledur = _autodur ? 1.0 : duration / d;
+			_dirty = false;
 		}
 		
 		/** @inheritDoc */
@@ -103,6 +104,13 @@ package flare.animate
 		}
 		
 		// -- Transition Handlers ---------------------------------------------
+		
+		/** @inheritDoc */
+		public override function play(reverse:Boolean=false):void
+		{
+			if (_dirty) computeDuration();
+			super.play(reverse);
+		}
 		
 		/**
 		 * Sets up each sub-transition.
