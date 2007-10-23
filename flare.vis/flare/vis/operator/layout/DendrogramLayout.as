@@ -73,7 +73,7 @@ package flare.vis.operator.layout
 		private function init():void
 		{
 			var root:NodeSprite = visualization.tree.root;
-			_leafCount = (visualization.tree.numNodes+1) / 2;
+			_leafCount = (visualization.tree.nodes.size+1) / 2;
 			_leafIndex = 0;
 			_maxDist = _dp!=null ? _dp.getValue(root) : computeHeights(root);
 			

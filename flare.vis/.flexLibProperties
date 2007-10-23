@@ -54,6 +54,7 @@
     <classEntry path="flare.vis.operator.distortion.BifocalDistortion"/>
     <classEntry path="flare.vis.data.render.NullRenderer"/>
     <classEntry path="flare.vis.operator.layout.IndentedTreeLayout"/>
+    <classEntry path="flare.vis.operator.layout.DendrogramLayout"/>
     <classEntry path="flare.vis.operator.encoder.PropertyEncoder"/>
     <classEntry path="flare.vis.palette.Palette"/>
     <classEntry path="flare.vis.operator.distortion.FisheyeDistortion"/>
