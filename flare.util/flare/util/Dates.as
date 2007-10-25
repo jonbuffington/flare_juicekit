@@ -193,8 +193,8 @@ package flare.util
 		}
 		
 		/**
-		 * For a given time span measure, returns the number of milliseconds
-		 * needed to step one time step forward according to the measure.
+		 * Returns the number of milliseconds needed to step one time step
+		 * forward according to the given time span measure.
 		 * @param span the time span for which to return a time step value.
 		 *  Legal values are any positive numbers (representing years) or DAYS,
 		 *  HOURS, MINUTES, SECONDS, and MILLISECONDS. Note that the MONTHS

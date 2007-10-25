@@ -50,7 +50,7 @@ package flare.util
 		public function get name():String { return _field; }
 		/** Flag indicating if all property values along a property chain
 		 *  should be reset when <code>setValue</code> is called (true by
-		 *  default. */
+		 *  default). */
 		public function get reset():Boolean { return _reset; }
 		
 		// --------------------------------------------------------------------

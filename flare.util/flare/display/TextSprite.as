@@ -218,6 +218,7 @@ package flare.display
 			_mode = mode;
 		}
 		
+		/** @inheritDoc */
 		public override function render():void
 		{
 			if (_mode == BITMAP) {
@@ -228,6 +229,7 @@ package flare.display
 			layout();
 		}
 		
+		/** @private */
 		protected function layout():void
 		{
 			var d:DisplayObject = (_mode==BITMAP ? _bmap : _tf);
@@ -244,6 +246,7 @@ package flare.display
 			}
 		}
 		
+		/** @private */
 		protected function drawMask():void
 		{
 			_mask.graphics.clear();
@@ -253,6 +256,7 @@ package flare.display
 			_mask.graphics.endFill();
 		}
 		
+		/** @private */
 		protected function rasterize():void
 		{
 			if (_locked) return;
@@ -268,6 +272,12 @@ package flare.display
 			bd.draw(_tf);
 		}
 		
+		/**
+		 * Sets the text format for the TextSprite.
+		 * @param format the text format
+		 * @param beginIndex the beginning index into the text string
+		 * @param endIndex the ending index into the text string
+		 */		
 		public function setTextFormat(format:TextFormat, beginIndex:int=-1, endIndex:int=-1):void
 		{
 			_fmt = format;
@@ -296,5 +306,6 @@ package flare.display
 				if (_mode == BITMAP) rasterize();
 			}
 		}
-	}
+		
+	} // end of class TextSprite
 }

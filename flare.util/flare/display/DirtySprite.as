@@ -78,6 +78,7 @@ package flare.display
 		private static const DIRTY:int = 1; // re-rendering needed
 		private static const VISIT:int = 2; // was re-rendered, but on list
 		
+		/** @private */
 		protected var _dirty:int = DIRTY; // dirty at birth
 		
 		/**

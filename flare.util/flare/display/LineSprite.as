@@ -1,7 +1,7 @@
 package flare.display
 {
 	/**
-	 * A Sprite representing a line. Supports positional, color, and width
+	 * A Sprite representing a line. Supports position, color, and width
 	 * properties.
 	 */
 	public class LineSprite extends DirtySprite

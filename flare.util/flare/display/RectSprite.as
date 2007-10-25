@@ -8,13 +8,21 @@ package flare.display
 	 */
 	public class RectSprite extends DirtySprite
 	{
+		/** @private */
 		protected var _w:Number;
+		/** @private */
 		protected var _h:Number;
+		/** @private */
 		protected var _cw:Number = 0;
+		/** @private */
 		protected var _ch:Number = 0;
+		/** @private */
 		protected var _fillColor:uint = 0x00ffffff;
+		/** @private */
 		protected var _lineColor:uint = 0xffaaaaaa;
+		/** @private */
 		protected var _lineWidth:Number = 0;
+		/** @private */
 		protected var _pixelHinting:Boolean = true;
 		
 		/** The width of the rectangle. */
@@ -74,6 +82,7 @@ package flare.display
 			this._ch = ch;
 		}
 		
+		/** @inheritDoc */
 		public override function render():void
 		{
 			graphics.clear();
