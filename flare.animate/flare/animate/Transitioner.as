@@ -35,11 +35,11 @@ package flare.animate
 	 * that passes the values to underlying tweens as needed. This same proxy
 	 * object is reused across calls to the <code>$</code> method so do
 	 * <strong>not</strong> attempt to use multiple return values from the
-	 * <code>$</code> method simultaneously. The following example shows what
-	 * you should not do!</p>
+	 * <code>$</code> method simultaneously. <em>The following example shows
+	 * what you should not do!</em></p>
 	 * <pre>
 	 * var o1:Object = t.$(item1);
-	 * var o2:Object = t.$(item2); // o2 *is* o1, now configured for item2
+	 * var o2:Object = t.$(item2); // o2==o1, now configured for item2
 	 * o1.x = 5; // actually sets the value 5 to item2, NOT item1
 	 * </pre>
 	 * 
@@ -70,8 +70,8 @@ package flare.animate
 	 * </p>
 	 * 
 	 * <p>
-	 * Transitioners also support some optimizations to improve animation
-	 * peformance. However, they are not enabled by default, as the
+	 * Transitioners also provide optimizations to improve animation
+	 * performance. However, they are not enabled by default, as the
 	 * optimizations make some assumptions about how the transitioner will
 	 * be used. See the <code>optimize</code> property and
 	 * <code>dispose</code> method for more information.
@@ -129,14 +129,15 @@ package flare.animate
 		// --------------------------------------------------------------------
 		
 		/**
-		 * Creates a new Transitioner with specified duration and delay.
+		 * Creates a new Transitioner with specified duration.
 		 * @param duration the length of the transition. If this value is NaN,
 		 *  the transitioner will be in immediate mode, in which all changes
 		 *  are immediately applied and no tweens are generated.
-		 * @param delay the delay to wait before starting the transition. This
-		 *  value is ignored if the Transitioner is in immediate mode.
 		 * @param easing the easing function to use for this transition. If
 		 *  null, the function Easing.none will be used.
+		 * @param optimize boolean flag indicating if the transitioner should
+		 *  attempt to optimize tween construction. See the documentation
+		 *  for the <code>optimize</code> property for mode details.
 		 */
 		public function Transitioner(duration:Number=1, easing:Function=null,
 									 optimize:Boolean=false)
