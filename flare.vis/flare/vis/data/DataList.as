@@ -15,7 +15,11 @@ package flare.vis.data
 	import flare.util.Sort;
 
 	/**
-	 * A list of nodes or edges maintained by a Data instance.
+	 * A list of nodes or edges maintained by a Data instance. Items contained
+	 * in this list can be accessed using array notation (<code>[]</code>),
+	 * iterated over using the <code>for each</code> construct, or can be
+	 * processed by passing a visitor function to the <code>visit</code>
+	 * method.
 	 */
 	public class DataList extends Proxy
 	{
