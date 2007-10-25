@@ -13,7 +13,7 @@ package flare.data
 		public static const DATE:int   = 2;
 		/** Constant indicating a String data type. */
 		public static const STRING:int = 3;
-		/** Constant indicating an arbitraty Object data type. */
+		/** Constant indicating an arbitrary Object data type. */
 		public static const OBJECT:int = 4;
 		
 		/**
