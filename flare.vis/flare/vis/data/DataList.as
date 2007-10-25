@@ -14,16 +14,19 @@ package flare.vis.data
 	import flare.util.Sort;
 	import flare.util.Sort;
 
+	/**
+	 * A list of nodes or edges maintained by a Data instance.
+	 */
 	public class DataList extends Proxy
 	{
 		/** Hashed set of items in the data list. */
-		protected var _map:Dictionary = new Dictionary();
+		private var _map:Dictionary = new Dictionary();
 		/** Array of items in the data set. */
-		protected var _list:Array = [];
+		private var _list:Array = [];
 		/** Default property values to be applied to new items. */
-		protected var _defs:Object = null;
+		private var _defs:Object = null;
 		/** Cache of Stats objects for item properties. */
-		protected var _stats:Object = {};
+		private var _stats:Object = {};
 		/** The underlying array storing the list. */
 		internal function get list():Array { return _list; }
 		
@@ -44,11 +47,23 @@ package flare.vis.data
 		
 		// -- Basic Operations: Contains, Add, Remove, Clear ------------------
 		
+		/**
+		 * Indicates if the given object is contained in this list.
+		 * @param o the object to check for containment
+		 * @return true if the list contains the object, false otherwise.
+		 */
 		public function contains(o:Object):Boolean
 		{
 			return (_map[o] != undefined);
 		}
 		
+		/**
+		 * Internal method for adding an object to the list. This method should
+		 * be used by the Data class only.
+		 * @param o the object to add
+		 * @return the added object
+		 * @private
+		 */
 		internal function add(o:Object):Object
 		{
 			_map[o] = _list.length;
@@ -62,6 +77,13 @@ package flare.vis.data
 			return o;
 		}
 		
+		/**
+		 * Internal method for removing an object from the list. This method
+		 * should be used by the Data class only.
+		 * @param o the object to remove
+		 * @return true if the object was found and removed, false otherwise
+		 * @private
+		 */
 		internal function remove(o:Object):Boolean
 		{
 			if (_map[o] == undefined) return false;
@@ -76,6 +98,13 @@ package flare.vis.data
 			return true;
 		}
 		
+		/**
+		 * Internal method for removing an object from the list. This method
+		 * should be used by the Data class only.
+		 * @param idx the index of the object to remove
+		 * @return the removed object
+		 * @private
+		 */
 		internal function removeAt(idx:int):Object
 		{
 			var o:Object = Arrays.removeAt(_list, idx);
@@ -86,6 +115,10 @@ package flare.vis.data
 			return o;
 		}
 		
+		/**
+		 * Internal method for removing all objects from ths list.
+		 * @private
+		 */
 		internal function clear():void
 		{
 			_map = new Dictionary();
@@ -121,6 +154,19 @@ package flare.vis.data
 
 		// -- Visitation ------------------------------------------------------
 		
+		/**
+		 * Iterates over the contents of the list, invoking a visitor function
+		 * on each element of the list. The visitor function should return a
+		 * Boolean value: if true the iteration will continue, if false the
+		 * iteration will stop with an early exit.
+		 * @param visitor the visitor function to be invoked on each item
+		 * @param reverse optional flag indicating if the list should be
+		 *  visited in reverse order
+		 * @param filter an optional boolean-valued function indicating which
+		 *  items should be visited
+		 * @return true if the visitation completed, false if an early exit
+		 *  occurred
+		 */		
 		public function visit(visitor:Function, reverse:Boolean=false,
 			filter:Function=null):Boolean
 		{
@@ -286,21 +332,25 @@ package flare.vis.data
 		
 		// -- Proxy Methods ---------------------------------------------------
 		
+		/** @private */
 		flash_proxy override function getProperty(name:*):*
 		{
         	return _list[name];
     	}
 		
+		/** @private */
 		flash_proxy override function nextNameIndex(idx:int):int
 		{
 			return (idx < _list.length ? idx + 1 : 0);
 		}
 
+		/** @private */
 		flash_proxy override function nextName(idx:int):String
 		{
 			return String(idx-1);
 		}
 		
+		/** @private */
 		flash_proxy override function nextValue(idx:int):*
 		{
 			return _list[idx-1];
