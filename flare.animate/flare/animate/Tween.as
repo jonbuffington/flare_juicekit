@@ -65,7 +65,6 @@ package flare.animate
 		 * Creates a new Tween with the specified parameters.
 		 * @param target the target object
 		 * @param duration the duration of the tween, in seconds
-		 * @param delay the starting delay, in seconds
 		 * @param values the properties to tween and their target values
 		 * @param remove a display list removal flag (for
 		 *  <code>DisplayObject</code> target objects
