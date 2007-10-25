@@ -1,10 +1,10 @@
 package flare.vis.util.heap
 {
 	/**
-	 * A fibonacci heap data structure for maintaining a sorted priority queue.
+	 * A Fibonacci heap data structure for maintaining a sorted priority queue.
 	 * For more about this particular implementation see
-	 * <a href=http://en.wikipedia.org/wiki/Fibonacci_heap">Wikipedia's
-	 * Fibonacci Heap article</a>.
+	 * <a target="_top" href="http://en.wikipedia.org/wiki/Fibonacci_heap">
+	 * Wikipedia's Fibonacci Heap article</a>.
 	 */
 	public class FibonacciHeap
 	{
