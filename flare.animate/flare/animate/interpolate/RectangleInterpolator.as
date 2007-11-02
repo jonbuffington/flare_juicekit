@@ -7,8 +7,11 @@ package flare.animate.interpolate
 	 */
 	public class RectangleInterpolator extends Interpolator
 	{
-		private var _start:Rectangle;
-		private var _end:Rectangle;
+		private var _startX:Number, _startY:Number;
+		private var _startW:Number, _startH:Number;
+		private var _rangeX:Number, _rangeY:Number;
+		private var _rangeW:Number, _rangeH:Number;
+
 		private var _cur:Rectangle;
 		
 		/**
@@ -28,12 +31,18 @@ package flare.animate.interpolate
 		 */
 		protected override function init(value:Object) : void
 		{
-			_end = Rectangle(value);
-			if (_cur == null) _cur = new Rectangle();
+			var r:Rectangle = value as Rectangle;
+			_cur = _prop.getValue(_target) as Rectangle;
+			if (_cur == null) _cur = r.clone();
 			
-			_start = _prop.getValue(_target) as Rectangle;
-			if (_start == null)
-				throw new Error("Current value is not a Rectangle.");
+			_startX = _cur.x;
+			_startY = _cur.y;
+			_startW = _cur.width;
+			_startH = _cur.height;
+			_rangeX = r.x - _startX;
+			_rangeY = r.y - _startY;
+			_rangeW = r.width - _startW;
+			_rangeH = r.height - _startH;
 		}
 		
 		/**
@@ -42,10 +51,10 @@ package flare.animate.interpolate
 		 */
 		public override function interpolate(f:Number) : void
 		{
-			_cur.x      = _start.x      + f * (_end.x - _start.x);
-			_cur.y      = _start.y      + f * (_end.y - _start.y);
-			_cur.width  = _start.width  + f * (_end.width - _start.width);
-			_cur.height = _start.height + f * (_end.height - _start.height);
+			_cur.x      = _startX + f * _rangeX;
+			_cur.y      = _startY + f * _rangeY;
+			_cur.width  = _startW + f * _rangeW;
+			_cur.height = _startH + f * _rangeH;
 			_prop.setValue(_target, _cur);
 		}
 		

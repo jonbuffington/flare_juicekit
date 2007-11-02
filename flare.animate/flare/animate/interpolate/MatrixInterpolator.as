@@ -7,8 +7,10 @@ package flare.animate.interpolate
 	 */
 	public class MatrixInterpolator extends Interpolator
 	{
-		private var _start:Matrix;
-		private var _end:Matrix;
+		private var _startA:Number, _startB:Number, _startC:Number;
+		private var _startD:Number, _startX:Number, _startY:Number;
+		private var _rangeA:Number, _rangeB:Number, _rangeC:Number;
+		private var _rangeD:Number, _rangeX:Number, _rangeY:Number;
 		private var _cur:Matrix;
 		
 		/**
@@ -28,12 +30,22 @@ package flare.animate.interpolate
 		 */
 		protected override function init(value:Object) : void
 		{
-			_end = Matrix(value);
-			if (_cur == null) _cur = new Matrix();
+			var m:Matrix = Matrix(value);
+			_cur = _prop.getValue(_target) as Matrix;
+			if (_cur == null) _cur = m.clone();
 			
-			_start = _prop.getValue(_target) as Matrix;
-			if (_start == null)
-				throw new Error("Current value is not a Matrix.");
+			_startA = _cur.a;
+			_startB = _cur.b;
+			_startC = _cur.c;
+			_startD = _cur.d;
+			_startX = _cur.tx;
+			_startY = _cur.ty;
+			_rangeA = m.a  - _startA;
+			_rangeB = m.b  - _startB;
+			_rangeC = m.c  - _startC;
+			_rangeD = m.d  - _startD;
+			_rangeX = m.tx - _startX;
+			_rangeY = m.ty - _startY;
 		}
 		
 		/**
@@ -42,12 +54,12 @@ package flare.animate.interpolate
 		 */
 		public override function interpolate(f:Number) : void
 		{
-			_cur.a  = _start.a  + f * (_end.a  - _start.a);
-			_cur.b  = _start.b  + f * (_end.b  - _start.b);
-			_cur.c  = _start.c  + f * (_end.c  - _start.c);
-			_cur.d  = _start.d  + f * (_end.d  - _start.d);
-			_cur.tx = _start.tx + f * (_end.tx - _start.tx);
-			_cur.ty = _start.ty + f * (_end.ty - _start.ty);
+			_cur.a  = _startA + f * _rangeA;
+			_cur.b  = _startB + f * _rangeB;
+			_cur.c  = _startC + f * _rangeC;
+			_cur.d  = _startD + f * _rangeD;
+			_cur.tx = _startX + f * _rangeX;
+			_cur.ty = _startY + f * _rangeY;
 			_prop.setValue(_target, _cur);
 		}
 		

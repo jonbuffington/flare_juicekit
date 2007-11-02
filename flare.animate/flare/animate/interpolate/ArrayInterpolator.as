@@ -32,14 +32,13 @@ package flare.animate.interpolate
 		protected override function init(value:Object) : void
 		{
 			_end = value as Array;
-			if (_cur == null || _cur.length != _end.length)
-				_cur = new Array(_end.length);
-			
-			_start = _prop.getValue(_target) as Array;
-			if (_start == null)
-				throw new Error("Current value is not an array.");
-			if (_start.length < _end.length)
+			_cur = _prop.getValue(_target) as Array;
+			if (_cur == null) {
+				_cur = Arrays.copy(_end);
+			} else if (_cur.length < _end.length) {
 				throw new Error("Array dimensions don't match");
+			}
+			_start = Arrays.copy(_cur, _start);
 		}
 		
 		/**

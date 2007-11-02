@@ -7,11 +7,9 @@ package flare.animate.interpolate
 	 */
 	public class PointInterpolator extends Interpolator
 	{
-		private var _startX:Number;
-		private var _startY:Number;
-		private var _endX:Number;
-		private var _endY:Number;
-		private var _end:Point;
+		private var _startX:Number, _startY:Number;
+		private var _rangeX:Number, _rangeY:Number;
+		private var _cur:Point;
 		
 		/**
 		 * Creates a new PointInterpolator.
@@ -30,13 +28,14 @@ package flare.animate.interpolate
 		 */
 		protected override function init(value:Object) : void
 		{
-			_end = Point(value);
-			
-			var p:Point = _prop.getValue(_target);
-			_startX = p.x;
-			_startY = p.y;
-			_endX = _end.x - _startX;
-			_endY = _end.y - _startY;
+			var p:Point = Point(value);
+			_cur = _prop.getValue(_target) as Point;
+			if (_cur == null) _cur = p.clone();
+
+			_startX = _cur.x;
+			_startY = _cur.y;
+			_rangeX = p.x - _startX;
+			_rangeY = p.y - _startY;
 		}
 		
 		/**
@@ -45,9 +44,9 @@ package flare.animate.interpolate
 		 */
 		public override function interpolate(f:Number) : void
 		{
-			_end.x = _startX + f*_endX;
-			_end.y = _startY + f*_endY;
-			_prop.setValue(_target, _end);
+			_cur.x = _startX + f*_rangeX;
+			_cur.y = _startY + f*_rangeY;
+			_prop.setValue(_target, _cur);
 		}
 		
 	} // end of class PointInterpolator
