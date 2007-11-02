@@ -38,7 +38,8 @@ package flare.util
 		/** A sorted array of all unique values in the collection. */
 		public function get uniqueValues():Array {
 			// get array with only unique items
-			var uniqs:Array = new Array();
+			var uniqs:Array = [];
+			if (_elm==null || _elm.length == 0) return uniqs;
 			uniqs.push(_elm[0]);
 			for (var i:int=1, j:int=0; i<_num; ++i) {
 				if (!equal(_elm[i], uniqs[j])) {

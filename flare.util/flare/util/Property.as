@@ -24,6 +24,7 @@ package flare.util
 		 */
 		public static function $(name:String):Property
 		{
+			if (name == null) return null;
 			var p:Property = __cache[name];
 			if (p == null) {
 				p = new Property(name);

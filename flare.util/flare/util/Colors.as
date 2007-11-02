@@ -80,6 +80,64 @@ package flare.util
 			return ((a & 0xFF) << 24) | (c & 0x00FFFFFF);
 		}
 		
+		/**
+		 * Returns the RGB color value for a color specified in HSV (hue,
+		 * saturation, value) color space.
+		 * @param h the hue, a value between 0 and 1
+		 * @param s the saturation, a value between 0 and 1
+		 * @param v the value (brighntess), a value between 0 and 1
+		 * @param a the (optional) alpha value, an integer between 0 and 255
+		 *  (255 is the default)
+		 * @return the corresponding RGB color value
+		 */
+		public static function hsv(h:Number, s:Number, v:Number, a:uint=255):uint
+		{
+			var r:uint=0, g:uint=0, b:uint=0;
+            if (s == 0) {
+                r = g = b = uint(v * 255 + .5);
+            } else {
+            	var i:Number = (h - Math.floor(h)) * 6.0;
+                var f:Number = i - Math.floor(i);
+                var p:Number = v * (1 - s);
+                var q:Number = v * (1 - s * f);
+                var t:Number = v * (1 - (s * (1 - f)));
+                switch (int(i))
+                {
+                    case 0:
+                        r = uint(v * 255 + .5);
+                        g = uint(t * 255 + .5);
+                        b = uint(p * 255 + .5);
+                        break;
+                    case 1:
+                        r = uint(q * 255 + .5);
+                        g = uint(v * 255 + .5);
+                        b = uint(p * 255 + .5);
+                        break;
+                    case 2:
+                        r = uint(p * 255 + .5);
+                        g = uint(v * 255 + .5);
+                        b = uint(t * 255 + .5);
+                        break;
+                    case 3:
+                        r = uint(p * 255 + .5);
+                        g = uint(q * 255 + .5);
+                        b = uint(v * 255 + .5);
+                        break;
+                    case 4:
+                        r = uint(t * 255 + .5);
+                        g = uint(p * 255 + .5);
+                        b = uint(v * 255 + .5);
+                        break;
+                    case 5:
+                        r = uint(v * 255 + .5);
+                        g = uint(p * 255 + .5);
+                        b = uint(q * 255 + .5);
+                        break;
+                }
+            }
+            return rgba(r, g, b, a);
+		}
+		
 		 /**
 	     * Interpolate between two color values by the given mixing proportion.
 	     * A mixing fraction of 0 will result in c1, a value of 1.0 will result
