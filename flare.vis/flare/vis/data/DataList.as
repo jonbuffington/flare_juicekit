@@ -1,18 +1,16 @@
 package flare.vis.data
 {
-	import flash.utils.Proxy;
-	import flash.utils.flash_proxy;
-	import flash.utils.Dictionary;
-	import flare.util.Arrays;
 	import flare.animate.Transitioner;
-	import flare.vis.scale.Scales;
-	import flare.util.Stats;
-	import flare.vis.scale.Scale;
+	import flare.util.Arrays;
 	import flare.util.Property;
 	import flare.util.Sort;
-	import flare.util.Sort;
-	import flare.util.Sort;
-	import flare.util.Sort;
+	import flare.util.Stats;
+	import flare.vis.scale.Scale;
+	import flare.vis.scale.Scales;
+	
+	import flash.utils.Dictionary;
+	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
 
 	/**
 	 * A list of nodes or edges maintained by a Data instance. Items contained
@@ -266,31 +264,37 @@ package flare.vis.data
 		 * Sets a property value on all items in the list.
 		 * @param name the name of the property
 		 * @param value the value of the property
-		 * @param trans an optional Transitioner for collecting value updates
-		 * @return the input transitioner
+		 * @param t a transitioner or time span for updating object values. If
+		 *  the input is a transitioner, it will be used to store the updated
+		 *  values. If the input is a number, a new Transitioner with duration
+		 *  set to the input value will be used. The input is null by default,
+		 *  in which case object values are updated immediately.
+		 * @return the transitioner used to update the values
 		 */
-		public function setProperty(name:String, value:*,
-			trans:Transitioner=null):Transitioner
+		public function setProperty(name:String, value:*, t:*=null):Transitioner
 		{
-			var t:Transitioner = (trans==null ? Transitioner.DEFAULT : trans);
+			var trans:Transitioner = Transitioner.instance(t);
 			for (var i:uint=0; i<_list.length; ++i)
-				t.setValue(_list[i], name, value);
+				trans.setValue(_list[i], name, value);
 			return trans;
 		}
 		
 		/**
 		 * Sets property values on all sprites in a given group.
 		 * @param vals an object containing the properties and values to set.
-		 * @param trans an optional Transitioner for collecting value updates
-		 * @return the input transitioner
+		 * @param t a transitioner or time span for updating object values. If
+		 *  the input is a transitioner, it will be used to store the updated
+		 *  values. If the input is a number, a new Transitioner with duration
+		 *  set to the input value will be used. The input is null by default,
+		 *  in which case object values are updated immediately.
+		 * @return the transitioner used to update the values
 		 */
-		public function setProperties(vals:Object, trans:Transitioner=null)
-			: Transitioner
+		public function setProperties(vals:Object, t:*=null):Transitioner
 		{
-			var t:Transitioner = (trans==null ? Transitioner.DEFAULT : trans);
+			var trans:Transitioner = Transitioner.instance(t);
 			for (var name:String in vals) {
 				for (var i:uint=0; i<_list.length; ++i)
-					t.setValue(_list[i], name, vals[name]);
+					trans.setValue(_list[i], name, vals[name]);
 			}
 			return trans;
 		}

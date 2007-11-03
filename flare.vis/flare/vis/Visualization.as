@@ -1,20 +1,18 @@
 package flare.vis
 {
-	import flash.display.Sprite;
-	import flash.geom.Rectangle;
-	import flare.vis.data.Data;
-	import flare.vis.operator.Operator;
-	import flare.vis.operator.OperatorList;
-	import flare.animate.Transitioner;
-	import flare.vis.data.Tree;
-	import flare.animate.Scheduler;
 	import flare.animate.ISchedulable;
+	import flare.animate.Scheduler;
+	import flare.animate.Transitioner;
 	import flare.vis.axis.Axes;
 	import flare.vis.axis.CartesianAxes;
+	import flare.vis.data.Data;
 	import flare.vis.data.Tree;
-	import flare.vis.data.DataSprite;
 	import flare.vis.events.DataEvent;
 	import flare.vis.events.VisualizationEvent;
+	import flare.vis.operator.OperatorList;
+	
+	import flash.display.Sprite;
+	import flash.geom.Rectangle;
 
 	/**
 	 * The Visualization class represents an interactive data visualization.
@@ -143,17 +141,21 @@ package flare.vis
 		 * perform value updates, enabling animated transitions. This method
 		 * also issues a <code>VisualizationEvent.UPDATE</code> event to any
 		 * registered listeners.
-		 * @param t a transitioner for updating object values. Null by default,
+		 * @param t a transitioner or time span for updating object values. If
+		 *  the input is a transitioner, it will be used to store the updated
+		 *  values. If the input is a number, a new Transitioner with duration
+		 *  set to the input value will be used. The input is null by default,
 		 *  in which case object values are updated immediately.
-		 * @return the input transitioner.
+		 * @return the transitioner used to store updated values.
 		 */
-		public function update(t:Transitioner=null):Transitioner
+		public function update(t:*=null):Transitioner
 		{
-			if (_axes != null) _axes.update(t);
-			_operators.operate(t);
-			if (_axes != null) _axes.update(t);
-			fireEvent(VisualizationEvent.UPDATE, t);
-			return t;
+			var trans:Transitioner = Transitioner.instance(t);
+			if (_axes != null) _axes.update(trans);
+			_operators.operate(trans);
+			if (_axes != null) _axes.update(trans);
+			fireEvent(VisualizationEvent.UPDATE, trans);
+			return trans;
 		}
 
 		// -- Event Handling --------------------------------------------------
