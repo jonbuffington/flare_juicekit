@@ -32,6 +32,18 @@ package flare.vis.operator
 			}
 		}
 		
+		/** An array of the operators contained in the operator list. */
+		public function set list(ops:Array):void {
+			// first remove all current operators
+			while (_list.length > 0) {
+				removeOperatorAt(_list.length-1);
+			}
+			// then add the new operators
+			for each (var op:IOperator in ops) {
+				add(op);
+			}
+		}
+		
 		/** The number of operators in the list. */
 		public function get length():uint { return _list.length; }
 		
@@ -50,7 +62,9 @@ package flare.vis.operator
 		/** @inheritDoc */
 		public function setup():void
 		{
-			// do nothing
+			for each (var op:IOperator in _list) {
+				op.setup();
+			}
 		}
 		
 		/**
@@ -144,6 +158,14 @@ package flare.vis.operator
 			for each (var op:IOperator in _list) {
 				op.operate(t);
 			}
+		}
+		
+		// -- MXML ------------------------------------------------------------
+		
+		/** @private */
+		public function initialized(document:Object, id:String):void
+		{
+			// do nothing
 		}
 		
 	} // end of class OperatorList

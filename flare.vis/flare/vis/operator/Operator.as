@@ -39,5 +39,13 @@ package flare.vis.operator
 			// for subclasses
 		}
 		
+		// -- MXML ------------------------------------------------------------
+		
+		/** @private */
+		public function initialized(document:Object, id:String):void
+		{
+			// do nothing
+		}
+		
 	} // end of class Operator
 }

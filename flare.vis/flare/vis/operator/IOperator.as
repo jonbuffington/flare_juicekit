@@ -2,6 +2,7 @@ package flare.vis.operator
 {
 	import flare.animate.Transitioner;
 	import flare.vis.Visualization;
+	import mx.core.IMXMLObject;
 	
 	/**
 	 * Interface for operators that perform processing tasks on the contents
@@ -9,7 +10,7 @@ package flare.vis.operator
 	 * size encoding. Custom operators can be defined by implementing this
 	 * interface;
 	 */
-	public interface IOperator
+	public interface IOperator extends IMXMLObject
 	{
 		/** The visualization processed by this operator. */
 		function get visualization():Visualization;
