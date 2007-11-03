@@ -91,7 +91,7 @@ package flare.vis.operator.encoder
 		public function Encoder(source:String=null, target:String=null,
 							which:int=1/*Data.NODES*/, filter:Function=null)
 		{
-			_source = new Property(source);
+			_source = source==null ? null : Property.$(source);
 			_target = target;
 			_which = which;
 			_filter = filter;
