@@ -5,7 +5,7 @@ package flare.demos
 	public class Demo extends Sprite
 	{
 		public var WIDTH:Number = 800;
-		public var HEIGHT:Number = 600;
+		public var HEIGHT:Number = 550;
 
 		public function play() : void
 		{

@@ -1,23 +1,25 @@
 package flare.demos
 {
-	import flare.vis.data.Data;
-	import flare.vis.Visualization;
-	import flare.vis.operator.layout.AxisLayout;
-	import flare.vis.data.DataSprite;
-	import flare.vis.util.graphics.Shapes;
-	import flare.vis.operator.encoder.ColorEncoder;
-	import flare.vis.palette.ColorPalette;
-	import flash.events.MouseEvent;
 	import flare.animate.Transitioner;
 	import flare.util.Button;
+	import flare.vis.Visualization;
+	import flare.vis.data.Data;
+	import flare.vis.data.DataSprite;
+	import flare.vis.operator.encoder.ColorEncoder;
+	import flare.vis.operator.layout.AxisLayout;
+	import flare.vis.palette.ColorPalette;
+	import flare.vis.util.graphics.Shapes;
+	
+	import flash.events.MouseEvent;
 	
 	public class Bars extends Demo
 	{
 		public function Bars() {
 			name = "Bars";
 			
-			var vis:Visualization = new Visualization(getData(50,20));
+			var vis:Visualization = new Visualization(getData(44,20));
 			vis.bounds.width = 700;
+			vis.bounds.height = HEIGHT - 100;
 			vis.data.nodes.setProperties({
 				shape: Shapes.HORIZONTAL_BAR,
 				lineAlpha: 0,
@@ -51,7 +53,7 @@ package flare.demos
 			var data:Data = new Data();
 			for (var i:uint=0; i<N; ++i) {
 				for (var j:uint=0; j<M; ++j) {
-					var s:String = "_"+i+"_";
+					var s:String = String(i<10?"0"+i:i);
 					data.addNode({
 						y:s, s:j, x: int(1 + 10*Math.random())
 					});

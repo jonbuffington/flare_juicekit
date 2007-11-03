@@ -1,46 +1,24 @@
 package {
-	import flash.display.Sprite;
-	import flare.demos.Smoke;
-	import flare.util.Button;
-	import flash.utils.getQualifiedClassName;
-	import flash.events.MouseEvent;
-	import flash.text.TextField;
-	import flash.display.DisplayObject;
-	import flare.demos.Graph;
-	import flash.text.TextFormat;
-	import flash.text.TextFieldAutoSize;
-	import flare.demos.Animation;
-	import flare.demos.TreeMap;
-	import flash.utils.Dictionary;
-	import flare.demos.GraphView;
-	import flash.display.Shape;
-	import flare.vis.util.graphics.GraphicsUtil;
-	import flare.vis.data.DataSprite;
 	import flare.animate.Transitioner;
-	import flare.animate.Tween;
-	import flare.demos.Stacks;
-	import flare.demos.Chart;
-	import flare.display.TextSprite;
-	import flare.demos.Timeline;
-	import flare.demos.Pie;
+	import flare.demos.Animation;
 	import flare.demos.Bars;
-	import flare.vis.data.Data;
-	import flare.util.Strings;
+	import flare.demos.Chart;
 	import flare.demos.Distortion;
-	import flash.filters.GlowFilter;
-	import flare.animate.Transition;
-	import flare.animate.Sequence;
-	import flare.animate.Easing;
+	import flare.demos.GraphView;
+	import flare.demos.Pie;
+	import flare.demos.Smoke;
+	import flare.demos.Stacks;
+	import flare.demos.Timeline;
+	import flare.demos.TreeMap;
+	import flare.util.Button;
+	
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.MouseEvent;
 
-	[SWF(width="800", height="600", backgroundColor="#ffffff", frameRate="30")]
+	[SWF(width="800", height="550", backgroundColor="#ffffff", frameRate="30")]
 	public class demos extends Sprite
 	{
-		public static const WIDTH:Number = 800;
-		public static const HEIGHT:Number = 600;
-		
-		//[Embed(fontFamily="Verdana",source="c:\\windows\\fonts\\verdana.ttf")]
-		//private var _verdana_str:String;
-		
 		private var _demos:Array;
 		private var _cancel:Button;
 		private var _buttons:Sprite;
@@ -51,9 +29,10 @@ package {
 		public function demos()
 		{
 			// create logo
-			_logo = createLogo();
+			_logo = new FlareLogo();
 			_logo.x = stage.stageWidth / 2;
 			_logo.y = stage.stageHeight/2 - _logo.height / 2;
+			_logo.play();
 			addChild(_logo);
 				
 			// create demos
@@ -61,7 +40,7 @@ package {
 			addChild(_demo);
 			_buttons = createDemos();
 			_buttons.x = (stage.stageWidth - _buttons.width) / 2;
-			_buttons.y = 7*stage.stageHeight/8 - _buttons.height / 2;
+			_buttons.y = stage.stageHeight - _buttons.height*3;
 			addChild(_buttons);
 			
 			// create cancel button
@@ -78,7 +57,6 @@ package {
 			_demos = new Array();
 			_demos.push(new Animation());
 			_demos.push(new Smoke());
-			//_demos.push(new Graph());
 			_demos.push(new Distortion());
 			_demos.push(new GraphView());
 			_demos.push(new TreeMap());
@@ -99,28 +77,6 @@ package {
 				s.addChild(b);
 			}
 			return s;
-		}
-		
-		private function createLogo():FlareLogo
-		{
-			/*
-			var fmt:TextFormat = new TextFormat("Sydnie",92,0,true,false);
-			var ts:TextSprite = new TextSprite("flare", fmt);
-			ts.filters = [new GlowFilter(0xff0000, 0.5, 0, 0, 2)];
-			
-			var t1:Tween = new Tween(ts, 5, 0, {"filters[0].blurX":16, "filters[0].blurY":16});
-			var t2:Tween = new Tween(ts, 5, 0, {"filters[0].blurX":0, "filters[0].blurY":0});
-			t1.easing = t2.easing = Easing.none;
-			_logoAnim = new Sequence(t1, t2);
-			_logoAnim.easing = Easing.easeInOutPoly(2);
-			_logoAnim.onEnd = function():void { _logoAnim.play(); }
-			_logoAnim.play();
-			
-			return ts;
-			*/
-			var logo:FlareLogo = new FlareLogo();
-			logo.play();
-			return logo;
 		}
 		
 		private function showDemo(event:MouseEvent):void

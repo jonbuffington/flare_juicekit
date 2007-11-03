@@ -27,7 +27,7 @@ package flare.demos
 			name = "Distortion";
 			
 			// create visualization
-			addChild(vis = new Visualization(GraphUtil.diamondTree(5, 6, 6)));
+			addChild(vis = new Visualization(GraphUtil.diamondTree(4, 6, 6)));
 			vis.bounds = new Rectangle(0, 0, WIDTH, HEIGHT-40);
 			vis.operators.add(new PropertyEncoder({scaleX:1, scaleY:1}));
 			vis.operators.add(layout=new NodeLinkTreeLayout());
