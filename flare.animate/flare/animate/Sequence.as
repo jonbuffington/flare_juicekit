@@ -138,7 +138,8 @@ package flare.animate
 				for (_idx=_trans.length; --_idx>=0;) _trans[_idx].step(0);
 				_idx += 1;
 			}
-			_trans[_idx].doStart(_reverse);
+			if (_trans.length > 0)
+				_trans[_idx].doStart(_reverse);
 		}
 		
 		/**
