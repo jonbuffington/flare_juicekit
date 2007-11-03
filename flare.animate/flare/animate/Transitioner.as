@@ -1,6 +1,7 @@
 package flare.animate
 {
 	import flare.util.Property;
+	
 	import flash.display.DisplayObject;
 	import flash.utils.Dictionary;
 	
@@ -81,6 +82,27 @@ package flare.animate
 	{
 		/** The default, immediate-mode transitioner instance. */
 		public static const DEFAULT:Transitioner = new Transitioner(NaN);
+		
+		/**
+		 * Gets a transitioner instance depending upon the input value.
+		 * @param t input determining the transitioner instance to return. If
+		 *  the input is a transitioner, it is simply returned. If the input is
+		 *  a number, a new Transitioner with duration set to the input value
+		 *  is returned. If the input is null,
+		 *  <code>Transitioner.DEFAULT</code> is returned.
+		 * @return a Transitioner instance determined by the input
+		 */		
+		public static function instance(t:*):Transitioner {
+			if (t is Number) {
+				return new Transitioner(t as Number);
+			} else if (t == null) {
+				return Transitioner.DEFAULT;
+			} else {
+				return t as Transitioner;
+			}
+		}
+		
+		// --------------------------------------------------------------------
 		
 		private var _immediate:Boolean;
 		private var _lookup:/*Object->Tween*/Dictionary = new Dictionary();
