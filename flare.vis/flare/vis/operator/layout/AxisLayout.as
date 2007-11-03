@@ -25,13 +25,17 @@ package flare.vis.operator.layout
 		private var _t:Transitioner;
 		
 		/** The x-axis source property. */
-		public function get xAxisField():String { return _xField.name; }
+		public function get xAxisField():String {
+			return _xField==null ? null : _xField.name;
+		}
 		public function set xAxisField(f:String):void {
 			_xField = Property.$(f); initializeAxes();
 		}
 		
 		/** The y-axis source property. */
-		public function get yAxisField():String { return _yField.name; }
+		public function get yAxisField():String {
+			return _yField==null ? null : _yField.name;
+		}
 		public function set yAxisField(f:String):void {
 			_yField = Property.$(f); initializeAxes();
 		}
@@ -60,8 +64,8 @@ package flare.vis.operator.layout
 		public function AxisLayout(xAxisField:String=null, yAxisField:String=null,
 								   xStacked:Boolean=false, yStacked:Boolean=false)
 		{
-			_xField = new Property(xAxisField);
-			_yField = new Property(yAxisField);
+			_xField = Property.$(xAxisField);
+			_yField = Property.$(yAxisField);
 			_xStacks = xStacked;
 			_yStacks = yStacked;
 		}
