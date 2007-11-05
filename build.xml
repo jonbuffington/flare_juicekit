@@ -10,6 +10,9 @@
   <!-- Update this property to point to your Flex SDK folder               -->
   <property name="FLEX_HOME" value="/usr/local/flex/"/>
 
+  <!-- This property should point to the dir containing "flex.swc."        -->
+  <property name="flex.lib.dir" value="${FLEX_HOME}frameworks/libs"/>
+
   <!-- Update this propery to point to the asdoc program. Windows users    -->
   <!-- should include the ".exe" extension.                                -->
   <property name="asdoc" value="${FLEX_HOME}bin/asdoc"/>
@@ -255,6 +258,9 @@
         <include name="flare.animate.swc"/>
         <include name="flare.physics.swc"/>
       </compiler.library-path>   
+      <compiler.library-path dir="${flex.lib.dir}">
+        <include name="framework.swc"/>
+      </compiler.library-path>
     </compc>
   </target>
 
