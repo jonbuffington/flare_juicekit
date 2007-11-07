@@ -121,14 +121,13 @@ package flare.vis.operator.layout
 	        ybias = (_horiz ? 0 : 1);
 	        mult = _top ? 1 : -1;
 	        len = _columns.length;
-	        
+
 	        // perform first walk to compute max values
 	        var maxValue:Number = peaks();
 	        var minX:Number = _horiz ? bounds.bottom : bounds.left;
 	        var minY:Number = _horiz ? (_top ? bounds.left : bounds.right)
 	                                 : (_top ? bounds.top : bounds.bottom);
 	        Arrays.fill(_baseline, minY);
-	        
 	        _scale.dataMax = maxValue;
 	        
 	        // initialize current polygon
@@ -146,9 +145,10 @@ package flare.vis.operator.layout
 	        // perform second walk to compute polygon layout
 	        visualization.data.nodes.visit(function(d:NodeSprite):Boolean
 	        {
+	        	var obj:Object = t.$(d);
 	        	var height:Number = 0, i:uint;
 	        	var visible:Boolean = d.visible && d.alpha>0;
-	        	var filtered:Boolean = !t.$(d).visible;
+	        	var filtered:Boolean = !obj.visible;
 	        	
 	        	// set full polygon to current baseline
 	        	for (i=0; i<len; ++i) {
@@ -156,8 +156,8 @@ package flare.vis.operator.layout
 	            }
 	            // if not visible, flatten on current baseline
 	        	if (!visible || filtered) {
-	        		if (!visible) d.points = Arrays.copy(_poly, d.points);
-	        		else _t.$(d).points = Arrays.copy(_poly);
+	        		if (!visible || _t.immediate) d.points = Arrays.copy(_poly, d.points);
+	        		else obj.points = Arrays.copy(_poly, d.props.poly);
 	        		return true;
 	        	}
 	        	
@@ -171,17 +171,20 @@ package flare.vis.operator.layout
 	                	_poly[2*(len-1-i)+ybias] - _poly[base+ybias]));
 	            }
 	            
+	            // if size is beneath threshold, then hide
+	            if ( height < _threshold ) {
+	            	obj.visible = false;
+	            }
+	            
 	            // update data sprite layout
 	            if (d.points == null)
 	            	d.points = getPolygon(d, bounds);
-	            _t.$(d).x = 0;
-	            _t.$(d).y = 0;
-	            _t.$(d).points = Arrays.copy(_poly);
-	            
-	            // if size is beneath threshold, then hide
-	            if ( height < _threshold ) {
-	            	_t.$(d).visible = false;
-	            }
+	            if (d.props.poly == null)
+	            	d.props.poly = Arrays.copy(_poly);
+	            obj.x = 0;
+	            obj.y = 0;
+	            obj.points = Arrays.copy(_poly, 
+	            	_t.immediate ? d.points : d.props.poly);
 	            
 	            return true;
 	        });
@@ -243,5 +246,6 @@ package flare.vis.operator.layout
 			}
 			return poly;
 		}
-	}
+		
+	} // end of class StackedAreaLayout
 }
