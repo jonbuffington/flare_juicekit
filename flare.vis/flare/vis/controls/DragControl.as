@@ -30,7 +30,6 @@ package flare.vis.controls
 									filter:Function=null) {
 			_obj = container;
 			_obj.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			_obj.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			_filter = filter;
 		}
 		
@@ -41,23 +40,41 @@ package flare.vis.controls
 		public function detach() : void
 		{
 			_obj.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			_obj.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			_obj = null;
 		}
 		
 		private function onMouseDown(event:MouseEvent) : void {
 			var s:Sprite = event.target as Sprite;
-			if (s!=null && (_filter==null || _filter(s))) {
+			if (s==null) return; // exit if not a sprite
+			
+			if (_filter==null || _filter(s)) {
 				_cur = s;
 				if (_cur is DataSprite) (_cur as DataSprite).fix();
 				_cur.startDrag();
+				_cur.stage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+				_cur.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			}
+			event.stopPropagation();
 		}
-			
+		
+		private function onDrag(event:MouseEvent) : void {
+			// ensure that position updates are handled correctly
+			// we hack this in because flash isn't invoking x,y overrides
+			// TODO: find cleaner fix? ie, a public position update method?
+			_cur.x = _cur.x + 1e-12;
+			_cur.y = _cur.y + 1e-12;
+			// ensure that render event is made for the next frame
+			event.updateAfterEvent();
+		}
+		
 		private function onMouseUp(event:MouseEvent) : void {
 			if (_cur != null) {
+				_cur.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				_cur.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
 				_cur.stopDrag();
+				
 				if (_cur is DataSprite) (_cur as DataSprite).unfix();
+				event.stopPropagation();
 			}
 			_cur = null;
 		}

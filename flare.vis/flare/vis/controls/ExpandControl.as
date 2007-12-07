@@ -15,6 +15,8 @@ package flare.vis.controls
 	public class ExpandControl
 	{
 		private var _vis:Visualization;
+		private var _cur:NodeSprite;
+		
 		/** The Visualization associated with this control. */
 		public function get visualization():Visualization { return _vis; }
 		/** Boolean-valued filter function for determining which items
@@ -42,7 +44,7 @@ package flare.vis.controls
 		{
 			_vis = vis;
 			if (_vis != null) {
-				_vis.addEventListener(MouseEvent.CLICK, onClick);
+				_vis.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			}
 			this.filter = filter;
 			if (update != null) this.update = update;
@@ -55,15 +57,35 @@ package flare.vis.controls
 		public function detach():void
 		{
 			if (_vis == null) return;
-			_vis.removeEventListener(MouseEvent.CLICK, onClick);
+			_vis.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			_vis = null;
 		}
 		
-		private function onClick(event:MouseEvent):void
-		{
-			var n:NodeSprite = event.target as NodeSprite;
-			if (n==null || (filter!=null && !filter(n))) return;
-			n.expanded = !n.expanded;
+		private function onMouseDown(event:MouseEvent) : void {
+			var s:NodeSprite = event.target as NodeSprite;
+			if (s==null) return; // exit if not a NodeSprite
+			
+			if (filter==null || filter(s)) {
+				_cur = s;
+				_cur.stage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+				_cur.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			}
+			event.stopPropagation();
+		}
+		
+		private function onDrag(event:MouseEvent) : void {
+			_cur.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			_cur.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			_cur = null;
+		}
+		
+		private function onMouseUp(event:MouseEvent) : void {
+			_cur.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			_cur.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			_cur.expanded = !_cur.expanded;
+			_cur = null;	
+			event.stopPropagation();
+			
 			update();
 		}
 		
