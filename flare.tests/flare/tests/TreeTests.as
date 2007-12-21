@@ -14,6 +14,7 @@ package flare.tests
 			addTest("bfsTest");
 			addTest("dfsTest");
 			addTest("mstTest");
+			addTest("bfsTwiceTest");
 		}
 		
 		// --------------------------------------------------------------------
@@ -140,5 +141,37 @@ package flare.tests
 			assertFalse(tree.contains(cg));
 		}
 		
+		//  a--b--c--d
+		//  |  |  |  
+		//  e  f  g
+		public function bfsTwiceTest():void
+		{
+			data.treeBuilder = TreeUtil.breadthFirstTree;
+			data.root = c;
+			var tree:Tree = data.tree;
+				
+			data.root = a;
+			tree = data.tree;
+
+			assertEquals(7, tree.nodes.size);
+			assertEquals(6, tree.edges.size);			
+			assertEquals(a, tree.root);
+			assertEquals(a, b.parentNode);
+			assertEquals(a, e.parentNode);
+			assertEquals(b, c.parentNode);
+			assertEquals(b, f.parentNode);
+			assertEquals(c, d.parentNode);
+			assertEquals(c, g.parentNode);
+			assertTrue(tree.contains(ab));
+			assertTrue(tree.contains(ae));
+			assertTrue(tree.contains(bc));
+			assertTrue(tree.contains(bf));
+			assertTrue(tree.contains(cd));
+			assertTrue(tree.contains(cg));
+			assertFalse(tree.contains(ef));
+			assertFalse(tree.contains(fg));
+			assertFalse(tree.contains(dg));
+		}
+
 	}
 }
