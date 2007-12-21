@@ -285,8 +285,7 @@ package flare.vis.data
 			
 			for (i=0; i<ea.length; ++i) {
 				fireEvent(DataEvent.DATA_REMOVED, ea[i]);
-				ea[i].source = null;
-				ea[i].target = null;
+				ea[i].clear();
 			}
 			var nodes:Array = _nodes.list
 			for (i=0; i<_nodes.size; ++i) {
@@ -423,6 +422,9 @@ package flare.vis.data
 			if (_treeBuilder != f) {
 				_tree = null;
 				_treeBuilder = f;
+				for (var i:uint=0; i<_nodes.size; ++i) {
+					_nodes.list[i].removeEdges(NodeSprite.TREE_LINKS);
+				}
 			}
 		}
 		
@@ -434,6 +436,9 @@ package flare.vis.data
 			if (_root != n) {
 				_tree = null;
 				_root = n;
+				for (var i:uint=0; i<_nodes.size; ++i) {
+					_nodes.list[i].removeEdges(NodeSprite.TREE_LINKS);
+				}
 			}
 		}
 		

@@ -1,7 +1,6 @@
 package flare.vis.data
 {
 	import flare.util.Arrays;
-	import flash.utils.Dictionary;
 	
 	/**
 	 * Visually represents a data element, such as a data tuple or graph node.
@@ -147,10 +146,10 @@ package flare.vis.data
 		private function dirtyEdges():void
 		{
 			var e:EdgeSprite;
-			if (_parentEdge != null) _parentEdge.dirty();
-			if (_childEdges != null) for each (e in _childEdges) { e.dirty(); }
-			if (_outEdges   != null) for each (e in _outEdges)   { e.dirty(); }
-			if (_inEdges    != null) for each (e in _inEdges)    { e.dirty(); }
+			if (_parentEdge) _parentEdge.dirty();
+			if (_childEdges) for each (e in _childEdges) { e.dirty(); }
+			if (_outEdges)   for each (e in _outEdges)   { e.dirty(); }
+			if (_inEdges)    for each (e in _inEdges)    { e.dirty(); }
 		}
 		
 		// -- Test Methods -------------------------------------
@@ -270,14 +269,34 @@ package flare.vis.data
 		
 		/**
 		 * Removes all edges incident on this node. Note that this method
-		 * does not update any of the nodes connected to this node.
+		 * does not update the edges themselves or the other nodes.
 		 */
 		public function removeAllEdges():void
 		{
+			removeEdges(ALL_LINKS);
+		}
+		
+		/**
+		 * Removes all edges of the indicated edge type. Note that this method
+		 * does not update the edges themselves or the other nodes.
+		 * @param type the type of edges to remove. For example, IN_LINKS,
+		 *  OUT_LINKS, TREE_LINKS, etc.
+		 */
+		public function removeEdges(type:int):void
+		{
 			var e:EdgeSprite;
-			while (_childEdges.length > 0) { e=_childEdges.pop(); e.clear(); }
-			while (_outEdges.length > 0)   { e=_outEdges.pop();   e.clear(); }
-			while (_inEdges.length > 0)    { e=_inEdges.pop();    e.clear(); }
+			if (type & PARENT_LINK && _parentEdge) {
+				_parentEdge = null;
+			}
+			if (type & CHILD_LINKS && _childEdges) {
+				while (_childEdges.length > 0) { e=_childEdges.pop(); }
+			}
+			if (type & OUT_LINKS && _outEdges) {
+				while (_outEdges.length > 0) { e=_outEdges.pop(); }
+			}
+			if (type & IN_LINKS && _inEdges) {
+				while (_inEdges.length > 0) { e=_inEdges.pop(); }	
+			}
 		}
 		
 		/**
