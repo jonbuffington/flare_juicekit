@@ -84,6 +84,7 @@ package flare.vis.operator.layout
         	_ax = a.x; _ay = a.y;
         
         	var root:NodeSprite = layoutRoot as NodeSprite;
+        	if (root == null) { _t = null; return; }
         	var rp:Params = params(root);
         
         	// do first pass - compute breadth information, collect depth info

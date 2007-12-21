@@ -110,6 +110,7 @@ package flare.vis.operator.layout
 			_t = (t!=null ? t : Transitioner.DEFAULT);
 			
 			var n:NodeSprite = layoutRoot as NodeSprite;
+			if (n == null) { _t = null; return; }
 			var np:Params = params(n);
 			
 			// calc relative widths and maximum tree depth
