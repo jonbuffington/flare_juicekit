@@ -1,7 +1,5 @@
 package flare.vis.util
 {
-	import flash.utils.Dictionary;
-	import flare.util.Arrays;
 	import flare.vis.data.Data;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
@@ -26,6 +24,8 @@ package flare.vis.util
 		 */
 		public static function breadthFirstTree(n:NodeSprite, data:Data):Tree
 		{
+			if (n==null) return new Tree();
+			
 			var t:Tree = new Tree(); t.root = n;
 			var q:Array = [n], nn:NodeSprite;
 			while (q.length > 0) {
@@ -53,6 +53,8 @@ package flare.vis.util
 		 */
 		public static function depthFirstTree(n:NodeSprite, d:Data):Tree
 		{
+			if (n==null) return new Tree();
+			
 			var t:Tree = new Tree(); t.root = n;
 			depthFirstHelper(n, t);
 			return t;
@@ -100,6 +102,8 @@ package flare.vis.util
 		 */
 		public static function minimumSpanningTree(n:NodeSprite, d:Data, w:Function):Tree
 		{
+			if (n==null) return new Tree();
+			
 			var t:Tree = new Tree(); t.root = n;
 			var hn:HeapNode, weight:Number, e:EdgeSprite;
 			

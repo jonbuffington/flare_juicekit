@@ -422,9 +422,6 @@ package flare.vis.data
 			if (_treeBuilder != f) {
 				_tree = null;
 				_treeBuilder = f;
-				for (var i:uint=0; i<_nodes.size; ++i) {
-					_nodes.list[i].removeEdges(NodeSprite.TREE_LINKS);
-				}
 			}
 		}
 		
@@ -436,9 +433,6 @@ package flare.vis.data
 			if (_root != n) {
 				_tree = null;
 				_root = n;
-				for (var i:uint=0; i<_nodes.size; ++i) {
-					_nodes.list[i].removeEdges(NodeSprite.TREE_LINKS);
-				}
 			}
 		}
 		
@@ -451,6 +445,10 @@ package flare.vis.data
 		public function get tree():Tree
 		{
 			if (_tree == null) {
+				// clear out any existing tree edges
+				for (var i:uint=0; i<_nodes.size; ++i) {
+					_nodes.list[i].removeEdges(NodeSprite.TREE_LINKS);
+				}
 				// build tree if necessary
 				var root:NodeSprite = _root == null ? _nodes[0] : _root;
 				_tree = _treeBuilder(root, this);	

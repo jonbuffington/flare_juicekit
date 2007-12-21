@@ -14,7 +14,7 @@ package flare.vis.data
 		 * when the tree does not yet have a root node. */
 		public override function set root(n:NodeSprite):void {
 			if (_root == null) {
-				super.addNode(n); _root = n;
+				super.addNode(n); _root = n; _root.parentIndex = -1;
 			} else {
 				throw new ArgumentError("Can't set root unless the tree is empty." +
 				"If you want to set an entirely new root, call clear() first.");
@@ -121,7 +121,9 @@ package flare.vis.data
 			
 			// disconnect tree
 			var c:NodeSprite = (e.target.parentNode==e.source ? e.target : e.source);
-			c.parentNode.removeChildEdge(e);
+			var p:NodeSprite = c.parentNode;
+			var i:int = c.parentIndex;
+			p.removeChildEdge(e);
 			
 			// walk disconnected segment to fire updates
 			c.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
@@ -130,6 +132,11 @@ package flare.vis.data
 				return true;
 			});
 			removeInternal(e, _edges);
+			
+			// update parent index values
+			for (; i<p.childDegree; ++i) {
+				p.getChildNode(i).parentIndex = i;
+			}
 			return true;	
 		}
 
