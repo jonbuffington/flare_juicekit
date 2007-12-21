@@ -1,13 +1,11 @@
 package flare.vis.axis
 {
-	import flash.geom.Rectangle;
-	import flash.display.Shape;
-	import flash.display.Sprite;
+	import flare.animate.Transitioner;
 	import flare.display.RectSprite;
 	import flare.display.TextSprite;
-	import flare.vis.util.graphics.Shapes;	
 	import flare.vis.Visualization;
-	import flare.animate.Transitioner;
+	
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Axes class representing 2D Cartesian (X-Y) axes.
@@ -23,6 +21,8 @@ package flare.vis.axis
 		private var _showXLine:Boolean;
 		private var _showYLine:Boolean;
 		private var _border:RectSprite;
+		private var _xrev:Boolean = false;
+		private var _yrev:Boolean = false;
 		
 		/** The x-axis. */
 		public function get xAxis():Axis { return _xaxis; }
@@ -32,6 +32,14 @@ package flare.vis.axis
 		public function get xLine():AxisGridLine { return _xline; }
 		/** Grid line for the origin along the y-axis. */
 		public function get yLine():AxisGridLine { return _yline; }
+		
+		/** Determines if the x-axis should be in reverse order. */
+		public function get xReverse():Boolean { return _xrev; }
+		public function set xReverse(b:Boolean):void { _xrev = b; }
+		
+		/** Determines if the y-axis should be in reverse order. */
+		public function get yReverse():Boolean { return _yrev; }
+		public function set yReverse(b:Boolean):void { _yrev = b; }
 		
 		/** The x-coordinate of the axes' origin point. */
 		public function get originX():Number { return _xaxis.originX; }
@@ -109,12 +117,22 @@ package flare.vis.axis
         	var b:Rectangle = layoutBounds.clone();
         	
         	// set x-axis position
-        	_xaxis.x1 = b.left;  _xaxis.y1 = b.bottom;
-        	_xaxis.x2 = b.right; _xaxis.y2 = b.bottom;
+        	if (_xrev) {
+        		_xaxis.x1 = b.right; _xaxis.y1 = b.bottom;
+        		_xaxis.x2 = b.left;  _xaxis.y2 = b.bottom;
+        	} else {
+        		_xaxis.x1 = b.left;  _xaxis.y1 = b.bottom;
+        		_xaxis.x2 = b.right; _xaxis.y2 = b.bottom;
+        	}
 
 			// set y-axis position
-			_yaxis.x1 = b.left;  _yaxis.y1 = b.bottom;
-        	_yaxis.x2 = b.left;  _yaxis.y2 = b.top;
+			if (_yrev) {
+				_yaxis.x1 = b.left;  _yaxis.y1 = b.top;
+        		_yaxis.x2 = b.left;  _yaxis.y2 = b.bottom;
+   			} else {
+   				_yaxis.x1 = b.left;  _yaxis.y1 = b.bottom;
+        		_yaxis.x2 = b.left;  _yaxis.y2 = b.top;
+   			}
         	
         	// gridline bias
         	_xaxis.lineBiasX = 0; _xaxis.lineBiasY = -b.height;
