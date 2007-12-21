@@ -1,30 +1,26 @@
 package flare.demos
 {
+	import flare.animate.Transitioner;
+	import flare.util.Button;
+	import flare.util.Stats;
 	import flare.vis.Visualization;
 	import flare.vis.axis.CartesianAxes;
-	import flare.vis.scale.LinearScale;
-	import flash.events.MouseEvent;
-	import flare.animate.Transitioner;
-	import flare.vis.data.Data;
-	import flare.vis.data.DataSprite;
-	import flare.vis.axis.Axis;
-	import flare.vis.operator.layout.AxisLayout;
-	import flash.filters.GlowFilter;
-	import flare.vis.scale.LogScale;
-	import flare.vis.operator.encoder.ShapeEncoder;
-	import flare.vis.operator.encoder.SizeEncoder;
-	import flare.vis.operator.encoder.ColorEncoder;
-	import flare.vis.palette.ColorPalette;
-	import flare.util.Stats;
-	import flare.vis.scale.Scales;
-	import flash.display.StageQuality;
-	import flare.util.Button;
-	import flare.vis.util.Filters;
 	import flare.vis.controls.HoverControl;
 	import flare.vis.controls.SelectionControl;
-	import flare.vis.operator.OperatorList;
-	import flash.events.Event;
+	import flare.vis.data.Data;
+	import flare.vis.data.DataSprite;
 	import flare.vis.operator.distortion.BifocalDistortion;
+	import flare.vis.operator.encoder.ColorEncoder;
+	import flare.vis.operator.encoder.ShapeEncoder;
+	import flare.vis.operator.encoder.SizeEncoder;
+	import flare.vis.operator.layout.AxisLayout;
+	import flare.vis.palette.ColorPalette;
+	import flare.vis.scale.Scales;
+	import flare.vis.util.Filters;
+	
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.filters.GlowFilter;
 	import flash.geom.Point;
 	
 	public class Chart extends Demo
