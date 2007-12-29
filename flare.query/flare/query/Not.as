@@ -9,7 +9,7 @@ package flare.query
 		
 		/** The sub-expression clause to negate. */
 		public function get clause():Expression { return _clause; }
-		public function set clause(e:Expression):void { _clause = e; }
+		public function set clause(e:*):void { _clause = Expression.expr(e); }
 		
 		/**
 		 * @inheritDoc
@@ -20,8 +20,8 @@ package flare.query
 		 * Creates a new Not operator.
 		 * @param clause the sub-expression clause to negate
 		 */
-		public function Not(clause:Expression) {
-			_clause = clause;
+		public function Not(clause:*) {
+			_clause = Expression.expr(clause);
 		}
 		
 		/**

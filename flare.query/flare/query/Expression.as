@@ -138,5 +138,5 @@ package flare.query
 			return new Literal(o);
 		}
 		
-	} // end of interface IExpression
+	} // end of class Expression
 }

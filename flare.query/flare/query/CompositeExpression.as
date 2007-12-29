@@ -53,7 +53,7 @@ package flare.query
 		 * Sets the sub-expressions of this composite
 		 * @param array an array of sub-expressions
 		 */
-		protected function setChildren(array:Array):void
+		public function setChildren(array:Array):void
 		{
 			_children = new Array();
 			for each (var expr:Expression in array) {
@@ -76,7 +76,7 @@ package flare.query
 		 * @return true if the expression was found and removed, false
 		 *  otherwise
 		 */
-		protected function removeChild(expr:Expression):Boolean
+		public function removeChild(expr:Expression):Boolean
 		{
 			var idx:int = _children.indexOf(expr);
 			if (idx >= 0) {
