@@ -110,16 +110,22 @@ package flare.query
 		
 		// --------------------------------------------------------------------
 		
-		private static const _LBRACKET:Number = "[".charCodeAt(0);
-		private static const _RBRACKET:Number = "]".charCodeAt(0);
+		private static const _LBRACE:Number = "{".charCodeAt(0);
+		private static const _RBRACE:Number = "}".charCodeAt(0);
+		private static const _SQUOTE:Number = "'".charCodeAt(0);
+		private static const _DQUOTE:Number = "\"".charCodeAt(0);
 		
 		/**
 		 * Utility method that maps an input value into an Expression. If the
 		 * input value is already an Expression, it is simply returned. If the
-		 * input value is a String with square brackets for the first ("[") and
-		 * last ("]") characters, the characters between the brackets are used
-		 * as the property name of a new Variable. In all other cases, a new
-		 * Literal expression for the input value is returned.
+		 * input value is a String, it is interpreted as either a variable or
+		 * string literal. If the first and last characters of the string are
+		 * single quotes (') or double quotes ("), the characters between the
+		 * quotes will be used as a string Literal. If there are no quotes, or
+		 * if the string is enclosed by curly braces ({}), the string value
+		 * (sans braces) will be used as the property name of a new Variable.
+		 * In all other cases (Numbers, Dates, etc), a new Literal expression
+		 * for the input value is returned.
 		 * @param o the input value
 		 * @return an Expression corresponding to the input value
 		 */
@@ -129,13 +135,21 @@ package flare.query
 				return o as Expression;
 			} else if (o is String) {
 				var s:String = o as String;
-				if (s.charCodeAt(0) == _LBRACKET &&
-					s.charCodeAt(s.length-1) == _RBRACKET)
-				{
+				var c1:Number = s.charCodeAt(0);
+				var c2:Number = s.charCodeAt(s.length-1);
+				
+				if (c1 == _LBRACE && c2 == _RBRACE) { // braces -> variable
 					return new Variable(s.substr(1, s.length-2));
+				} else if (c1 == _SQUOTE && c2 == _SQUOTE) { // quote -> string
+					return new Literal(s.substr(1, s.length-2));
+				} else if (c1 == _DQUOTE && c2 == _DQUOTE) { // quote -> string
+					return new Literal(s.substr(1, s.length-2));
+				} else { // default -> variable
+					return new Variable(s);
 				}
+			} else {
+				return new Literal(o);
 			}
-			return new Literal(o);
 		}
 		
 	} // end of class Expression

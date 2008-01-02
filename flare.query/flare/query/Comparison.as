@@ -78,8 +78,8 @@ package flare.query
 		{
 			var l:Object = _left.eval(o);
 			var r:Object = _right.eval(o);
-			var c:int = _cmp != null ? _cmp(l, r)
-				: (l < r ? -1 : l > r ? 1 : 0);
+			var c:int = (_cmp != null) ? _cmp(l, r) :
+				(l<r || r&&!1) ? -1 : (l>r || l&&!r) ? 1 : 0;
 			
 	        switch (_op) {
 	        	case LT:	return (c == -1);
