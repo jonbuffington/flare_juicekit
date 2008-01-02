@@ -7,33 +7,41 @@ package flare.tests
 	import flare.query.If;
 	import flare.query.Literal;
 	import flare.query.Or;
+	import flare.query.Query;
 	import flare.query.Range;
 	import flare.query.Variable;
 	import flare.query.Xor;
-	import flare.query.methods.add;
-	import flare.query.methods.and;
-	import flare.query.methods.div;
-	import flare.query.methods.eq;
-	import flare.query.methods.gt;
-	import flare.query.methods.gte;
-	import flare.query.methods.iff;
-	import flare.query.methods.lt;
-	import flare.query.methods.lte;
-	import flare.query.methods.mod;
-	import flare.query.methods.mul;
-	import flare.query.methods.neq;
-	import flare.query.methods.or;
-	import flare.query.methods.range;
-	import flare.query.methods.sub;
-	import flare.query.methods.xor;
+	import flare.query.methods.*;
 	
 	import unitest.TestCase;
 
 	public class ExpressionTests extends TestCase
 	{
 		public function ExpressionTests() {
+			addTest("testParse");
 			addTest("testExpressions");
 			addTest("testExpressionMethods");
+			addTest("testQuery");
+		}
+		
+		public function testParse():void
+		{
+			assertTrue(Expression.expr(true) is Literal);
+			assertTrue(Expression.expr(false) is Literal);
+			assertTrue(Expression.expr(1) is Literal);
+			assertTrue(Expression.expr(new Date()) is Literal);
+			assertTrue(Expression.expr("'a'") is Literal);
+			assertTrue(Expression.expr("a") is Variable);
+			assertTrue(Expression.expr("{a}") is Variable);
+			
+			var s:String = "a";
+			assertTrue(_(s) is Literal);
+			assertEquals("a", _(s).eval());
+			assertTrue($(s) is Variable);
+			assertEquals("a", $(s).name);
+			assertTrue(Expression.expr(s) is Variable);
+			assertTrue(Expression.expr(_(s)) is Literal);
+			assertTrue(Expression.expr($(s)) is Variable);
 		}
 		
 		// test variables
@@ -184,8 +192,8 @@ package flare.tests
 		
 		public function testExpressionMethods():void 
 		{
-			var a:String = "[a]";
-			var b:String = "[b]";
+			var a:Variable = $("a");
+			var b:Variable = $("b");
 			
 			_lt  = lt(a, b);
 			_gt  = gt(a, b);
@@ -206,6 +214,103 @@ package flare.tests
 			_span  = range(t1, t2, a);
 			
 			_runTests();
+		}
+		
+		public function testQuery():void
+		{
+			var data:Array = [
+				{val:4, cat:"a"},
+				{val:4, cat:"a"},
+				{val:4, cat:"a"},
+				{val:3, cat:"b"},
+				{val:3, cat:"b"},
+				{val:3, cat:"b"},
+				{val:2, cat:"c"},
+				{val:2, cat:"c"},
+				{val:2, cat:"c"},
+				{val:1, cat:"d"}
+			];
+			
+			var r:Array;
+			
+			r = select({count:count("cat")}).eval(data);
+			assertEquals(1, r.length);
+			assertEquals(10, r[0].count);
+			
+			r = select({distinct:distinct("cat")}).eval(data);
+			assertEquals(1, r.length);
+			assertEquals(4, r[0].distinct);
+			
+			r = select({min:min("val")}).eval(data);
+			assertEquals(1, r.length);
+			assertEquals(1, r[0].min);
+			
+			r = select({max:max("val")}).eval(data);
+			assertEquals(1, r.length);
+			assertEquals(4, r[0].max);
+			
+			r = select({avg:average("val")}).eval(data);
+			assertEquals(1, r.length);
+			assertEquals(2.8, r[0].avg);
+			
+			r = select({sum:sum("val")}).eval(data);
+			assertEquals(1, r.length);
+			assertEquals(28, r[0].sum);
+			
+			r = select({sum:sum("val")})
+				.where(eq("cat", _("a"))) // use a as literal
+				.eval(data);
+			assertEquals(1, r.length);
+			assertEquals(12, r[0].sum);
+			
+			r = select({sum:sum("val")})
+				.where(eq("cat", $("a"))) // use a as variable
+				.eval(data);
+			assertEquals(0, r.length);
+			
+			r = select("cat", {sum:sum("val")})
+				.groupby("cat")
+				.eval(data);
+			assertEquals( 4, r.length);
+			assertEquals(12, r[0].sum); assertEquals("a", r[0].cat);
+			assertEquals( 9, r[1].sum); assertEquals("b", r[1].cat);
+			assertEquals( 6, r[2].sum); assertEquals("c", r[2].cat);
+			assertEquals( 1, r[3].sum); assertEquals("d", r[3].cat);
+			
+			var q:Query = where(or(eq("cat", _("a")),
+			                       eq("cat", _("b"))));
+			r = q.eval(data);
+			assertEquals(6, r.length);
+			
+			r = q.orderby("cat", false).eval(data);
+			assertEquals(6, r.length);
+			assertEquals("b", r[0].cat);
+			assertEquals("a", r[5].cat);
+			
+			// -----
+			
+			data = [
+	 			{cat:"a", val:1}, {cat:"a", val:2},
+	 			{cat:"b", val:3}, {cat:"b", val:4},
+	 			{cat:"c", val:5}, {cat:"c", val:6},
+	 			{cat:"d", val:7}, {cat:"d", val:8}
+	 		];
+	 
+	 		r = orderby("cat", true, "val", false).eval(data);
+	 		assertEquals(8, r.length);
+	 		assertEquals(2, r[0].val); assertEquals(1, r[1].val); 
+	 		assertEquals(4, r[2].val); assertEquals(3, r[3].val); 
+	 		assertEquals(6, r[4].val); assertEquals(5, r[5].val); 
+	 		assertEquals(8, r[6].val); assertEquals(7, r[7].val); 
+	 
+	 		r = select("cat", {sum:sum("val")}) // category + sum of values
+	            .where(neq("cat", _("d")))      // exclude category "d"
+	            .groupby("cat")                 // group by category
+	            .eval(data);                    // evaluate with data array
+	  		assertEquals( 3, r.length);
+	  		assertEquals("a", r[0].cat); assertEquals( 3, r[0].sum);
+	  		assertEquals("b", r[1].cat); assertEquals( 7, r[1].sum);
+	  		assertEquals("c", r[2].cat); assertEquals(11, r[2].sum);
 		}
 		
 	}
