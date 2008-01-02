@@ -287,6 +287,10 @@ package flare.tests
 			assertEquals("b", r[0].cat);
 			assertEquals("a", r[5].cat);
 			
+			r = where(eq(func("sqrt","val"), 2)).eval(data);
+			assertEquals(3, r.length);
+			assertEquals("a", r[0].cat);
+			
 			// -----
 			
 			data = [
