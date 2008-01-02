@@ -56,8 +56,8 @@ package flare.query
 		public function setChildren(array:Array):void
 		{
 			_children = new Array();
-			for each (var expr:Expression in array) {
-				_children.push(expr);
+			for each (var e:* in array) {
+				_children.push(Expression.expr(e));
 			}
 		}
 		
