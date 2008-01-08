@@ -1,14 +1,14 @@
 package flare.vis.operator.layout
 {
-	import flare.physics.Simulation;
 	import flare.animate.Transitioner;
-	import flash.utils.Dictionary;
-	import flare.vis.data.DataSprite;
-	import flare.vis.data.EdgeSprite;
-	import flash.filters.GradientBevelFilter;
 	import flare.physics.Particle;
+	import flare.physics.Simulation;
 	import flare.physics.Spring;
 	import flare.vis.data.Data;
+	import flare.vis.data.DataSprite;
+	import flare.vis.data.EdgeSprite;
+	
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Layout that positions graph items based on a physics simulation of
@@ -34,13 +34,13 @@ package flare.vis.operator.layout
 	 */
 	public class ForceDirectedLayout extends Layout
 	{
-		private var _lookup:Dictionary = new Dictionary();
 		private var _sim:Simulation;
 		private var _step:Number = 1;
 		private var _iter:int = 1;
 		private var _gen:uint = 0;
+		private var _enforceBounds:Boolean = false;
 		
-		// simlation defaults
+		// simulation defaults
 		private var _mass:Number = 1;
 		private var _restLength:Number = 30;
 		private var _tension:Number = 0.1;
@@ -76,6 +76,11 @@ package flare.vis.operator.layout
 		/** The physics simulation driving this layout. */
 		public function get simulation():Simulation { return _sim; }
 		
+		/** Flag indicating if the layout bounds should be enforced. 
+		 *  If true, the layoutBounds will limit node placement. */
+		public function get enforceBounds():Boolean { return _enforceBounds; }
+		public function set enforceBounds(b:Boolean):void { _enforceBounds = b; }
+		
 		// --------------------------------------------------------------------
 		
 		/**
@@ -85,7 +90,10 @@ package flare.vis.operator.layout
 		 * @param sim the physics simulation to use for the layout. If null
 		 *  (the default), default simulation settings will be used
 		 */
-		public function ForceDirectedLayout(iterations:int=1, sim:Simulation=null) {
+		public function ForceDirectedLayout(enforceBounds:Boolean=false, 
+			iterations:int=1, sim:Simulation=null)
+		{
+			_enforceBounds = enforceBounds;
 			_iter = iterations;
 			_sim = (sim==null ? new Simulation(0, 0, 0.05, -50) : sim);
 		}
@@ -109,6 +117,7 @@ package flare.vis.operator.layout
 				if (_sim.springs[i].tag != _gen) _sim.removeSpring(i);
 			
 			// run simulation
+			_sim.bounds = _enforceBounds ? layoutBounds : null;
 			for (i=0; i<_iter; ++i) {
 				_sim.tick(_step);
 			}
@@ -131,8 +140,9 @@ package flare.vis.operator.layout
 		{
 			var p:Particle = d.props.particle;
 			if (!p.fixed) {
-				_t.$(d).x = p.x;
-				_t.$(d).y = p.y;
+				var o:Object = _t.$(d);
+				o.x = p.x;
+				o.y = p.y;
 			}
 			return true;
 		}
