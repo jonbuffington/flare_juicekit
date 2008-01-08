@@ -1,26 +1,20 @@
 package flare.demos
 {
-	import flare.vis.data.Data;
-	import flare.vis.Visualization;
-	import flash.geom.Rectangle;
-	import flare.vis.operator.layout.AxisLayout;
-	import flare.vis.axis.CartesianAxes;
-	import flare.vis.data.DataSprite;
-	import flare.vis.data.EdgeSprite;
-	import flare.vis.data.NodeSprite;
-	import flare.vis.data.render.NullRenderer;
-	import flash.events.MouseEvent;
-	import flare.vis.operator.Operator;
-	import flare.vis.operator.layout.ForceDirectedLayout;
-	import flare.vis.operator.layout.Layout;
 	import flare.animate.Transitioner;
-	import flare.vis.operator.encoder.ColorEncoder;
-	import flare.vis.palette.ColorPalette;
 	import flare.display.TextSprite;
-	import flare.util.Maths;
 	import flare.util.Button;
+	import flare.util.Maths;
+	import flare.vis.Visualization;
 	import flare.vis.controls.DragControl;
+	import flare.vis.data.Data;
+	import flare.vis.operator.encoder.ColorEncoder;
+	import flare.vis.operator.layout.AxisLayout;
+	import flare.vis.operator.layout.ForceDirectedLayout;
+	import flare.vis.palette.ColorPalette;
 	import flare.vis.util.Filters;
+	
+	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 	
 	public class Timeline extends Demo
 	{
@@ -54,11 +48,14 @@ package flare.demos
 			btn.x = 10; btn.y = HEIGHT - 10 - btn.height;
 			btn.addEventListener(MouseEvent.CLICK, function(evt:MouseEvent):void
 			{
-				var fdl:Layout = new ForceDirectedLayout();
+				// create new force-directed layout that enforces the bounds
+				var fdl:ForceDirectedLayout = new ForceDirectedLayout(true);
+				fdl.layoutBounds = new Rectangle(0, 0, 600, 400);
 				vis.operators.setOperatorAt(0, fdl);
 				vis.continuousUpdates = true;
 				fdl.hideAxes(new Transitioner(1)).play();
 				new DragControl(vis, Filters.isNodeSprite);
+				vis.data.nodes.setProperty("buttonMode", true);
 				removeChild(btn);
 			});
 			addChild(btn);
