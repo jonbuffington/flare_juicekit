@@ -1,16 +1,20 @@
 package flare.vis.data
 {
-	import flash.utils.Dictionary;
-	import flash.events.EventDispatcher;
-	import flare.animate.Transitioner;
+	import flare.data.DataField;
+	import flare.data.DataSchema;
+	import flare.data.DataSet;
+	import flare.data.DataTable;
+	import flare.data.DataUtil;
 	import flare.util.Arrays;
-	import flare.util.Sort;
 	import flare.util.Property;
+	import flare.util.Sort;
 	import flare.util.Stats;
 	import flare.vis.events.DataEvent;
 	import flare.vis.scale.Scale;
 	import flare.vis.scale.Scales;
 	import flare.vis.util.TreeUtil;
+	
+	import flash.events.EventDispatcher;
 	
 	/**
 	 * Data structure for managing a collection of visual data objects. The
@@ -59,11 +63,86 @@ package flare.vis.data
 		// -- Methods ---------------------------------------------------------
 
 		/**
-		 * Creates a new Data object.
+		 * Creates a new Data instance.
 		 * @param directedEdges the default directedness of new edges
 		 */
 		public function Data(directedEdges:Boolean=false) {
 			this.directedEdges = directedEdges;
+		}
+		
+		/**
+		 * Creates a new Data instance from an array of tuples. The object in
+		 * the array will become the data objects for NodeSprites.
+		 * @param a an Array of data objects
+		 * @return a new Data instance, with NodeSprites populated with the
+		 *  input data.
+		 */
+		public static function fromArray(a:Array):Data {
+			var d:Data = new Data();
+			for each (var tuple:Object in a) {
+				d.addNode(tuple);
+			}
+			return d;
+		}
+		
+		/**
+		 * Creates a new Data instance from a data set.
+		 * @param ds a DataSet to visualize. For example, this data set may be
+		 *  loaded using a data converter in the flare.data library.
+		 * @return a new Data instance, with NodeSprites and EdgeSprites
+		 *  populated with the input data.
+		 */
+		public static function fromDataSet(ds:DataSet):Data {			
+			var d:Data = new Data(), i:int;
+			var schema:DataSchema, f:DataField;
+			
+			// copy node data defaults
+			if ((schema = ds.nodes.schema)) {
+				for (i=0; i<schema.numFields; ++i) {
+					f = schema.getFieldAt(i);
+					if (f.defaultValue)
+						d.nodes.setDefault("data."+f.name, f.defaultValue);
+				}
+			}
+			// add node data
+			for each (var tuple:Object in ds.nodes.data) {
+				d.addNode(tuple);
+			}
+			// exit if there is no edge data
+			if (!ds.edges) return d;
+				
+			var nodes:DataList = d.nodes, map:Object = {};
+			var id:String = "id"; // TODO: generalize these fields
+			var src:String = "source";
+			var trg:String = "target";
+			var dir:String = "directed";
+			
+			// build node map
+			for (i=0; i<nodes.size; ++i) {
+				map[nodes[i].data[id]] = nodes[i];
+			}
+			
+			// copy edge data defaults
+			if ((schema = ds.edges.schema)) {
+				for (i=0; i<schema.numFields; ++i) {
+					f = schema.getFieldAt(i);
+					if (f.defaultValue)
+						d.edges.setDefault("data."+f.name, f.defaultValue);
+				}
+				if ((f = schema.getFieldByName(dir))) {
+					d.directedEdges = Boolean(f.defaultValue);
+				}
+			}
+			// add edge data
+			for each (tuple in ds.edges.data) {
+				var n1:NodeSprite = map[tuple[src]];
+				if (!n1) throw new Error("Missing node id="+tuple[src]);
+				var n2:NodeSprite = map[tuple[trg]];
+				if (!n2) throw new Error("Missing node id="+tuple[trg]);
+				d.addEdgeFor(n1, n2, tuple[dir], tuple);
+			}
+			
+			return d;
 		}
 
 		// -- Operations ---------------------------------------
@@ -234,8 +313,8 @@ package flare.vis.data
 		protected function newNode(data:Object):NodeSprite
 		{
 			var ns:NodeSprite = new NodeSprite();
-			if (data != null) { ns.data = data; }
 			_nodes.applyDefaults(ns);
+			if (data != null) { ns.data = data; }
 			return ns;
 		}
 		
@@ -252,8 +331,8 @@ package flare.vis.data
 								   d:Boolean, data:Object):EdgeSprite
 		{
 			var es:EdgeSprite = new EdgeSprite(s,t,d);
-			if (data != null) { es.data = data; }
 			_edges.applyDefaults(es);
+			if (data != null) { es.data = data; }
 			return es;
 		}
 		

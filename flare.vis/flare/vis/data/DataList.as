@@ -8,9 +8,9 @@ package flare.vis.data
 	import flare.vis.scale.Scale;
 	import flare.vis.scale.Scales;
 	
+	import flash.utils.flash_proxy;
 	import flash.utils.Dictionary;
 	import flash.utils.Proxy;
-	import flash.utils.flash_proxy;
 
 	/**
 	 * A list of nodes or edges maintained by a Data instance. Items contained
@@ -126,6 +126,20 @@ package flare.vis.data
 			_map = new Dictionary();
 			_list = [];
 			_stats = {};
+		}
+		
+		/**
+		 * Returns an array of data objects for each item in this data list.
+		 * Data objects are retrieved from the "data" property for each item.
+		 * @return an array of data objects for items in this data list
+		 */
+		public function toDataArray():Array
+		{
+			var a:Array = new Array(_list.length);
+			for (var i:int=0; i<a.length; ++i) {
+				a[i] = _list[i].data;
+			}
+			return a;
 		}
 
 		// -- Sort ------------------------------------------------------------
