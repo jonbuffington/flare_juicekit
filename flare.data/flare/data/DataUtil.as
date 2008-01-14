@@ -15,6 +15,8 @@ package flare.data
 		public static const STRING:int = 3;
 		/** Constant indicating an arbitrary Object data type. */
 		public static const OBJECT:int = 4;
+		/** Constant indicating a boolean data type. */
+		public static const BOOLEAN:int = 5;
 		
 		/**
 		 * Parse an input value given its data type.
@@ -29,6 +31,8 @@ package flare.data
 					return Number(val);
 				case INT:	
 					return int(val);
+				case BOOLEAN:
+					return Boolean(val);
 				case DATE:
 					var t:Number = val is Number ? Number(val) 
 												 : Date.parse(String(val));
@@ -53,6 +57,51 @@ package flare.data
 			if (!isNaN(Date.parse(s))) return DATE;
 			return STRING;
 		}
+		
+		/**
+		 * Infers the data schema by checking values of the input data.
+		 * @param lines an array of lines of input text
+		 * @return the inferred schema
+		 */
+		/*
+		public static function inferSchema(tuples:Array):DataSchema
+		{
+			if (tuples==null || tuples.length==0) return null;
+			
+			var header:Array = [];
+			for (var name:String in tuples[0]) {
+				header.push(name);
+			}
+			var types:Array = new Array(header.length);
+			
+			// initialize data types
+			for (var col:int=0; col<header.length; ++col) {
+				types[col] = DataUtil.type(tuples[0][header[col]]);
+			}
+			
+			// now process data to infer types
+			for (var i:int = 2; i<tuples.length; ++i) {
+				var tuple:Object = tuples[i];
+				for (col=0; col<header.length; ++col) {
+					name = header[col];
+					var value:Object = tuple[name];
+					if (types[col] == -1 || value==null) continue;
+					var type:int = DataUtil.type(value);
+					if (types[col] != type) {
+						types[col] = -1;
+					}
+				}
+			}
+			
+			// finally, we create the schema
+			var schema:DataSchema = new DataSchema();
+			for (col=0; col<header.length; ++col) {
+				schema.addField(new DataField(header[col],
+					types[col]==-1 ? DataUtil.STRING : types[col]));
+			}
+			return schema;
+		}
+		*/
 		
 	} // end of class DataUtil
 }

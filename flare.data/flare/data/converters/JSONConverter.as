@@ -1,13 +1,17 @@
 package flare.data.converters
 {
-	import flash.utils.IDataInput;
-	import flash.utils.IDataOutput;
-	import flare.data.DataSchema;
 	import com.adobe.serialization.json.JSON;
-	import flash.utils.ByteArray;
+	
 	import flare.data.DataField;
+	import flare.data.DataSchema;
+	import flare.data.DataSet;
+	import flare.data.DataTable;
 	import flare.data.DataUtil;
 	import flare.util.Property;
+	
+	import flash.utils.ByteArray;
+	import flash.utils.IDataInput;
+	import flash.utils.IDataOutput;
 
 	/**
 	 * Converts data between JSON (JavaScript Object Notation) strings and
@@ -18,9 +22,11 @@ package flare.data.converters
 		/**
 		 * @inheritDoc
 		 */
-		public function read(input:IDataInput, schema:DataSchema=null, data:Array=null):Array
+		public function read(input:IDataInput, schema:DataSchema=null):DataSet
 		{
-			return parse(input.readUTFBytes(input.bytesAvailable), schema, data);
+			return new DataSet(new DataTable(
+				parse(input.readUTFBytes(input.bytesAvailable), schema), schema
+			));
 		}
 		
 		/**
@@ -33,7 +39,7 @@ package flare.data.converters
 		 * @return an array of converted data objects. If the <code>data</code>
 		 *  argument is non-null, it is returned.
 		 */
-		public function parse(text:String, schema:DataSchema, data:Array=null):Array
+		public function parse(text:String, schema:DataSchema):Array
 		{
 			var json:Object = JSON.decode(text) as Object;
 			var list:Array = json as Array;
@@ -50,22 +56,17 @@ package flare.data.converters
 					}
 				}
 			}
-			if (data != null) {
-				for (var i:int=0; i<json.length; ++i)
-					data.push(list[i]);
-			} else {
-				data = list;
-			}
-			return data;
+			return list;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function write(data:Array, schema:DataSchema=null, output:IDataOutput=null):IDataOutput
+		public function write(data:DataSet, output:IDataOutput=null):IDataOutput
 		{
+			var tuples:Array = data.nodes.data;
 			if (output==null) output = new ByteArray();
-			output.writeUTFBytes(JSON.encode(data));
+			output.writeUTFBytes(JSON.encode(tuples));
 			return output;
 		}
 		

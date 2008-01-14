@@ -14,7 +14,8 @@ package flare.data
 		public var hasHeader:Boolean = false;
 		
 		private var _fields:/*DataField*/Array = [];
-		private var _lookup:/*String->DataField*/Object = {};
+		private var _nameLookup:/*String->DataField*/Object = {};
+		private var _idLookup:/*String->DataField*/Object = {};
 		
 		/** An array containing the data fields in this schema. */
 		public function get fields():Array { return Arrays.copy(_fields); }
@@ -40,7 +41,8 @@ package flare.data
 		public function addField(field:DataField):void
 		{
 			_fields.push(field);
-			_lookup[field.name] = field;
+			_nameLookup[field.name] = field;
+			_idLookup[field.id] = field;
 		}
 		
 		/**
@@ -51,7 +53,18 @@ package flare.data
 		 */
 		public function getFieldByName(name:String):DataField
 		{
-			return _lookup[name];
+			return _nameLookup[name];
+		}
+		
+		/**
+		 * Retrieves a data field by id.
+		 * @param name the data field id
+		 * @return the corresponding data field, or null if no data field is
+		 *  found matching the id
+		 */
+		public function getFieldById(id:String):DataField
+		{
+			return _idLookup[id];
 		}
 		
 		/**

@@ -1,11 +1,14 @@
 package flare.data.converters
 {
+	import flare.data.DataField;
+	import flare.data.DataSchema;
+	import flare.data.DataSet;
+	import flare.data.DataTable;
+	import flare.data.DataUtil;
+	
+	import flash.utils.ByteArray;
 	import flash.utils.IDataInput;
 	import flash.utils.IDataOutput;
-	import flash.utils.ByteArray;
-	import flare.data.DataSchema;
-	import flare.data.DataField;
-	import flare.data.DataUtil;
 
 	/**
 	 * Converts data between delimited text (e.g., tab delimited) and
@@ -30,9 +33,9 @@ package flare.data.converters
 		/**
 		 * @inheritDoc
 		 */
-		public function read(input:IDataInput, schema:DataSchema=null, data:Array=null):Array
+		public function read(input:IDataInput, schema:DataSchema=null):DataSet
 		{
-			return parse(input.readUTFBytes(input.bytesAvailable), schema, data);
+			return parse(input.readUTFBytes(input.bytesAvailable), schema);
 		}
 		
 		/**
@@ -45,9 +48,9 @@ package flare.data.converters
 		 * @return an array of converted data objects. If the <code>data</code>
 		 *  argument is non-null, it is returned.
 		 */
-		public function parse(text:String, schema:DataSchema=null, data:Array=null):Array
+		public function parse(text:String, schema:DataSchema=null):DataSet
 		{
-			if (data==null) data = [];
+			var tuples:Array = [];
 			var lines:Array = text.split(/\r\n|\r|\n/);
 			
 			if (schema == null) {
@@ -64,18 +67,21 @@ package flare.data.converters
 					var field:DataField = schema.getFieldAt(j);
 					tuple[field.name] = DataUtil.parseValue(tok[j], field.type);
 				}
-				data.push(tuple);
+				tuples.push(tuple);
 			}
-			return data;
+			return new DataSet(new DataTable(tuples, schema));
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function write(data:Array, schema:DataSchema=null, output:IDataOutput=null):IDataOutput
+		public function write(data:DataSet, output:IDataOutput=null):IDataOutput
 		{
 			if (output==null) output = new ByteArray();
-			for each (var tuple:Object in data) {
+			var tuples:Array = data.nodes.data;
+			var schema:DataSchema = data.nodes.schema;
+			
+			for each (var tuple:Object in tuples) {
 				var i:int = 0, s:String;
 				if (schema == null) {
 					for (var name:String in tuple) {
@@ -96,7 +102,7 @@ package flare.data.converters
 		}
 		
 		/**
-		 * Infers the data schema by checkin values of the input data.
+		 * Infers the data schema by checking values of the input data.
 		 * @param lines an array of lines of input text
 		 * @return the inferred schema
 		 */
