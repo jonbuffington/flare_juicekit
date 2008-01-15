@@ -1,20 +1,19 @@
 package flare.vis.axis
 {
-	import flash.display.Sprite;
-	import flash.display.DisplayObjectContainer;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.text.TextFormat;
-	import flare.vis.data.DataSprite;	
-	import flare.vis.scale.LinearScale;
-	import flare.vis.scale.QuantitativeScale;
-	import flare.vis.scale.Scale;
 	import flare.animate.Transitioner;
 	import flare.display.TextSprite;
-	import flare.util.Strings;
-	import flare.util.Maths;
 	import flare.util.Stats;
+	import flare.util.Strings;
 	import flare.vis.scale.IScaleMap;
+	import flare.vis.scale.LinearScale;
+	import flare.vis.scale.OrdinalScale;
+	import flare.vis.scale.QuantitativeScale;
+	import flare.vis.scale.Scale;
+	
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.geom.Point;
+	import flash.text.TextFormat;
 
 	/**
 	 * A linear, metric data axis, consisting of axis labels and gridlines.
@@ -40,7 +39,8 @@ package flare.vis.axis
 		private var _lineColor:uint = 0xd8d8d8;
 		private var _lineWidth:Number = 0;
 		// label settings
-		private var _numLabels:uint = 10;
+		private var _fixOverlap:Boolean = true;
+		private var _numLabels:int = -1;//10;
 		private var _anchorH:int = TextSprite.LEFT;
 		private var _anchorV:int = TextSprite.TOP;
 		private var _labelAngle:Number = 0;
@@ -81,6 +81,10 @@ package flare.vis.axis
 		/** Flag indicating if axis labels should be shown. */
 		public function get showLabels():Boolean { return _showLabels; }
 		public function set showLabels(b:Boolean):void { _showLabels = b; }
+		
+		/** Flag indicating if labels should be removed in case of overlap. */
+		public function get fixLabelOverlap():Boolean { return _fixOverlap; }
+		public function set fixLabelOverlap(b:Boolean):void { _fixOverlap = b; }
 		
 		/** Flag indicating if axis grid lines should be shown. */
 		public function get showLines():Boolean { return _showGrid; }
@@ -276,33 +280,32 @@ package flare.vis.axis
 			
 			var keepLabels:Array = new Array(nl);
 			var keepLines:Array = new Array(ng);
-			var values:Array = null;
+			// TODO: generalize label number determination
+			var numLabels:int = _axisScale is OrdinalScale ? -1 : 10;
+			var values:Array = _axisScale.values(numLabels);
 			
-			if (_showLabels || _showGrid) {
-				values = _axisScale.values(_numLabels);
-				for (i=0; i<values.length; ++i) {
+			if (_showLabels) { // process labels
+				for (i=0, ordinal=0; i<values.length; ++i) {
 					val = values[i];
-					// process labels
-					if (_showLabels) {
-						if ((idx = findLabel(val, nl)) < 0) {
-							label = createLabel(val);
-						} else {
-							label = labels.getChildAt(idx) as AxisLabel;
-							keepLabels[idx] = true;
-						}
-						label.ordinal = ordinal;
+					if ((idx = findLabel(val, nl)) < 0) {
+						label = createLabel(val);
+					} else {
+						label = labels.getChildAt(idx) as AxisLabel;
+						keepLabels[idx] = true;
 					}
-					// process gridlines
-					if (_showGrid) {
-						if ((idx = findGridLine(val, ng)) < 0) {
-							gline = createGridLine(val);
-						} else {
-							gline = gridLines.getChildAt(idx) as AxisGridLine;
-							keepLines[idx] = true;
-						}
-						gline.ordinal = ordinal;
+					label.ordinal = ordinal++;
+				}
+			}
+			if (_showGrid) { // process gridlines
+				for (i=0, ordinal=0; i<values.length; ++i) {
+					val = values[i];
+					if ((idx = findGridLine(val, ng)) < 0) {
+						gline = createGridLine(val);
+					} else {
+						gline = gridLines.getChildAt(idx) as AxisGridLine;
+						keepLines[idx] = true;
 					}
-					ordinal++;
+					gline.ordinal = ordinal++;
 				}
 			}
 			markRemovals(trans, keepLabels, labels);
@@ -346,6 +349,8 @@ package flare.vis.axis
 				o.y = p.y;
 				o.alpha = trans.willRemove(label) ? 0 : 1;
 			}
+			// fix label overlap
+			if (_fixOverlap) fixOverlap(trans);
 			// layout gridlines
 			for (i=0; i<_gls.numChildren; ++i) {
 				gline = _gls.getChildAt(i) as AxisGridLine;
@@ -360,6 +365,71 @@ package flare.vis.axis
 			}
 			// update previous scale
 			_prevScale = _axisScale.clone(); // clone as IScale
+		}
+		
+		/**
+		 * Checks for label overlap and, if found, removes labels until the
+		 * overlap is eliminated. This method performs an iterative
+		 * optimization, removing every other label on each iteration.
+		 * @param trans a transitioner, potentially storing label target values
+		 */
+		protected function fixOverlap(trans:Transitioner):void {
+			var labs:Array = [], overlap:Boolean = false, i:int;
+			
+			// collect labels
+			for (i=0; i<labels.numChildren; ++i) {
+				var s:Sprite = Sprite(labels.getChildAt(i));
+				if (!trans.willRemove(s)) labs.push(s);
+			}
+			if (labs.length == 0) return;
+			// TODO (??): keep labels container sorted instead
+			labs.sortOn("ordinal", Array.NUMERIC);
+
+			// fix overlap with an iterative optimization
+			// remove every other label with each iteration
+			do {
+				// compute overlap
+				for (i=1, overlap=false; i<labs.length; ++i) {
+					if ((overlap = overlaps(trans, labs[i], labs[i-1])))
+						break;
+				}
+				if (!overlap) return;
+				
+				// reduce labels
+				i = (i=labs.length) - (i & 0x1 ? 2 : 1);
+				for (; i>0; i-=2) {
+					trans.$(labs[i]).alpha = 0;
+					trans.removeChild(labs[i], true);
+					labs.splice(i, 1); // remove from array
+				}
+			} while (true);
+		}
+		
+		/**
+		 * Indicates if two display objects overlap, sensitive to any target
+		 * values stored in a transitioner.
+		 * @param trans a Transitioner, potentially with target values
+		 * @param l1 a display object
+		 * @param l2 a display object
+		 * @return true if the objects overlap (considering values in the
+		 *  transitioner, if appropriate), false otherwise
+		 */
+		protected function overlaps(trans:Transitioner,
+			l1:DisplayObject, l2:DisplayObject):Boolean
+		{
+			if (trans.immediate) return l1.hitTestObject(l2);
+			// get original co-ordinates
+			var xa:Number = l1.x, ya:Number = l1.y;
+			var xb:Number = l2.x, yb:Number = l2.y;
+			var o:Object;
+			// set to target co-ordinates
+			o = trans.$(l1); l1.x = o.x; l1.y = o.y;
+			o = trans.$(l2); l2.x = o.x; l2.y = o.y;
+			// compute overlap
+			var b:Boolean = l1.hitTestObject(l2);
+			// reset to original coordinates
+			l1.x = xa; l1.y = ya; l2.x = xb; l2.y = yb;
+			return b;
 		}
 		
 		/**

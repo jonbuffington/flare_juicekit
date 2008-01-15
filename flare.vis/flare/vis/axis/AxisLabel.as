@@ -1,6 +1,5 @@
 package flare.vis.axis
 {
-	import flash.text.TextField;
 	import flare.display.TextSprite;
 	
 	/**
