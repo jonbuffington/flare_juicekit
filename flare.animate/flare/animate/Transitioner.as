@@ -310,7 +310,7 @@ package flare.animate
 		public function removeChild(dobj:DisplayObject, b:Boolean=true):void
 		{
 			if (_immediate && b) {
-				if (dobj.parent != null) dobj.parent.removeChild(dobj);
+				if (dobj.parent) dobj.parent.removeChild(dobj);
 			} else if (!_immediate) {
 				_(dobj).remove = b;
 			}
