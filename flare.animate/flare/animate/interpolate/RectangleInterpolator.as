@@ -18,31 +18,34 @@ package flare.animate.interpolate
 		 * Creates a new RectangleInterpolator.
 		 * @param target the object whose property is being interpolated
 		 * @param property the property to interpolate
-		 * @param value the target rectangle value to interpolate to
+		 * @param start the starting rectangle value to interpolate from
+		 * @param end the target re3ctangle value to interpolate to
 		 */
-		public function RectangleInterpolator(target:Object, property:String, value:Object)
+		public function RectangleInterpolator(target:Object, property:String,
+		                                      start:Object, end:Object)
 		{
-			super(target, property, value);
+			super(target, property, start, end);
 		}
 		
 		/**
 		 * Initializes this interpolator.
-		 * @param value the target value of the interpolation
+		 * @param start the starting value of the interpolation
+		 * @param end the target value of the interpolation
 		 */
-		protected override function init(value:Object) : void
+		protected override function init(start:Object, end:Object) : void
 		{
-			var r:Rectangle = value as Rectangle;
-			_cur = _prop.getValue(_target) as Rectangle;
-			if (_cur == null) _cur = r.clone();
+			var e:Rectangle = Rectangle(end), s:Rectangle = Rectangle(start);
+			if (_cur == null || _cur == s || _cur == e)
+				_cur = e.clone();
 			
-			_startX = _cur.x;
-			_startY = _cur.y;
-			_startW = _cur.width;
-			_startH = _cur.height;
-			_rangeX = r.x - _startX;
-			_rangeY = r.y - _startY;
-			_rangeW = r.width - _startW;
-			_rangeH = r.height - _startH;
+			_startX = s.x;
+			_startY = s.y;
+			_startW = s.width;
+			_startH = s.height;
+			_rangeX = e.x - _startX;
+			_rangeY = e.y - _startY;
+			_rangeW = e.width - _startW;
+			_rangeH = e.height - _startH;
 		}
 		
 		/**

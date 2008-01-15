@@ -1,9 +1,9 @@
 package flare.animate.interpolate
 {
-	import flash.utils.Dictionary;
-	import flash.utils.getQualifiedClassName;
-	import flash.utils.getDefinitionByName;
 	import flare.util.Property;
+	
+	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * Base class for value interpolators. This class also provides factory 
@@ -11,7 +11,7 @@ package flare.animate.interpolate
 	 * <code>create</code> method for details about interpolator creation.
 	 */
 	public class Interpolator
-	{		
+	{
 		/** The target object whose property is being interpolated. */
 		protected var _target:Object;
 		/** The property to interpolate. */
@@ -23,9 +23,10 @@ package flare.animate.interpolate
 		 * @param property the property to interpolate
 		 * @param value the target value of the interpolation
 		 */
-		public function Interpolator(target:Object, property:String, value:Object)
+		public function Interpolator(target:Object, property:String,
+									 start:Object, end:Object)
 		{
-			reset(target, property, value);
+			reset(target, property, start, end);
 		}
 		
 		/**
@@ -34,11 +35,12 @@ package flare.animate.interpolate
 		 * @param property the property to interpolate
 		 * @param value the target value of the interpolation
 		 */
-		public function reset(target:Object, property:String, value:Object):void
+		public function reset(target:Object, property:String,
+		                      start:Object, end:Object):void
 		{
 			_target = target;
 			_prop = Property.$(property);
-			init(value);
+			init(start, end);
 		}
 		
 		/**
@@ -47,7 +49,7 @@ package flare.animate.interpolate
 		 * override this method for custom initialization.
 		 * @param value the target value of the interpolation
 		 */
-		protected function init(value:Object) : void
+		protected function init(start:Object, end:Object) : void
 		{
 			// for subclasses to override
 		}
@@ -101,7 +103,7 @@ package flare.animate.interpolate
 			return rules;
 		}
 		
-		private static function isColor(target:Object, property:String, value:Object)
+		private static function isColor(target:Object, property:String, s:Object, e:Object)
 			: String
 		{
 			return property.indexOf("Color")>=0 || property.indexOf("color")>=0
@@ -109,7 +111,7 @@ package flare.animate.interpolate
 				: null;
 		}
 		
-		private static function isShape(target:Object, property:String, value:Object)
+		private static function isShape(target:Object, property:String, s:Object, e:Object)
 			: String
 		{
 			return property == "shape"
@@ -198,17 +200,17 @@ package flare.animate.interpolate
 		 * interpolation rule functions or by adding new mappings from
 		 * interpolation value types to custom interpolator classes.</p>
 		 */
-		public static function create(target:Object, property:String, value:Object)
-			: Interpolator
+		public static function create(target:Object, property:String,
+			                          start:Object, end:Object): Interpolator
 		{
 			// first, check the rules list for an interpolator
 			var name:String = null;
 			for (var i:uint=0; name==null && i<_rules.length; ++i) {
-				name = _rules[i](target, property, value);
+				name = _rules[i](target, property, start, end);
 			}
 			// if no matching rule, use the type lookup table
 			if (name == null) {
-				name = _lookup[getQualifiedClassName(value)];
+				name = _lookup[getQualifiedClassName(end)];
 			}
 			// if that fails, use ObjectInterpolator as default
 			if (name == null) {
@@ -220,11 +222,11 @@ package flare.animate.interpolate
 			if (pool == null || pool.length == 0) {
 				// nothing in the pool, create a new instance
 				var Ref:Class = getDefinitionByName(name) as Class;
-				return new Ref(target, property, value) as Interpolator;
+				return new Ref(target, property, start, end) as Interpolator;
 			} else {
 				// reuse an interpolator from the object pool
 				var interp:Interpolator = pool.pop() as Interpolator;
-				interp.reset(target, property, value);
+				interp.reset(target, property, start, end);
 				return interp;
 			}
 		}

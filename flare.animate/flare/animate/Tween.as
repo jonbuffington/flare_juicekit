@@ -1,9 +1,9 @@
 package flare.animate
 {
 	import flare.animate.interpolate.Interpolator;
-	import flash.display.DisplayObject;
-	import flare.util.Arrays;
 	import flare.util.Property;
+	
+	import flash.display.DisplayObject;
 	
 	/**
 	 * Transition that interpolates (in-be<em>tweens</em>) properties
@@ -41,6 +41,7 @@ package flare.animate
 		
 		private var _interps:Array = new Array();
 		private var _target:Object;
+		private var _start:Object;
 		private var _remove:Boolean = false;
 		private var _visible:Boolean = true;
 		private var _values:Object;
@@ -58,6 +59,11 @@ package flare.animate
 		/** The properties to tween and their target values. */
 		public function get values():Object { return _values; }
 		public function set values(o:Object):void { _values = o; }
+		
+		/** Optional starting values for tweened properties. */
+		public function get from():Object { return _start; }
+		public function set from(s:Object):void { _start = s; }
+		
 		
 		// - Methods ----------------------------------------------------------
 		
@@ -78,6 +84,7 @@ package flare.animate
 			_target = target;
 			_remove = remove;
 			_values = values==null ? {} : values;
+			_start = {};
 		}
 		
 		/** @inheritDoc */
@@ -108,17 +115,19 @@ package flare.animate
 			}
 			
 			// build interpolators
-			var v0:Object, v1:Object;
+			var vc:Object, v0:Object, v1:Object;
 			for (var name:String in _values) {
-				// create interpolator only if start/end values don't match
-				v0 = Property.$(name).getValue(_target);
+				// create interpolator only if start/cur/end values don't match
+				vc = Property.$(name).getValue(_target);
+				v0 = _start.hasOwnProperty(name) ? _start[name] : vc;
 				v1 = _values[name];
-				if (v0 != v1) {
+				
+				if (vc != v1 || vc != v0) {
 					if (name == "visible") {
 						// special handling for visibility
 						_visible = Boolean(v1);
 					} else {
-						_interps.push(Interpolator.create(_target, name, v1));
+						_interps.push(Interpolator.create(_target, name, v0, v1));
 					}
 				}
 			}

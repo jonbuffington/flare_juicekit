@@ -13,23 +13,25 @@ package flare.animate.interpolate
 		 * Creates a new DateInterpolator.
 		 * @param target the object whose property is being interpolated
 		 * @param property the property to interpolate
-		 * @param value the target date value to interpolate to
+		 * @param start the starting date value to interpolate from
+		 * @param end the target date value to interpolate to
 		 */
-		public function DateInterpolator(target:Object, property:String, value:Object)
+		public function DateInterpolator(target:Object, property:String,
+		                                 start:Object, end:Object)
 		{
-			super(target, property, value);
+			super(target, property, start, end);
 		}
 		
 		/**
 		 * Initializes this interpolator.
-		 * @param value the target value of the interpolation
+		 * @param start the starting value of the interpolation
+		 * @param end the target value of the interpolation
 		 */
-		protected override function init(value:Object) : void
+		protected override function init(start:Object, end:Object) : void
 		{
 			_d = new Date();
-			_end = (value as Date).time;
-			_start = (_prop.getValue(_target) as Date).time;
-			_end = _end - _start;
+			_start = (start as Date).time;
+			_end = (end as Date).time - _start;
 		}
 		
 		/**

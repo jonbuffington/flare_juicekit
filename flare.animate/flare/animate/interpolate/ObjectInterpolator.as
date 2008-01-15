@@ -14,21 +14,24 @@ package flare.animate.interpolate
 		 * Creates a new ObjectInterpolator.
 		 * @param target the object whose property is being interpolated
 		 * @param property the property to interpolate
-		 * @param value the target object value to interpolate to
+		 * @param start the starting object value to interpolate from
+		 * @param end the target object value to interpolate to
 		 */
-		public function ObjectInterpolator(target:Object, property:String, value:Object)
+		public function ObjectInterpolator(target:Object, property:String,
+		                                   start:Object, end:Object)
 		{
-			super(target, property, value);
+			super(target, property, start, end);
 		}
 		
 		/**
 		 * Initializes this interpolator.
-		 * @param value the target value of the interpolation
+		 * @param start the starting value of the interpolation
+		 * @param end the target value of the interpolation
 		 */
-		protected override function init(value:Object) : void
+		protected override function init(start:Object, end:Object) : void
 		{
-			_end = value;
-			_start = _prop.getValue(_target);
+			_start = start;
+			_end = end;
 		}
 		
 		/**

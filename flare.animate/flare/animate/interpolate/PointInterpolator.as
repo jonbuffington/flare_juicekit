@@ -15,27 +15,30 @@ package flare.animate.interpolate
 		 * Creates a new PointInterpolator.
 		 * @param target the object whose property is being interpolated
 		 * @param property the property to interpolate
-		 * @param value the target point value to interpolate to
+		 * @param start the starting point value to interpolate from
+		 * @param end the target point value to interpolate to
 		 */
-		public function PointInterpolator(target:Object, property:String, value:Object)
+		public function PointInterpolator(target:Object, property:String,
+		                                  start:Object, end:Object)
 		{
-			super(target, property, value);
+			super(target, property, start, end);
 		}
 		
 		/**
 		 * Initializes this interpolator.
-		 * @param value the target value of the interpolation
+		 * @param start the starting value of the interpolation
+		 * @param end the target value of the interpolation
 		 */
-		protected override function init(value:Object) : void
+		protected override function init(start:Object, end:Object) : void
 		{
-			var p:Point = Point(value);
-			_cur = _prop.getValue(_target) as Point;
-			if (_cur == null) _cur = p.clone();
-
-			_startX = _cur.x;
-			_startY = _cur.y;
-			_rangeX = p.x - _startX;
-			_rangeY = p.y - _startY;
+			var e:Point = Point(end), s:Point = Point(start);
+			if (_cur == null || _cur == s || _cur == e)
+				_cur = e.clone();
+			
+			_startX = s.x;
+			_startY = s.y;
+			_rangeX = e.x - _startX;
+			_rangeY = e.y - _startY;
 		}
 		
 		/**

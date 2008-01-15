@@ -17,28 +17,36 @@ package flare.animate.interpolate
 		 * Creates a new ArrayInterpolator.
 		 * @param target the object whose property is being interpolated
 		 * @param property the property to interpolate
-		 * @param value the target array to interpolate to. This should be an
+		 * @param start the starting array of values to interpolate from
+		 * @param end the target array to interpolate to. This should be an
 		 *  array of numerical values.
 		 */
-		public function ArrayInterpolator(target:Object, property:String, value:Object)
+		public function ArrayInterpolator(target:Object, property:String,
+		                                  start:Object, end:Object)
 		{
-			super(target, property, value);
+			super(target, property, start, end);
 		}
 		
 		/**
 		 * Initializes this interpolator.
-		 * @param value the target value of the interpolation
+		 * @param start the starting value of the interpolation
+		 * @param end the target value of the interpolation
 		 */
-		protected override function init(value:Object) : void
+		protected override function init(start:Object, end:Object) : void
 		{
-			_end = value as Array;
-			_cur = _prop.getValue(_target) as Array;
-			if (_cur == null) {
-				_cur = Arrays.copy(_end);
-			} else if (_cur.length < _end.length) {
+			_start = start as Array;
+			_end = end as Array;
+			
+			if (!_end) throw new Error("Target array is null!");
+			if (!_start) _start = Arrays.copy(_end);
+			if (_start.length != _end.length)
 				throw new Error("Array dimensions don't match");
+			
+			if (_cur == null || _cur == _start || _cur == _end) {
+				_cur = Arrays.copy(_start);
+			} else {
+				_cur = Arrays.copy(_start, _cur);
 			}
-			_start = Arrays.copy(_cur, _start);
 		}
 		
 		/**

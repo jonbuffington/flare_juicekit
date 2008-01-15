@@ -17,35 +17,38 @@ package flare.animate.interpolate
 		 * Creates a new MatrixInterpolator.
 		 * @param target the object whose property is being interpolated
 		 * @param property the property to interpolate
-		 * @param value the target matrix value to interpolate to
+		 * @param start the starting matrix value to interpolate from
+		 * @param end the target matrix value to interpolate to
 		 */
-		public function MatrixInterpolator(target:Object, property:String, value:Object)
+		public function MatrixInterpolator(target:Object, property:String,
+		                                   start:Object, end:Object)
 		{
-			super(target, property, value);
+			super(target, property, start, end);
 		}
 		
 		/**
 		 * Initializes this interpolator.
-		 * @param value the target value of the interpolation
+		 * @param start the starting value of the interpolation
+		 * @param end the target value of the interpolation
 		 */
-		protected override function init(value:Object) : void
+		protected override function init(start:Object, end:Object) : void
 		{
-			var m:Matrix = Matrix(value);
-			_cur = _prop.getValue(_target) as Matrix;
-			if (_cur == null) _cur = m.clone();
+			var e:Matrix = Matrix(end), s:Matrix = Matrix(start);
+			if (_cur == null || _cur == s || _cur == e)
+				_cur = e.clone();
 			
-			_startA = _cur.a;
-			_startB = _cur.b;
-			_startC = _cur.c;
-			_startD = _cur.d;
-			_startX = _cur.tx;
-			_startY = _cur.ty;
-			_rangeA = m.a  - _startA;
-			_rangeB = m.b  - _startB;
-			_rangeC = m.c  - _startC;
-			_rangeD = m.d  - _startD;
-			_rangeX = m.tx - _startX;
-			_rangeY = m.ty - _startY;
+			_startA = s.a;
+			_startB = s.b;
+			_startC = s.c;
+			_startD = s.d;
+			_startX = s.tx;
+			_startY = s.ty;
+			_rangeA = e.a  - _startA;
+			_rangeB = e.b  - _startB;
+			_rangeC = e.c  - _startC;
+			_rangeD = e.d  - _startD;
+			_rangeX = e.tx - _startX;
+			_rangeY = e.ty - _startY;
 		}
 		
 		/**
