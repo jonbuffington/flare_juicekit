@@ -32,7 +32,7 @@ package flare.demos
 			name = "Chart";
 			
 			vis = new Visualization(getData(100));
-			vis.bounds.width = WIDTH-100;
+			vis.bounds.width = WIDTH-65;
 			vis.bounds.height = HEIGHT-90;
 			addChild(vis);
 			
@@ -51,10 +51,11 @@ package flare.demos
 			vis.operators.add(new ShapeEncoder(field1));
 			vis.operators.add(new SizeEncoder(field2, Data.NODES, Scales.QUANTILE, 5));
 			vis.operators.add(new ColorEncoder(field1,Data.NODES, "lineColor",
-											   ColorPalette.category(stats1.unique), Scales.ORDINAL));
+			    ColorPalette.category(stats1.unique), Scales.ORDINAL));
+			vis.xyAxes.xAxis.fixLabelOverlap = false; // keep overlapping labels
 			vis.update();
 			
-			vis.x = 60;
+			vis.x = 45;
 			vis.y = 15;
 			
 			// add mouse over

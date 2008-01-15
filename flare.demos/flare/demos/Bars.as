@@ -28,7 +28,7 @@ package flare.demos
 
 			vis.operators.add(new AxisLayout("data.x","data.y",true,false));
 			vis.operators.add(new ColorEncoder("data.s",1,"fillColor",
-						ColorPalette.category(vis.data.nodes.stats("data.s").unique)));
+			    ColorPalette.category(vis.data.nodes.stats("data.s").unique)));
 			vis.xyAxes.yAxis.showLines = false;
 			vis.update();
 
