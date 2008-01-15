@@ -1,4 +1,5 @@
 package {
+	import flare.tests.AnimationTests;
 	import flare.tests.DataIOTests;
 	import flare.tests.DataTests;
 	import flare.tests.ExpressionTests;
@@ -13,6 +14,7 @@ package {
 	{	
 		public function tests()
 		{
+			addTest(new AnimationTests());
 			addTest(new StringFormatTests());
 			addTest(new ExpressionTests());
 			addTest(new DataTests());
