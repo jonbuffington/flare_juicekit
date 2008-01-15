@@ -1,9 +1,9 @@
 package flare.display
 {
-	import flash.events.Event;
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.display.Stage;
-	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.geom.Rectangle;
 	
 	/**
@@ -152,6 +152,26 @@ package flare.display
 		{
 			if (_dirty == DIRTY) { _dirty = VISIT; render(); }
 			return super.getBounds(targetCoordinateSpace);
+		}
+		
+		/**
+		 * If dirty, either sprite is re-rendered before hit-testing.
+		 */
+		public override function hitTestObject(obj:DisplayObject):Boolean
+		{
+			if (_dirty == DIRTY) { _dirty = VISIT; render(); }
+			var ds:DirtySprite = obj as DirtySprite;
+			if (ds && ds._dirty == DIRTY) { ds._dirty = VISIT; ds.render(); }
+			return super.hitTestObject(obj);
+		}
+		
+		/**
+		 * If dirty, this sprite is re-rendered before hit-testing.
+		 */
+		public override function hitTestPoint(x:Number, y:Number, shapeFlag:Boolean=false):Boolean
+		{
+			if (_dirty == DIRTY) { _dirty = VISIT; render(); }
+			return super.hitTestPoint(x, y, shapeFlag);
 		}
 		
 		/**
