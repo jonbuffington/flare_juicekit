@@ -14,6 +14,7 @@ package flare.vis.axis
 	import flash.display.Sprite;
 	import flash.geom.Point;
 	import flash.text.TextFormat;
+	import flash.utils.Dictionary;
 
 	/**
 	 * A linear, metric data axis, consisting of axis labels and gridlines.
@@ -374,7 +375,8 @@ package flare.vis.axis
 		 * @param trans a transitioner, potentially storing label target values
 		 */
 		protected function fixOverlap(trans:Transitioner):void {
-			var labs:Array = [], overlap:Boolean = false, i:int;
+			var labs:Array = [], overlap:Boolean = false;
+			var d:DisplayObject, i:int;
 			
 			// collect labels
 			for (i=0; i<labels.numChildren; ++i) {
@@ -385,6 +387,10 @@ package flare.vis.axis
 			// TODO (??): keep labels container sorted instead
 			labs.sortOn("ordinal", Array.NUMERIC);
 
+			// maintain min and max if we get down to two
+			var min:Object = labs[0], max:Object = labs[labs.length-1];
+			var rem:Dictionary = new Dictionary();
+
 			// fix overlap with an iterative optimization
 			// remove every other label with each iteration
 			do {
@@ -393,16 +399,31 @@ package flare.vis.axis
 					if ((overlap = overlaps(trans, labs[i], labs[i-1])))
 						break;
 				}
-				if (!overlap) return;
+				if (!overlap) break;
 				
 				// reduce labels
-				i = (i=labs.length) - (i & 0x1 ? 2 : 1);
-				for (; i>0; i-=2) {
-					trans.$(labs[i]).alpha = 0;
-					trans.removeChild(labs[i], true);
-					labs.splice(i, 1); // remove from array
+				i = labs.length;
+				if (i < 4) { // use min and max if we're down to two
+					if (rem[min]) delete rem[min];
+					if (rem[max]) delete rem[max];
+					for each (d in labs) {
+						if (d != min && d != max) rem[d] = d;
+					}
+					break;
+				} else { // else remove every odd element
+					i = i - (i & 0x1 ? 2 : 1);
+					for (; i>0; i-=2) {
+						rem[labs[i]] = labs[i];
+						labs.splice(i, 1); // remove from array
+					}
 				}
 			} while (true);
+			
+			// remove the deleted labels
+			for each (d in rem) {
+				trans.$(d).alpha = 0;
+				trans.removeChild(d, true);
+			}
 		}
 		
 		/**

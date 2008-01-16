@@ -1,10 +1,11 @@
 package flare.vis.operator.layout
 {
 	import flare.animate.Transitioner;
+	import flare.util.Property;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
+	
 	import flash.geom.Rectangle;
-	import flare.util.Property;
 	
 	/**
 	 * Layout that places wedges for pie and donut charts.
@@ -64,10 +65,9 @@ package flare.vis.operator.layout
 			var a:Number = _a0, aw:Number;
 			var sum:Number = visualization.data.nodes.stats(_field.name).sum;
 			
-			with (_t.$(visualization.marks)) {
-				x = cx;
-				y = cy;
-			}
+			var o:Object = _t.$(visualization.marks);
+			o.x = cx; o.y = cy;
+			
 			visualization.data.visit(function(d:DataSprite):Boolean {
 				var aw:Number = (_cw?-1:1) * 2*Math.PI * (_field.getValue(d)/sum);
 				var rh:Number = _width * r;

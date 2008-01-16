@@ -92,11 +92,11 @@ package flare.vis.scale
             var i:int, j:int, b:Number, v:Number = _zero?-1:1;
             for (i = beg; i <= end; ++i)
             {
-	           	if (i==0 && v<=0) vals.push(0);
+	           	if (i==0 && v<=0) { vals.push(v); vals.push(0); }
 	           	v = _zero && i<0 ? -Math.pow(_base,-i) : Math.pow(_base,i);
 	           	b = _zero && i<0 ? Math.pow(_base,-i-1) : v;
 	            	
-	           	for (j = 0; j < _base; ++j, v += b) {
+	           	for (j = 1; j < _base; ++j, v += b) {
 	           		if (v > _smax) return vals;
 	           		vals.push(v);
 	           	}

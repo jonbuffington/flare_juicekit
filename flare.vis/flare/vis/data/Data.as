@@ -245,7 +245,8 @@ package flare.vis.data
 		{
 			// create arrays and sort criteria
 			var a:Array = Arrays.copy(_nodes.list);
-			var g:Array = groupBy is Array ? groupBy as Array : [groupBy];
+			var g:Array = groupBy ? 
+				(groupBy is Array ? groupBy as Array : [groupBy]) : [];
 			var len:int = g.length;
 			if (sortBy is Array) {
 				var s:Array = sortBy as Array;
@@ -268,7 +269,7 @@ package flare.vis.data
 			
 			// connect all items who match on the last group by field
 			for (i=1; i<a.length; ++i) {
-				if (f.getValue(a[i-1]) == f.getValue(a[i])) {
+				if (!f || f.getValue(a[i-1]) == f.getValue(a[i])) {
 					var e:EdgeSprite = addEdgeFor(a[i-1], a[i], directedEdges);
 					// add data values from nodes
 					for (var j:uint=0; j<p.length; ++j) {

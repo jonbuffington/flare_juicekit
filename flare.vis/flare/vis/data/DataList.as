@@ -335,6 +335,16 @@ package flare.vis.data
 			}
 		}
 		
+		
+		/**
+		 * Clears any cached stats for the given field. 
+		 * @param field the data field to clear the stats for.
+		 */
+		public function clearStats(field:String):void
+		{
+			delete _stats[field];
+		}
+		
 		// -- Scales ----------------------------------------------------------
 		
 		/**
