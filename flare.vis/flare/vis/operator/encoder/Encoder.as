@@ -51,14 +51,14 @@ package flare.vis.operator.encoder
 		public function set filter(f:Function):void { _filter = f; }
 		
 		/** The source property. */
-		public function get sourceProperty():String { return _source.name; }
-		public function set sourceProperty(f:String):void {
+		public function get source():String { return _source.name; }
+		public function set source(f:String):void {
 			_source = Property.$(f); setup();
 		}
 		
 		/** The target property. */
-		public function get targetProperty():String { return _target; }
-		public function set targetProperty(f:String):void { _target = f; }
+		public function get target():String { return _target; }
+		public function set target(f:String):void { _target = f; }
 		
 		/** The scale type parameter.
 		 *  @see flare.vis.scale.Scales */

@@ -22,7 +22,7 @@ package flare.vis.scale
 		 *  be made. True by default.
 		 * @param labelFormat the formatting pattern for value labels
 		 */
-		public function OrdinalScale(ordinals:Array, flush:Boolean=false,
+		public function OrdinalScale(ordinals:Array=null, flush:Boolean=false,
 			copy:Boolean=true, labelFormat:String=null)
         {
         	_ordinals = (ordinals==null ? new Array() :

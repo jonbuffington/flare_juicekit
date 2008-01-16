@@ -46,8 +46,8 @@ package flare.vis.operator.layout
 		 * @param field the source data field for determining wedge size
 		 * @param width the radial width of wedges, negative for full slices
 		 */		
-		public function PieLayout(field:String, width:Number=-1) {
-			_field = new Property(field);
+		public function PieLayout(field:String=null, width:Number=-1) {
+			_field = (field==null) ? null : new Property(field);
 			_width = width;
 		}
 		

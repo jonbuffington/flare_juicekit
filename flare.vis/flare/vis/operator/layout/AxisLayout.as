@@ -25,18 +25,18 @@ package flare.vis.operator.layout
 		private var _t:Transitioner;
 		
 		/** The x-axis source property. */
-		public function get xAxisField():String {
+		public function get xField():String {
 			return _xField==null ? null : _xField.name;
 		}
-		public function set xAxisField(f:String):void {
+		public function set xField(f:String):void {
 			_xField = Property.$(f); initializeAxes();
 		}
 		
 		/** The y-axis source property. */
-		public function get yAxisField():String {
+		public function get yField():String {
 			return _yField==null ? null : _yField.name;
 		}
-		public function set yAxisField(f:String):void {
+		public function set yField(f:String):void {
 			_yField = Property.$(f); initializeAxes();
 		}
 		

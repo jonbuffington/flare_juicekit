@@ -2,11 +2,13 @@ package flare.vis.scale
 {
 	import flare.util.Strings;
 	
+	import mx.core.IMXMLObject;
+	
 	/**
 	 * Base class for all data scale classes that represent a range of
 	 * data values.
 	 */
-	public class Scale
+	public class Scale implements IMXMLObject
 	{
 		/** Flag indicating if the scale bounds should be flush with the data.
 		 *  False by default, thereby allowing some padding space on the end
@@ -98,6 +100,14 @@ package flare.vis.scale
 		public function values(num:int=-1) : Array
 		{
 			return null;
+		}
+		
+		// -- MXML ------------------------------------------------------------
+		
+		/** @private */
+		public function initialized(document:Object, id:String):void
+		{
+			// do nothing
 		}
 		
 	} // end of class Scale

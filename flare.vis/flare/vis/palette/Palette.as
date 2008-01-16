@@ -1,10 +1,12 @@
 package flare.vis.palette
 {
+	import mx.core.IMXMLObject;
+	
 	/**
 	 * Base class for palettes, such as color and size palettes, that map from
 	 * interpolated scale values into visual properties
 	 */
-	public class Palette
+	public class Palette implements IMXMLObject
 	{
 		/** Array of palette values. */
 		protected var _values:Array;
@@ -26,6 +28,14 @@ package flare.vis.palette
 			if (_values==null || _values.length==0)
 				return 0;
 			return _values[uint(Math.round(f*(_values.length-1)))];
+		}
+		
+		// -- MXML ------------------------------------------------------------
+		
+		/** @private */
+		public function initialized(document:Object, id:String):void
+		{
+			// do nothing
 		}
 		
 	} // end of class Palette

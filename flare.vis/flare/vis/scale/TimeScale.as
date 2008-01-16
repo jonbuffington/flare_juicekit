@@ -13,8 +13,8 @@ package flare.vis.scale
 	 */
 	public class TimeScale extends Scale
 	{
-		private var _dmin:Date = new Date(0);
-		private var _dmax:Date = new Date(0);
+		private var _dmin:Date;
+		private var _dmax:Date;
 		private var _smin:Date;
 		private var _smax:Date;
 		private var _autofmt:Boolean = true;
@@ -26,11 +26,11 @@ package flare.vis.scale
 		 * @param flush the flush flag for scale padding
 		 * @param labelFormat the formatting pattern for value labels
 		 */
-		public function TimeScale(min:Date, max:Date, flush:Boolean=false,
-								  labelFormat:String=null)
+		public function TimeScale(min:Date=null, max:Date=null,
+			flush:Boolean=false, labelFormat:String=null)
 		{
-			this.dataMin = min;
-			this.dataMax = max;
+			this.dataMin = min==null ? new Date(0) : min;
+			this.dataMax = max==null ? new Date(0) : max;
 			this.flush = flush;
 			this.labelFormat = labelFormat;
 		}
