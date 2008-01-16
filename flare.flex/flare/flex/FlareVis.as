@@ -1,12 +1,11 @@
 package flare.flex
 {
 	import flare.data.DataSet;
+	import flare.display.DirtySprite;
 	import flare.vis.Visualization;
 	import flare.vis.axis.Axes;
 	import flare.vis.axis.CartesianAxes;
 	import flare.vis.data.Data;
-	
-	import flash.geom.Rectangle;
 	
 	import mx.containers.Canvas;
 
@@ -19,10 +18,6 @@ package flare.flex
 	public class FlareVis extends Canvas
 	{
 		private var _vis:Visualization;
-		
-		/** The bounds for the data display area of this visualization. */
-		public function get bounds():Rectangle { return _vis.bounds; }
-		public function set bounds(b:Rectangle):void { _vis.bounds = b; }
 		
 		/** The visualization operators used by this visualization. This
 		 *  should be an array of IOperator instances. */
@@ -63,7 +58,23 @@ package flare.flex
 			return _vis;
 		}
 		
+		public function get visWidth():Number { return _vis.bounds.width; }
+		public function set visWidth(w:Number):void {
+			_vis.bounds.width = w;
+			_vis.update();
+			invalidateSize();
+		}
+		
+		public function get visHeight():Number { return _vis.bounds.height; }
+		public function set visHeight(h:Number):void {
+			_vis.bounds.height = h;
+			_vis.update();
+			invalidateSize();
+		}
+		
 		// --------------------------------------------------------------------
+		
+		private var _margin:int = 10;
 		
 		/**
 		 * Creates a new FlareVis component. By default, a new visualization
@@ -75,6 +86,29 @@ package flare.flex
 			this.rawChildren.addChild(
 				_vis = new Visualization(data==null ? new Data() : data)
 			);
+			_vis.x = _margin;
+		}
+		
+		// -- Flex Overrides --------------------------------------------------
+		
+		/** @private */
+		public override function getExplicitOrMeasuredWidth():Number {
+			DirtySprite.renderDirty(); // make sure everything is current
+			var w:Number = _vis.bounds.width;
+			if (_vis.width > w) {
+				// TODO: this is a temporary hack. fix later!
+				_vis.x = _margin + Math.abs(_vis.getBounds(_vis).x);
+				w = _vis.width;
+			}
+			return 2*_margin + Math.max(super.getExplicitOrMeasuredWidth(), w);
+		}
+		
+		/** @private */
+		public override function getExplicitOrMeasuredHeight():Number {
+			DirtySprite.renderDirty(); // make sure everything is current
+			return Math.max(super.getExplicitOrMeasuredHeight(),
+							_vis.bounds.height,
+							_vis.height);
 		}
 		
 	} // end of class FlareVis
