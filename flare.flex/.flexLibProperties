@@ -4,5 +4,7 @@
     <classEntry path="flare.flex.FlareVis"/>
   </includeClasses>
   <includeResources/>
-  <namespaceManifests/>
+  <namespaceManifests>
+    <namespaceManifestEntry manifest="manifest.xml" namespace="http://flare.prefuse.org/2008/mxml"/>
+  </namespaceManifests>
 </flexLibProperties>

@@ -1,5 +1,6 @@
 package flare.flex
 {
+	import flare.data.DataSet;
 	import flare.vis.Visualization;
 	import flare.vis.axis.Axes;
 	import flare.vis.axis.CartesianAxes;
@@ -7,7 +8,7 @@ package flare.flex
 	
 	import flash.geom.Rectangle;
 	
-	import mx.core.UIComponent;
+	import mx.containers.Canvas;
 
 	/**
 	 * Flex component that wraps a Flare visualization instance. This class can
@@ -15,7 +16,7 @@ package flare.flex
 	 * underlying Flare <code>Visualization</code> instance can always be
 	 * accessed using the <code>visualization</code> property.
 	 */
-	public class FlareVis extends UIComponent
+	public class FlareVis extends Canvas
 	{
 		private var _vis:Visualization;
 		
@@ -30,18 +31,23 @@ package flare.flex
 			_vis.update();
 		}
 		
-		/** Sets the data visualized by this instance. Any existing data will
-		 *  be removed and new NodeSprite instances will be created for each
-		 *  object in the input arrary. */
-		public function set data(d:Array):void {
-			if (_vis.data == null) {
-				_vis.data = new Data();
+		/** Sets the data visualized by this instance. The input value can be
+		 *  an array of data objects, a Data instance, or a DataSet instance.
+		 *  Any existing data will be removed and new NodeSprite instances will
+		 *  be created for each object in the input arrary. */
+		public function set dataSet(d:*):void {
+			var dd:Data;
+			
+			if (d is Data) {
+				dd = Data(d);
+			} else if (d is Array) {
+				dd = Data.fromArray(d as Array);
+			} else if (d is DataSet) {
+				dd = Data.fromDataSet(d as DataSet);
 			} else {
-				_vis.data.clear();
+				throw new Error("Unrecognized data set type: "+d);
 			}
-			for each (var tuple:Object in d) {
-				_vis.data.addNode(tuple);
-			}
+			_vis.data = dd;
 			_vis.operators.setup();
 			_vis.update();
 		}
@@ -66,52 +72,9 @@ package flare.flex
 		 *  empty data instance will be used.
 		 */
 		public function FlareVis(data:Data=null) {
-			addChild(_vis = new Visualization(data==null ? new Data() : data));
-		}
-		
-		// -- UIComponent Overrides -------------------------------------------
-		
-		/** @private */
-		public override function setActualSize(w:Number, h:Number):void
-		{
-			_vis.bounds.width = w;
-			_vis.bounds.height = h;
-		}
-		
-		/** @private */
-		public override function get explicitWidth():Number
-		{
-			return _vis.bounds.width;
-		}
-		
-		/** @private */
-		public override function set explicitWidth(value:Number):void
-		{
-			_vis.bounds.width = value;
-		}
-		
-		/** @private */
-		public override function get explicitHeight():Number
-		{
-			return _vis.bounds.height;
-		}
-		
-		/** @private */
-		public override function set explicitHeight(value:Number):void
-		{
-			_vis.bounds.height = value;
-		}
-		
-		/** @private */
-		public override function get measuredHeight():Number
-		{
-			return _vis.bounds.height;
-		}
-		
-		/** @private */
-		public override function get measuredWidth():Number
-		{
-			return _vis.bounds.width;
+			this.rawChildren.addChild(
+				_vis = new Visualization(data==null ? new Data() : data)
+			);
 		}
 		
 	} // end of class FlareVis
