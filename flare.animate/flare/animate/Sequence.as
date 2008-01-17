@@ -15,11 +15,16 @@ package flare.animate
 	{
 		// -- Properties ------------------------------------------------------
 		
-		private var _trans:/*Transition*/Array = [];
-		private var _fracs:/*Number*/Array = [];
-		private var _autodur:Boolean = true;
-		private var _dirty:Boolean = false;
-		private var _idx:int = 0;
+		/** Array of sequential transitions */
+		protected var _trans:/*Transition*/Array = [];
+		/** @private */
+		protected var _fracs:/*Number*/Array = [];
+		/** @private */
+		protected var _autodur:Boolean = true;
+		/** @private */
+		protected var _dirty:Boolean = false;
+		/** @private */
+		protected var _idx:int = 0;
 		
 		/**
 		 * If true, the duration of this sequence is automatically determined

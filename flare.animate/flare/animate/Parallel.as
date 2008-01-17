@@ -16,9 +16,12 @@ package flare.animate
 		
 		/** Array of parallel transitions */
 		protected var _trans:/*Transition*/Array = [];
-		private var _equidur:Boolean;
-		private var _dirty:Boolean = false;
-		private var _autodur:Boolean = true;
+		/** @private */
+		protected var _equidur:Boolean;
+		/** @private */
+		protected var _dirty:Boolean = false;
+		/** @private */
+		protected var _autodur:Boolean = true;
 
 		/**
 		 * If true, the duration of this sequence is automatically determined
@@ -82,7 +85,7 @@ package flare.animate
 		 * Computes the duration of this parallel transition.
 		 */
 		protected function computeDuration():void {
-			var d:Number, td:Number;
+			var d:Number=0, td:Number;
 			if (_trans.length > 0) d = _trans[0].totalDuration;
 			_equidur = true;	
 			for each (var t:Transition in _trans) {

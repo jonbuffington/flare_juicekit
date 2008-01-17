@@ -111,6 +111,11 @@ package flare.animate
 		private var _optimize:Boolean = false;
 		private var _subdur:Number;
 		
+		/** @private */
+		public override function get duration():Number {
+			return _trans.length==0 ? _subdur : super.duration;
+		}
+		
 		/** Immediate mode flag, used to bypass tween generation and perform
 		 *  immediate updates of target object values. */
 		public function get immediate():Boolean { return _immediate; }
