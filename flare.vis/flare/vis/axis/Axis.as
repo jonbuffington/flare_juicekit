@@ -6,6 +6,7 @@ package flare.vis.axis
 	import flare.util.Strings;
 	import flare.vis.scale.IScaleMap;
 	import flare.vis.scale.LinearScale;
+	import flare.vis.scale.LogScale;
 	import flare.vis.scale.OrdinalScale;
 	import flare.vis.scale.QuantitativeScale;
 	import flare.vis.scale.Scale;
@@ -264,6 +265,14 @@ package flare.vis.axis
         	return axisScale.lookup(f);
         }
 		
+		/**
+		 * Clears the previous axis scale used, if cached.
+		 */
+		public function clearPreviousScale():void
+		{
+			_prevScale = _axisScale;
+		}
+		
 		// -- Filter ----------------------------------------------------------
 		
 		/**
@@ -368,62 +377,90 @@ package flare.vis.axis
 			_prevScale = _axisScale.clone(); // clone as IScale
 		}
 		
+		// -- Label Overlap ---------------------------------------------------
+		
 		/**
-		 * Checks for label overlap and, if found, removes labels until the
-		 * overlap is eliminated. This method performs an iterative
-		 * optimization, removing every other label on each iteration.
-		 * @param trans a transitioner, potentially storing label target values
-		 */
-		protected function fixOverlap(trans:Transitioner):void {
-			var labs:Array = [], overlap:Boolean = false;
-			var d:DisplayObject, i:int;
-			
-			// collect labels
+		 * Eliminates overlap between labels along an axis. 
+		 * @param trans a transitioner, potentially storing label positions
+		 */		
+		protected function fixOverlap(trans:Transitioner):void
+		{
+			var labs:Array = [], d:DisplayObject, i:int;
+			// collect and sort labels
 			for (i=0; i<labels.numChildren; ++i) {
-				var s:Sprite = Sprite(labels.getChildAt(i));
+				var s:AxisLabel = AxisLabel(labels.getChildAt(i));
 				if (!trans.willRemove(s)) labs.push(s);
 			}
 			if (labs.length == 0) return;
-			// TODO (??): keep labels container sorted instead
 			labs.sortOn("ordinal", Array.NUMERIC);
-
-			// maintain min and max if we get down to two
-			var min:Object = labs[0], max:Object = labs[labs.length-1];
+			
+			// stores the labels to remove
 			var rem:Dictionary = new Dictionary();
+			
+			if (_axisScale is LogScale) {
+				var base:int = int(LogScale(_axisScale).base), j:int;
+				if (!hasOverlap(labs, trans)) return;
+				
+				for (i=1, j=2; i<labs.length; ++j) {
+					if (j == base) {
+						j = 1; ++i;
+					} else {
+						rem[labs[i]] = labs[i];
+						labs.splice(i, 1);
+					}
+				}
+			}
+			
+			// maintain min and max if we get down to two
+			i = labs.length;
+			var min:Object = labs[0];
+			var max:Object = labs[i-1];
+			var mid:Object = (i&1) ? labs[(i>>1)] : null;
 
 			// fix overlap with an iterative optimization
 			// remove every other label with each iteration
-			do {
-				// compute overlap
-				for (i=1, overlap=false; i<labs.length; ++i) {
-					if ((overlap = overlaps(trans, labs[i], labs[i-1])))
-						break;
-				}
-				if (!overlap) break;
-				
+			while (hasOverlap(labs, trans)) {
 				// reduce labels
 				i = labs.length;
-				if (i < 4) { // use min and max if we're down to two
+				if (mid && i>3 && i<8) { // use min, med, max if we can
+					for each (d in labs) rem[d] = d;
+					if (rem[min]) delete rem[min];
+					if (rem[max]) delete rem[max];
+					if (rem[mid]) delete rem[mid];
+					labs = [min, mid, max];
+				}
+				else if (i < 4) { // use min and max if we're down to two
 					if (rem[min]) delete rem[min];
 					if (rem[max]) delete rem[max];
 					for each (d in labs) {
 						if (d != min && d != max) rem[d] = d;
 					}
 					break;
-				} else { // else remove every odd element
-					i = i - (i & 0x1 ? 2 : 1);
+				}
+				else { // else remove every odd element
+					i = i - (i&1 ? 2 : 1);
 					for (; i>0; i-=2) {
 						rem[labs[i]] = labs[i];
 						labs.splice(i, 1); // remove from array
 					}
 				}
-			} while (true);
+			}
 			
 			// remove the deleted labels
 			for each (d in rem) {
 				trans.$(d).alpha = 0;
 				trans.removeChild(d, true);
 			}
+		}
+		
+		private static function hasOverlap(labs:Array, trans:Transitioner):Boolean
+		{
+			var d:DisplayObject = labs[0], e:DisplayObject;
+			for (var i:int=1; i<labs.length; ++i) {
+				if (overlaps(trans, d, (e=labs[i]))) return true;
+				d = e;
+			}
+			return false;
 		}
 		
 		/**
@@ -435,7 +472,7 @@ package flare.vis.axis
 		 * @return true if the objects overlap (considering values in the
 		 *  transitioner, if appropriate), false otherwise
 		 */
-		protected function overlaps(trans:Transitioner,
+		private static function overlaps(trans:Transitioner,
 			l1:DisplayObject, l2:DisplayObject):Boolean
 		{
 			if (trans.immediate) return l1.hitTestObject(l2);
@@ -451,14 +488,6 @@ package flare.vis.axis
 			// reset to original coordinates
 			l1.x = xa; l1.y = ya; l2.x = xb; l2.y = yb;
 			return b;
-		}
-		
-		/**
-		 * Clears the previous axis scale used, if cached.
-		 */
-		public function clearPreviousScale():void
-		{
-			_prevScale = _axisScale;
 		}
 		
 		// -- Axis Label Helpers ----------------------------------------------
