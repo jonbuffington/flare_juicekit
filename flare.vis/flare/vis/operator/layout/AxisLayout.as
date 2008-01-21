@@ -1,13 +1,13 @@
 package flare.vis.operator.layout
 {
 	import flare.animate.Transitioner;
-	import flare.vis.data.DataSprite;
-	import flare.vis.Visualization;
-	import flare.vis.axis.CartesianAxes;
-	import flare.vis.scale.LinearScale;
-	import flare.vis.data.Data;
-	import flash.utils.Dictionary;
 	import flare.util.Property;
+	import flare.vis.axis.Axis;
+	import flare.vis.axis.CartesianAxes;
+	import flare.vis.data.Data;
+	import flare.vis.data.DataSprite;
+	import flare.vis.scale.LinearScale;
+	import flare.vis.scale.Scales;
 	
 	/**
 	 * Layout that places items according to data properties along the X and Y
@@ -17,12 +17,27 @@ package flare.vis.operator.layout
 	 */
 	public class AxisLayout extends Layout
 	{
-		private var _initAxes:Boolean = true;
+		public static const ALWAYS:int = 2;
+		public static const SETUP:int = 1;
+		public static const NEVER:int = 0;
+		
+		private var _initAxes:int = SETUP;
 		private var _xStacks:Boolean = false;
 		private var _yStacks:Boolean = false;		
 		private var _xField:Property;
 		private var _yField:Property;
 		private var _t:Transitioner;
+		
+		/** The scale type parameter for the x-axis. */
+		protected var _xScaleType:int = Scales.LINEAR;
+		/** A parameter for the scale instance for the x-axis. */
+		protected var _xScaleParam:Number = 10;
+		/** The scale type parameter for the y-axis. */
+		protected var _yScaleType:int = Scales.LINEAR;
+		/** A parameter for the scale instance for the y-axis. */
+		protected var _yScaleParam:Number = 10;
+		
+		// ------------------------------------------------
 		
 		/** The x-axis source property. */
 		public function get xField():String {
@@ -49,6 +64,31 @@ package flare.vis.operator.layout
 		 *  y-axis values. */
 		public function get yStacked():Boolean { return _yStacks; }
 		public function set yStacked(b:Boolean):void { _yStacks = b; }
+		
+		/** The scale type parameter for the x-axis.
+		 *  @see flare.vis.scale.Scales */
+		public function get xScaleType():int { return _xScaleType; }
+		public function set xScaleType(st:int):void { _xScaleType = st; setup(); }
+		
+		/** A parameter for the scale instance for the x-axis. Used as input
+		 *  to the <code>flare.vis.scale.Scales.scale method. */
+		public function get xScaleParam():Number { return _xScaleParam; }
+		public function set xScaleParam(p:Number):void { _xScaleParam = p; setup(); }
+		
+		/** The scale type parameter for the y-axis.
+		 *  @see flare.vis.scale.Scales */
+		public function get yScaleType():int { return _yScaleType; }
+		public function set yScaleType(st:int):void { _yScaleType = st; setup(); }
+		
+		/** A parameter for the scale instance for the y-axis. Used as input
+		 *  to the <code>flare.vis.scale.Scales.scale method. */
+		public function get yScaleParam():Number { return _yScaleParam; }
+		public function set yScaleParam(p:Number):void { _yScaleParam = p; setup(); }
+		
+		/** The policy for when axes should be initialized by this layout.
+		 *  One of NEVER, SETUP (to initialize only on setup), and ALWAYS. */
+		public function get initAxes():int { return _initAxes; }
+		public function set initAxes(policy:int):void { _initAxes = policy; }
 		
 		// --------------------------------------------------------------------
 		
@@ -81,19 +121,23 @@ package flare.vis.operator.layout
 		 */
 		public function initializeAxes():void
 		{
-			if (!_initAxes || visualization==null) return;
+			if (_initAxes==NEVER || visualization==null) return;
 			
 			// set axes
-			var axes:CartesianAxes = super.xyAxes;
+			var axes:CartesianAxes = super.xyAxes, axis:Axis;
 			var data:Data = visualization.data;
-			axes.xAxis.axisScale = data.scale(_xField.name);
-			axes.yAxis.axisScale = data.scale(_yField.name);
+
+			axes.xAxis.axisScale = data.scale(
+				_xField.name, Data.NODES, _xScaleType, _xScaleParam);
+			axes.yAxis.axisScale = data.scale(
+				_yField.name, Data.NODES, _yScaleType, _yScaleParam);
 		}
 		
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
 			_t = (t != null ? t : Transitioner.DEFAULT);
+			if (_initAxes==ALWAYS) initializeAxes();
 			if (_xStacks || _yStacks) { rescale(); }
 						
 			var axes:CartesianAxes = super.xyAxes;

@@ -5,6 +5,7 @@
     <classEntry path="flare.vis.axis.AxisGridLine"/>
     <classEntry path="flare.vis.data.DataSprite"/>
     <classEntry path="flare.vis.operator.OperatorSwitch"/>
+    <classEntry path="flare.vis.operator.OperatorSequence"/>
     <classEntry path="flare.vis.scale.LinearScale"/>
     <classEntry path="flare.vis.util.TreeUtil"/>
     <classEntry path="flare.vis.operator.layout.RandomLayout"/>
