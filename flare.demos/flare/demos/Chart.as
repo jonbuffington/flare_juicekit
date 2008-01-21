@@ -4,7 +4,6 @@ package flare.demos
 	import flare.util.Button;
 	import flare.util.Stats;
 	import flare.vis.Visualization;
-	import flare.vis.axis.CartesianAxes;
 	import flare.vis.controls.HoverControl;
 	import flare.vis.controls.SelectionControl;
 	import flare.vis.data.Data;
@@ -72,14 +71,13 @@ package flare.demos
 			sc.onDeselect = hc.onRollOut;
 
 			// add scale update button
-			var flip:Boolean = false;
 			var bs:Button = new Button("Change Scale");
 			bs.addEventListener(MouseEvent.CLICK, function(evt:MouseEvent):void {
 				// change the x-axis scale and animate the result
-				vis.xyAxes.xAxis.axisScale = 
-					flip ? Scales.linear(stats1) : Scales.log(stats1);
+				var al:AxisLayout = vis.operators[0] as AxisLayout;
+				al.xScaleType = 
+					al.xScaleType==Scales.LOG ? Scales.LINEAR : Scales.LOG;
 				vis.update(new Transitioner(2)).play();
-				flip = !flip;
 			});
 			bs.x = 10; bs.y = HEIGHT - 10 - bs.height;
 			addChild(bs);
