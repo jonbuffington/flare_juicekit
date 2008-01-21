@@ -41,7 +41,7 @@ package flare.animate
 		
 		private var _interps:Array = new Array();
 		private var _target:Object;
-		private var _start:Object;
+		private var _from:Object;
 		private var _remove:Boolean = false;
 		private var _visible:Boolean = true;
 		private var _values:Object;
@@ -61,8 +61,8 @@ package flare.animate
 		public function set values(o:Object):void { _values = o; }
 		
 		/** Optional starting values for tweened properties. */
-		public function get from():Object { return _start; }
-		public function set from(s:Object):void { _start = s; }
+		public function get from():Object { return _from; }
+		public function set from(s:Object):void { _from = s; }
 		
 		
 		// - Methods ----------------------------------------------------------
@@ -84,7 +84,7 @@ package flare.animate
 			_target = target;
 			_remove = remove;
 			_values = values==null ? {} : values;
-			_start = {};
+			_from = {};
 		}
 		
 		/** @inheritDoc */
@@ -119,7 +119,7 @@ package flare.animate
 			for (var name:String in _values) {
 				// create interpolator only if start/cur/end values don't match
 				vc = Property.$(name).getValue(_target);
-				v0 = _start.hasOwnProperty(name) ? _start[name] : vc;
+				v0 = _start.hasOwnProperty(name) ? _from[name] : vc;
 				v1 = _values[name];
 				
 				if (vc != v1 || vc != v0) {

@@ -31,9 +31,10 @@ package flare.animate
 				
 		private var _duration:Number;         // duration, in seconds
 		private var _delay:Number;            // delay, in seconds
-		private var _start:Number;            // start time
 		private var _frac:Number;             // animation fraction
 		private var _state:int = SETUP;       // initialization flag
+		/** @private */
+		protected var _start:Number;          // start time	
 		/** Flag indicating this Transition is currently running. */
 		protected var _running:Boolean = false;
 		/** Flag indicating this Transition is running in reverse. */

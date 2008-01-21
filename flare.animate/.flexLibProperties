@@ -4,6 +4,7 @@
     <classEntry path="flare.animate.Easing"/>
     <classEntry path="flare.animate.Scheduler"/>
     <classEntry path="flare.animate.Sequence"/>
+    <classEntry path="flare.animate.FunctionSequence"/>
     <classEntry path="flare.animate.Pause"/>
     <classEntry path="flare.animate.ISchedulable"/>
     <classEntry path="flare.animate.interpolate.NumberInterpolator"/>
