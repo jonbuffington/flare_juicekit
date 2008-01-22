@@ -14,14 +14,15 @@ package flare.physics
 		public function integrate(sim:Simulation, dt:Number):void
 		{
 			var particles:Array = sim.particles, p:Particle, i:uint;
-			
+			var a:Number;
 			sim.eval();
 			for (i=0; i<particles.length; ++i) {
 				p = particles[i] as Particle;
+				a = dt / p.mass;
 				p.x += dt * p.vx;
 				p.y += dt * p.vy;
-				p.vx += dt * p.mass * p.fx;
-				p.vy += dt * p.mass * p.fy;
+				p.vx += a * p.fx;
+				p.vy += a * p.fy;
 			}
 		}
 		
