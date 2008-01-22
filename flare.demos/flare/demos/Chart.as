@@ -14,7 +14,7 @@ package flare.demos
 	import flare.vis.operator.encoder.SizeEncoder;
 	import flare.vis.operator.layout.AxisLayout;
 	import flare.vis.palette.ColorPalette;
-	import flare.vis.scale.Scales;
+	import flare.vis.scale.ScaleType;
 	import flare.vis.util.Filters;
 	
 	import flash.events.Event;
@@ -48,9 +48,9 @@ package flare.demos
 			});
 			vis.operators.add(new AxisLayout(field1, field2));
 			vis.operators.add(new ShapeEncoder(field1));
-			vis.operators.add(new SizeEncoder(field2, Data.NODES, Scales.QUANTILE, 5));
+			vis.operators.add(new SizeEncoder(field2, Data.NODES, ScaleType.QUANTILE, 5));
 			vis.operators.add(new ColorEncoder(field1,Data.NODES, "lineColor",
-			    ColorPalette.category(stats1.unique), Scales.ORDINAL));
+			    ColorPalette.category(stats1.unique), ScaleType.ORDINAL));
 			vis.xyAxes.xAxis.fixLabelOverlap = false; // keep overlapping labels
 			vis.update();
 			
@@ -76,7 +76,7 @@ package flare.demos
 				// change the x-axis scale and animate the result
 				var al:AxisLayout = vis.operators[0] as AxisLayout;
 				al.xScaleType = 
-					al.xScaleType==Scales.LOG ? Scales.LINEAR : Scales.LOG;
+					al.xScaleType==ScaleType.LOG ? ScaleType.LINEAR : ScaleType.LOG;
 				vis.update(new Transitioner(2)).play();
 			});
 			bs.x = 10; bs.y = HEIGHT - 10 - bs.height;
