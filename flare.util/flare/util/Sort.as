@@ -71,6 +71,17 @@ package flare.util
 		// Static Methods
 		
 		/**
+		 * Default comparator function that compares two values based on blind
+		 *  application of the less-than and greater-than operators.
+		 * @param a the first value to compare
+		 * @param b the second value to compare
+		 * @return -1 if a < b, 1 if a > b, 0 otherwise.
+		 */
+		public static function defaultComparator(a:*, b:*):int {
+			return a<b ? -1 : a>b ? 1 : 0;
+		}
+		
+		/**
 		 * Sorts the input array using an optional comparator function. This
 		 * method attempts to use optimized sorting routines based on the
 		 * choice of comparators.
@@ -122,7 +133,7 @@ package flare.util
 			} else if (cmp is Array) {
 				c = sorter(cmp as Array);
 			} else if (cmp == null) {
-				c = function(a:*, b:*):int { return a<b ? -1 : a>b ? 1 : 0; }
+				c = defaultComparator;
 			} else {
 				throw new ArgumentError("Unknown parameter type: "+cmp);	
 			}

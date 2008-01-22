@@ -125,21 +125,27 @@ package flare.util
 		
 		/**
 		 * Performs a binary search over the input array for the given key
-		 * using the provided comparison function.
+		 * value, optionally using a provided property to extract from array
+		 * items and a custom comparison function.
 		 * @param a the array to search over
 		 * @param key the key value to search for
-		 * @param cmp the comparison function
+		 * @param prop the property to retrieve from objecs in the array. If null
+		 *  (the default) the array values will be used directly.
+		 * @param cmp an optional comparison function
 		 * @return the index of the given key if it exists in the array,
          *  otherwise -1 times the index value at the insertion point that
          *  would be used if the key were added to the array.
          */
 		public static function binarySearch(a:Array, key:Object,
-											cmp:Function) : int
+			prop:String=null, cmp:Function=null) : int
 		{
+			if (cmp==null) cmp = Sort.defaultComparator;
+			var p:Property = prop ? Property.$(prop) : null;
+			
 			var x1:int = 0, x2:int = a.length, i:int = (x2>>1);
         	while (x1 < x2) {
-        		var c:int = cmp(a[i], key);
-            	if (c == 0) {
+        		var c:int = cmp(p ? p.getValue(a[i]) : a[i], key);
+        		if (c == 0) {
                 	return i;
             	} else if (c < 0) {
                 	x1 = i + 1;
@@ -150,6 +156,6 @@ package flare.util
         	}
         	return -1*(i+1);
 		}
-		
+
 	} // end of class Arrays
 }
