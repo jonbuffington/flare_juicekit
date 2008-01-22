@@ -1,9 +1,9 @@
 package flare.vis.operator.encoder
 {
 	import flare.vis.data.Data;
-	import flare.vis.palette.SizePalette;
-	import flare.vis.scale.Scales;
 	import flare.vis.palette.Palette;
+	import flare.vis.palette.SizePalette;
+	import flare.vis.scale.ScaleType;
 	
 	/**
 	 * Encodes a data field into size values, using a scale transform and a
@@ -32,7 +32,7 @@ package flare.vis.operator.encoder
 		 * @param scaleParam a parameter for creating the scale (5 by default)
 		 */
 		public function SizeEncoder(source:String=null, which:int=1/*Data.NODES*/,
-			scaleType:int=Scales.QUANTILE, scaleParam:Number=5)
+			scaleType:String=ScaleType.QUANTILE, scaleParam:Number=5)
 		{
 			super(source, "size", which);
 			_scaleType = scaleType;

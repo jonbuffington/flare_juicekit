@@ -7,6 +7,7 @@ package flare.vis.operator.layout
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.scale.LinearScale;
+	import flare.vis.scale.ScaleType;
 	import flare.vis.scale.Scales;
 	
 	/**
@@ -29,11 +30,11 @@ package flare.vis.operator.layout
 		private var _t:Transitioner;
 		
 		/** The scale type parameter for the x-axis. */
-		protected var _xScaleType:int = Scales.LINEAR;
+		protected var _xScaleType:String = ScaleType.LINEAR;
 		/** A parameter for the scale instance for the x-axis. */
 		protected var _xScaleParam:Number = 10;
 		/** The scale type parameter for the y-axis. */
-		protected var _yScaleType:int = Scales.LINEAR;
+		protected var _yScaleType:String = ScaleType.LINEAR;
 		/** A parameter for the scale instance for the y-axis. */
 		protected var _yScaleParam:Number = 10;
 		
@@ -67,8 +68,8 @@ package flare.vis.operator.layout
 		
 		/** The scale type parameter for the x-axis.
 		 *  @see flare.vis.scale.Scales */
-		public function get xScaleType():int { return _xScaleType; }
-		public function set xScaleType(st:int):void { _xScaleType = st; setup(); }
+		public function get xScaleType():String { return _xScaleType; }
+		public function set xScaleType(st:String):void { _xScaleType = st; setup(); }
 		
 		/** A parameter for the scale instance for the x-axis. Used as input
 		 *  to the <code>flare.vis.scale.Scales.scale method. */
@@ -77,8 +78,8 @@ package flare.vis.operator.layout
 		
 		/** The scale type parameter for the y-axis.
 		 *  @see flare.vis.scale.Scales */
-		public function get yScaleType():int { return _yScaleType; }
-		public function set yScaleType(st:int):void { _yScaleType = st; setup(); }
+		public function get yScaleType():String { return _yScaleType; }
+		public function set yScaleType(st:String):void { _yScaleType = st; setup(); }
 		
 		/** A parameter for the scale instance for the y-axis. Used as input
 		 *  to the <code>flare.vis.scale.Scales.scale method. */

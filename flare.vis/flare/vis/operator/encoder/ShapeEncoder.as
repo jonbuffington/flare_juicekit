@@ -1,10 +1,10 @@
 package flare.vis.operator.encoder
 {
-	import flare.vis.scale.OrdinalScale;
-	import flare.vis.scale.Scales;
-	import flare.vis.scale.Scale;
-	import flare.vis.palette.ShapePalette;
 	import flare.vis.palette.Palette;
+	import flare.vis.palette.ShapePalette;
+	import flare.vis.scale.OrdinalScale;
+	import flare.vis.scale.Scale;
+	import flare.vis.scale.ScaleType;
 	
 	/**
 	 * Encodes a data field into shape values, using an ordinal scale.
@@ -28,8 +28,8 @@ package flare.vis.operator.encoder
 		// --------------------------------------------------------------------
 		
 		/** @inheritDoc */
-		public override function set scaleType(st:int):void {
-			if (st != Scales.ORDINAL)
+		public override function set scaleType(st:String):void {
+			if (st != ScaleType.ORDINAL)
 				throw new ArgumentError("Shape encoders only use ordinal scales");
 		}
 		
@@ -48,7 +48,7 @@ package flare.vis.operator.encoder
 		{
 			super(field, "shape", which);
 			_palette = ShapePalette.defaultPalette();
-			_scaleType = Scales.ORDINAL;
+			_scaleType = ScaleType.ORDINAL;
 		}
 		
 		/** @inheritDoc */

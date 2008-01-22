@@ -33,7 +33,7 @@ package flare.vis.operator.encoder
 		/** The scale used by the encoder. */
 		protected var _scale:Scale;
 		/** The scale type parameter. */
-		protected var _scaleType:int;
+		protected var _scaleType:String;
 		/** A parameter for the scale instance. */
 		protected var _scaleParam:Number;
 		/** Flag indicating if this encoder should initialize the scale. */
@@ -62,8 +62,8 @@ package flare.vis.operator.encoder
 		
 		/** The scale type parameter.
 		 *  @see flare.vis.scale.Scales */
-		public function get scaleType():int { return _scaleType; }
-		public function set scaleType(st:int):void { _scaleType = st; setup(); }
+		public function get scaleType():String { return _scaleType; }
+		public function set scaleType(st:String):void { _scaleType = st; setup(); }
 		
 		/** A parameter for the scale instance. Used as input to the
 		 *  <code>flare.vis.scale.Scales.scale method. */

@@ -7,19 +7,6 @@ package flare.vis.scale
 	 */
 	public class Scales
 	{
-		/** Constant indicating an ordinal scale. */
-		public static const ORDINAL:int = 0;
-		/** Constant indicating a linear numeric scale. */
-		public static const LINEAR:int = 1;
-		/** Constant indicating a root-transformed numeric scale. */
-		public static const ROOT:int = 2;
-		/** Constant indicating a log-transformed numeric scale. */
-		public static const LOG:int = 3;
-		/** Constant indicating a quantile scale. */
-		public static const QUANTILE:int = 4;
-		/** Constant indicating a date/time scale. */
-		public static const TIME:int = 5;
-		
 		/**
 		 * Constructor, throws an error if called, as this is an abstract class.
 		 */
@@ -36,32 +23,33 @@ package flare.vis.scale
 		 *  example, this might be the number of quantiles for a quantile scale
 		 *  or the number base for a logarithmic scale.
 		 */
-		public static function scale(stats:Stats, scaleType:int=1, ...rest):Scale
+		public static function scale(stats:Stats,
+			scaleType:String=ScaleType.LINEAR, ...rest):Scale
 		{
 			var arg1:Number, arg2:Number;
 			
 			switch (stats.dataType) {
 				case Stats.NUMBER:
 					switch (scaleType) {
-						case Scales.LINEAR:
+						case ScaleType.LINEAR:
 							arg1 = rest.length > 0 ? rest[0] : 10;
 							return linear(stats, arg1);
-						case Scales.ROOT:
+						case ScaleType.ROOT:
 							arg1 = rest.length > 0 ? rest[0] : 2;
 							arg2 = rest.length > 1 ? rest[1] : 10;
 							return root(stats, arg1, arg2);
-						case Scales.LOG:
+						case ScaleType.LOG:
 							arg1 = rest.length > 0 ? rest[0] : 10;
 							return log(stats, arg1);
-						case Scales.QUANTILE:
+						case ScaleType.QUANTILE:
 							arg1 = rest.length > 0 ? rest[0] : 5;
 							return quantile(stats, int(arg1));
 						default: return ordinal(stats);
 					}
 				case Stats.DATE:
 					switch (scaleType) {
-						case Scales.LINEAR:
-						case Scales.TIME:
+						case ScaleType.LINEAR:
+						case ScaleType.TIME:
 							return time(stats);
 						default: return ordinal(stats);
 					}

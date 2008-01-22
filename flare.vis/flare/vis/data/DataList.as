@@ -6,6 +6,7 @@ package flare.vis.data
 	import flare.util.Sort;
 	import flare.util.Stats;
 	import flare.vis.scale.Scale;
+	import flare.vis.scale.ScaleType;
 	import flare.vis.scale.Scales;
 	
 	import flash.utils.flash_proxy;
@@ -71,7 +72,8 @@ package flare.vis.data
 			_map[o] = _list.length;
 			_stats = {};
 			if (_sort != null) {
-				var idx:int = Arrays.binarySearch(_list, o, _sort.comparator);
+				var idx:int = Arrays.binarySearch(_list, o, null,
+				                                  _sort.comparator);
 				_list.splice(-(idx+1), 0, o);
 			} else {
 				_list.push(o);
@@ -355,7 +357,8 @@ package flare.vis.data
 		 * @return a Scale instance for the given data field
 		 * @see flare.vis.scale.Scales
 		 */
-		public function scale(field:String, scaleType:int=1, ...rest):Scale
+		public function scale(field:String,
+			scaleType:String=ScaleType.LINEAR, ...rest):Scale
 		{
 			var scale:Scale = Scales.scale(stats(field), scaleType);
 			// TODO: lookup formatting info (?)

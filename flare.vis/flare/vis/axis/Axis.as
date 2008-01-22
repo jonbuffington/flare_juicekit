@@ -2,6 +2,7 @@ package flare.vis.axis
 {
 	import flare.animate.Transitioner;
 	import flare.display.TextSprite;
+	import flare.util.Arrays;
 	import flare.util.Stats;
 	import flare.util.Strings;
 	import flare.vis.scale.IScaleMap;
@@ -398,17 +399,7 @@ package flare.vis.axis
 			var rem:Dictionary = new Dictionary();
 			
 			if (_axisScale is LogScale) {
-				var base:int = int(LogScale(_axisScale).base), j:int;
-				if (!hasOverlap(labs, trans)) return;
-				
-				for (i=1, j=2; i<labs.length; ++j) {
-					if (j == base) {
-						j = 1; ++i;
-					} else {
-						rem[labs[i]] = labs[i];
-						labs.splice(i, 1);
-					}
-				}
+				fixLogOverlap(labs, rem, trans, LogScale(_axisScale));
 			}
 			
 			// maintain min and max if we get down to two
@@ -451,6 +442,43 @@ package flare.vis.axis
 				trans.$(d).alpha = 0;
 				trans.removeChild(d, true);
 			}
+		}
+		
+		private static function fixLogOverlap(labs:Array, rem:Dictionary,
+			trans:Transitioner, scale:LogScale):void
+		{
+				var base:int = int(scale.base), i:int, j:int, zidx:int;
+				if (!hasOverlap(labs, trans)) return;
+				
+				// find zero
+				zidx = Arrays.binarySearch(labs, 0, "value");
+				var neg:Boolean = scale.dataMin < 0;
+				var pos:Boolean = scale.dataMax > 0;
+				
+				// if includes negative, traverse backwards from zero/end
+				if (neg) {
+					i = (zidx<0 ? labs.length : zidx) - (pos ? 1 : 2);
+					for (j=pos?1:2; i>=0; ++j, --i) {
+						if (j == base) {
+							j = 1;
+						} else {
+							rem[labs[i]] = labs[i];
+							labs.splice(i, 1); --zidx;
+						}
+					}
+				}
+				// if includes positive, traverse forwards from zero/start
+				if (pos) {
+					i = (zidx<0 ? 0 : zidx+1) + (neg ? 0 : 1);
+					for (j=neg?1:2; i<labs.length; ++j) {
+						if (j == base) {
+							j = 1; ++i;
+						} else {
+							rem[labs[i]] = labs[i];
+							labs.splice(i, 1);
+						}
+					}
+				}
 		}
 		
 		private static function hasOverlap(labs:Array, trans:Transitioner):Boolean

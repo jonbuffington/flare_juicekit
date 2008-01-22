@@ -1,8 +1,8 @@
 package flare.vis.operator.encoder
 {
 	import flare.vis.palette.ColorPalette;
-	import flare.vis.scale.Scales;
 	import flare.vis.palette.Palette;
+	import flare.vis.scale.ScaleType;
 	
 	/**
 	 * Encodes a data field into color values, using a scale transform and
@@ -34,7 +34,7 @@ package flare.vis.operator.encoder
 		 */
 		public function ColorEncoder(source:String=null, which:int=1/*Data.NODES*/,
 			target:String="lineColor", palette:ColorPalette=null,
-			scaleType:int=Scales.LINEAR, scaleParam:Number=10)
+			scaleType:String=ScaleType.LINEAR, scaleParam:Number=10)
 		{
 			super(source, target, which);
 			_scaleType = scaleType;

@@ -3,14 +3,13 @@ package flare.vis.data
 	import flare.data.DataField;
 	import flare.data.DataSchema;
 	import flare.data.DataSet;
-	import flare.data.DataTable;
-	import flare.data.DataUtil;
 	import flare.util.Arrays;
 	import flare.util.Property;
 	import flare.util.Sort;
 	import flare.util.Stats;
 	import flare.vis.events.DataEvent;
 	import flare.vis.scale.Scale;
+	import flare.vis.scale.ScaleType;
 	import flare.vis.scale.Scales;
 	import flare.vis.util.TreeUtil;
 	
@@ -565,7 +564,7 @@ package flare.vis.data
 		 * @see flare.vis.scale.Scales
 		 */
 		public function scale(field:String, which:int=NODES, 
-							  scaleType:int=1, ...rest):Scale
+							  scaleType:String=ScaleType.LINEAR, ...rest):Scale
 		{
 			var list:DataList = (which==NODES ? _nodes : _edges);
 			var stats:Stats = list.stats(field);
