@@ -1,15 +1,13 @@
 package flare.display
 {
 	import flash.display.Bitmap;
-	import flash.text.TextField;
 	import flash.display.BitmapData;
-	import flash.text.TextFormat;
-	import flash.text.TextFieldAutoSize;
-	import flash.filters.BlurFilter;
+	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.geom.Rectangle;
-	import flash.display.DisplayObject;
-	import flare.display.DirtySprite;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 
 	/**
 	 * A Sprite representing a text label.
@@ -140,6 +138,78 @@ package flare.display
 				if (_fmt!=null) _tf.setTextFormat(_fmt);
 				dirty();
 			}
+		}
+		
+		/**
+		 * The font to the text.
+		 */
+		public function get font():String { return String(_fmt.font); }
+		public function set font(f:String):void {
+			_fmt.font = f;
+			_tf.setTextFormat(_fmt);
+		}
+		
+		/**
+		 * The color of the text.
+		 */
+		public function get color():uint { return uint(_fmt.color); }
+		public function set color(c:uint):void {
+			_fmt.color = c;
+			_tf.setTextFormat(_fmt);
+		}
+		
+		/**
+		 * The size of the text.
+		 */
+		public function get size():Number { return Number(_fmt.size); }
+		public function set size(s:Number):void {
+			_fmt.size = s;
+			_tf.setTextFormat(_fmt);
+		}
+		
+		/**
+		 * The boldness of the text.
+		 */
+		public function get bold():Boolean { return Boolean(_fmt.bold); }
+		public function set bold(b:Boolean):void {
+			_fmt.bold = b;
+			_tf.setTextFormat(_fmt);
+		}
+		
+		/**
+		 * The italics of the text.
+		 */
+		public function get italic():Boolean { return Boolean(_fmt.italic); }
+		public function set italic(b:Boolean):void {
+			_fmt.italic = b;
+			_tf.setTextFormat(_fmt);
+		}
+		
+		/**
+		 * The underline of the text.
+		 */
+		public function get underline():Boolean { return Boolean(_fmt.underline); }
+		public function set underline(b:Boolean):void {
+			_fmt.underline = b;
+			_tf.setTextFormat(_fmt);
+		}
+		
+		/**
+		 * The kerning of the text.
+		 */
+		public function get kerning():Boolean { return Boolean(_fmt.kerning); }
+		public function set kerning(b:Boolean):void {
+			_fmt.kerning = b;
+			_tf.setTextFormat(_fmt);
+		}
+		
+		/**
+		 * The letter-spacing of the text.
+		 */
+		public function get letterSpacing():int { return int(_fmt.letterSpacing); }
+		public function set letterSpacing(s:int):void {
+			_fmt.letterSpacing = s;
+			_tf.setTextFormat(_fmt);
 		}
 		
 		/**
