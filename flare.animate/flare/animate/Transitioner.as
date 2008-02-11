@@ -184,7 +184,7 @@ package flare.animate
 		 * @return a tween for the input target object, or null if this
 		 *  transitioner is in immediate mode.
 		 */
-		private function _(o:Object):Tween
+		public function _(o:Object):Tween
 		{
 			if (_immediate) return null;
 			
