@@ -14,8 +14,8 @@ package flare.demos
 	import flare.vis.operator.layout.CircleLayout;
 	import flare.vis.operator.layout.ForceDirectedLayout;
 	import flare.vis.operator.layout.IndentedTreeLayout;
-	import flare.vis.operator.layout.Layout;
 	import flare.vis.operator.layout.NodeLinkTreeLayout;
+	import flare.vis.operator.layout.Orientation;
 	import flare.vis.operator.layout.RadialTreeLayout;
 	import flare.vis.util.graphics.Shapes;
 	
@@ -41,7 +41,7 @@ package flare.demos
 			
 			os = new OperatorSwitch(
 				new ForceDirectedLayout(),
-				new NodeLinkTreeLayout(Layout.LEFT_TO_RIGHT, 20, 5, 10),
+				new NodeLinkTreeLayout(Orientation.LEFT_TO_RIGHT, 20, 5, 10),
 				new IndentedTreeLayout(20),
 				new RadialTreeLayout(50, false),
 				new CircleLayout()
