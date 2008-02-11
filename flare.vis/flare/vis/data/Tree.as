@@ -140,6 +140,23 @@ package flare.vis.data
 			return true;	
 		}
 
+		// --------------------------------------------------------------------
+		
+		/**
+		 * Counts the number of leaf nodes in the tree.
+		 * @return the number of leaf nodes
+		 */
+		public function countLeaves():int
+		{
+			var leaves:int = 0;
+			for each (var ns:NodeSprite in _nodes.list) {
+				if (ns.childDegree == 0) ++leaves;
+			}
+			return leaves;
+		}
+
+		// --------------------------------------------------------------------
+
 		/**
 		 * Continuously swaps the given node with its parent node
 		 * until it is the root.

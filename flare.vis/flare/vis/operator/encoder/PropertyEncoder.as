@@ -1,8 +1,8 @@
 package flare.vis.operator.encoder
 {
-	import flare.vis.operator.Operator;
 	import flare.animate.Transitioner;
 	import flare.vis.data.DataSprite;
+	import flare.vis.operator.Operator;
 
 	/**
 	 * A property encoder simply sets a group of properties to static
@@ -21,6 +21,8 @@ package flare.vis.operator.encoder
 		protected var _which:int;
 		/** Boolean function indicating which items to process. */
 		protected var _filter:Function;
+		/** Flag indicating if property values should be set immediately. */
+		protected var _ignoreTrans:Boolean;
 		/** The properties to set on each invocation. */
 		protected var _values:Object;
 		/** A transitioner for collecting value updates. */
@@ -37,6 +39,9 @@ package flare.vis.operator.encoder
 		public function get filter():Function { return _filter; }
 		public function set filter(f:Function):void { _filter = f; }
 		
+		public function get ignoreTransitioner():Boolean { return _ignoreTrans; }
+		public function set ignoreTransitioner(b:Boolean):void { _ignoreTrans = b; }
+		
 		/** The properties to set on each invocation. */
 		public function get values():Object { return _values; }
 		public function set values(o:Object):void { _values = o; }
@@ -49,19 +54,24 @@ package flare.vis.operator.encoder
 		 *  should be an object with a set of name/value pairs.
 		 * @param which Flag indicating which data group (NODES, EDGES, or ALL)
 		 *  should be processed by this encoder.
+		 * @param filter a Boolean-valued function that takes a DataSprite as
+		 *  input and returns true if the sprite should be processed
+		 * @param ignoreTransitioner Flag indicating if values should be set
+		 *  immediately rather than being processed by any transitioners
 		 */		
 		public function PropertyEncoder(values:Object=null, which:int=1,
-			filter:Function=null)
+			filter:Function=null, ignoreTransitioner:Boolean=false)
 		{
 			_values = values==null ? {} : values;
 			_which = which;
 			_filter = filter;
+			_ignoreTrans = ignoreTransitioner;
 		}
 		
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
-			t = (t==null ? Transitioner.DEFAULT : t);
+			t = (t==null || _ignoreTrans ? Transitioner.DEFAULT : t);
 			if (_values == null) return;
 			
 			visualization.data.visit(function(d:DataSprite):Boolean {

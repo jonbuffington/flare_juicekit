@@ -1,9 +1,10 @@
 package flare.vis.operator.layout
 {
 	import flare.animate.Transitioner;
-	import flare.vis.data.NodeSprite;
-	import flash.geom.Rectangle;
 	import flare.util.Arrays;
+	import flare.vis.data.NodeSprite;
+	
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Layout that places tree nodes in a radial layout, laying out subsequent

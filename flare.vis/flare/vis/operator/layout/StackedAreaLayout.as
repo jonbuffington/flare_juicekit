@@ -29,7 +29,7 @@ package flare.vis.operator.layout
     	private var _peaks:Array;
     	private var _poly:Array;
 		
-		private var _orient:uint = BOTTOM_TO_TOP;
+		private var _orient:String = Orientation.BOTTOM_TO_TOP;
 		private var _horiz:Boolean = false;
 		private var _top:Boolean = false;
 		private var _initAxes:Boolean = true;
@@ -56,11 +56,12 @@ package flare.vis.operator.layout
 		public function set threshold(t:Number):void { _threshold = t; }
 		
 		/** The orientation of the layout. */
-		public function get orientation():uint { return _orient; }
-		public function set orientation(o:uint):void {
+		public function get orientation():String { return _orient; }
+		public function set orientation(o:String):void {
 			_orient = o;
-			_horiz = (_orient == LEFT_TO_RIGHT || _orient == RIGHT_TO_LEFT);
-        	_top   = (_orient == TOP_TO_BOTTOM || _orient == LEFT_TO_RIGHT);
+			_horiz = Orientation.isHorizontal(_orient);
+        	_top   = (_orient == Orientation.TOP_TO_BOTTOM ||
+        			  _orient == Orientation.LEFT_TO_RIGHT);
         	initializeAxes();
 		}
 		

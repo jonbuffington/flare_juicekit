@@ -1,9 +1,9 @@
 package flare.vis.operator.layout
 {
 	import flare.animate.Transitioner;
-	import flare.vis.data.NodeSprite;
 	import flare.util.Property;
 	import flare.vis.data.EdgeSprite;
+	import flare.vis.data.NodeSprite;
 	
 	/**
 	 * Layout that places items in a dendrogram for displaying the results of a
@@ -23,7 +23,7 @@ package flare.vis.operator.layout
 	{
 		// TODO: support axes, too
 		
-		private var _orient:uint = TOP_TO_BOTTOM; // the orientation of the tree
+		private var _orient:String = Orientation.TOP_TO_BOTTOM; // the orientation of the tree
 		private var _dp:Property;
 		private var _t:Transitioner; // temp variable for transitioner access
 		
@@ -43,8 +43,8 @@ package flare.vis.operator.layout
 		}
 		
 		/** The orientation of the dendrogram */
-		public function get orientation():uint { return _orient; }
-		public function set orientation(o:uint):void { _orient = o; }
+		public function get orientation():String { return _orient; }
+		public function set orientation(o:String):void { _orient = o; }
 		
 		/**
 		 * Creates a new DendrogramLayout.
@@ -53,7 +53,7 @@ package flare.vis.operator.layout
 		 * @param orientation the orientation of the dendrogram
 		 */
 		public function DendrogramLayout(distField:String=null,
-			orientation:uint=TOP_TO_BOTTOM)
+			orientation:String=Orientation.TOP_TO_BOTTOM)
 		{
 			_dp = distField==null ? null : Property.$(distField);
 			_orient = orientation;
@@ -73,30 +73,30 @@ package flare.vis.operator.layout
 		private function init():void
 		{
 			var root:NodeSprite = visualization.tree.root;
-			_leafCount = (visualization.tree.nodes.size+1) / 2;
+			_leafCount = visualization.tree.countLeaves();
 			_leafIndex = 0;
 			_maxDist = _dp!=null ? _dp.getValue(root) : computeHeights(root);
 			
 			switch (_orient) {
-				case TOP_TO_BOTTOM:
+				case Orientation.TOP_TO_BOTTOM:
 					_b1 = layoutBounds.left;
 					_db = layoutBounds.width;
 					_d1 = layoutBounds.bottom;
 					_dd = -layoutBounds.height;
 					break;
-				case BOTTOM_TO_TOP:
+				case Orientation.BOTTOM_TO_TOP:
 					_b1 = layoutBounds.left;
 					_db = layoutBounds.width;
 					_d1 = layoutBounds.top;
 					_dd = layoutBounds.height;
 					break;
-				case LEFT_TO_RIGHT:
+				case Orientation.LEFT_TO_RIGHT:
 					_b1 = layoutBounds.top;
 					_db = layoutBounds.height;
 					_d1 = layoutBounds.right;
 					_dd = -layoutBounds.width;
 					break;
-				case RIGHT_TO_LEFT:
+				case Orientation.RIGHT_TO_LEFT:
 					_b1 = layoutBounds.top;
 					_db = layoutBounds.height;
 					_d1 = layoutBounds.left;
@@ -129,7 +129,7 @@ package flare.vis.operator.layout
 				b /= n.childDegree;
 			} else {
 				var step:Number = 1.0 / _leafCount;
-				b = _b1 + _db * (step/2 + step*_leafIndex++);
+				b = _b1 + _db * step * (0.5 + _leafIndex++);
 			}
 			layoutNode(n, b, d);
 			return b;
@@ -138,7 +138,7 @@ package flare.vis.operator.layout
 		private function layoutNode(n:NodeSprite, b:Number, d:Number):void
 		{
 			var o:Object = _t.$(n);
-			if (_orient==TOP_TO_BOTTOM || _orient==BOTTOM_TO_TOP) {
+			if (Orientation.isVertical(_orient)) {
 				o.x = b; o.y = d;
 			} else {
 				o.x = d; o.y = b;
@@ -147,9 +147,12 @@ package flare.vis.operator.layout
 		
 		private function layoutEdge(e:EdgeSprite, b:Number, d:Number):void
 		{
-			var vert:Boolean = _orient==TOP_TO_BOTTOM || _orient==BOTTOM_TO_TOP;
+			var vert:Boolean = Orientation.isVertical(_orient);
+			var o:Object = _t.$(e);
 			if (e.points == null) {
-				e.points = vert ? [e.source.x, e.target.y] : [e.target.x, e.source.y];
+				var s:NodeSprite = e.source;
+				var t:NodeSprite = e.target;
+				e.points = [(s.x+t.x)/2, (s.y+t.y)/2];
 			}
 			_t.$(e).points = vert ? [b, d] : [d, b];
 		}

@@ -23,15 +23,6 @@ package flare.vis.operator.layout
 	 */
 	public class Layout extends Operator
 	{
-		/** Constant indicating a left-to-right layout orientation. */
-		public static const LEFT_TO_RIGHT:uint = 0;
-		/** Constant indicating a right-to-left layout orientation. */
-		public static const RIGHT_TO_LEFT:uint = 1;
-		/** Constant indicating a top-to-bottom layout orientation. */
-		public static const TOP_TO_BOTTOM:uint = 2;
-		/** Constant indicating a bottom-to-top layout orientation. */
-		public static const BOTTOM_TO_TOP:uint = 3;
-		
 		// -- Properties ------------------------------------------------------
 		
 		private var _bounds:Rectangle = null;

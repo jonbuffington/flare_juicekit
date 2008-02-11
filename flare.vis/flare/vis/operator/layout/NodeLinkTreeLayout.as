@@ -28,7 +28,7 @@ package flare.vis.operator.layout
 		/** Property name for storing parameters for this layout. */
 		public static const PARAMS:String = "nodeLinkTreeLayoutParams";
 		
-		private var _orient:uint = LEFT_TO_RIGHT; // the orientation of the tree
+		private var _orient:String = Orientation.LEFT_TO_RIGHT; // orientation
 		private var _bspace:Number = 5;  // the spacing between sibling nodes
     	private var _tspace:Number = 25; // the spacing between subtrees
     	private var _dspace:Number = 50; // the spacing between depth levels
@@ -38,8 +38,8 @@ package flare.vis.operator.layout
 		private var _t:Transitioner; // temp variable for transitioner access
 		
 		/** The orientation of the layout. */
-		public function get orientation():uint { return _orient; }
-		public function set orientation(o:uint):void { _orient = o; }
+		public function get orientation():String { return _orient; }
+		public function set orientation(o:String):void { _orient = o; }
 		
 		/** The space between successive depth levels of the tree. */
 		public function get depthSpacing():Number { return _dspace; }
@@ -63,8 +63,9 @@ package flare.vis.operator.layout
 		 * @param breadthSpace the space between siblings in the tree
 		 * @param subtreeSpace the space between different sub-trees
 		 */		
-		public function NodeLinkTreeLayout(orientation:uint=LEFT_TO_RIGHT,
-			depthSpace:Number=50, breadthSpace:Number=5, subtreeSpace:Number=25)
+		public function NodeLinkTreeLayout(
+			orientation:String=Orientation.LEFT_TO_RIGHT, depthSpace:Number=50,
+			breadthSpace:Number=5, subtreeSpace:Number=25)
 		{
 			_orient = orientation;
 			_dspace = depthSpace;
@@ -263,12 +264,12 @@ package flare.vis.operator.layout
 		private function setBreadth(n:Object, p:NodeSprite, b:Number):void
 		{
 			switch (_orient) {
-				case LEFT_TO_RIGHT:
-				case RIGHT_TO_LEFT:
+				case Orientation.LEFT_TO_RIGHT:
+				case Orientation.RIGHT_TO_LEFT:
 					n.y = _ay + b;
 					break;
-				case TOP_TO_BOTTOM:
-				case BOTTOM_TO_TOP:
+				case Orientation.TOP_TO_BOTTOM:
+				case Orientation.BOTTOM_TO_TOP:
 					n.x = _ax + b;
 					break;
 				default:
@@ -279,16 +280,16 @@ package flare.vis.operator.layout
 		private function setDepth(n:Object, p:NodeSprite, d:Number):void
 		{
 			switch (_orient) {
-				case LEFT_TO_RIGHT:
+				case Orientation.LEFT_TO_RIGHT:
 					n.x = _ax + d;
 					break;
-				case RIGHT_TO_LEFT:
+				case Orientation.RIGHT_TO_LEFT:
 					n.x = _ax - d;
 					break;
-				case TOP_TO_BOTTOM:
+				case Orientation.TOP_TO_BOTTOM:
 					n.y = _ay + d;
 					break;
-				case BOTTOM_TO_TOP:
+				case Orientation.BOTTOM_TO_TOP:
 					n.y = _ax - d;
 					break;
 				default:
@@ -310,14 +311,14 @@ package flare.vis.operator.layout
 		
 		private function spacing(l:NodeSprite, r:NodeSprite, siblings:Boolean):Number
 		{
-			var w:Boolean = (_orient==BOTTOM_TO_TOP || _orient==TOP_TO_BOTTOM);
+			var w:Boolean = Orientation.isVertical(_orient);
 			return (siblings ? _bspace : _tspace) + 0.5 *
 					(w ? l.width + r.width : l.height + r.height)
     	}
     
     	private function updateDepths(depth:uint, item:NodeSprite):void
     	{
-    		var v:Boolean = (_orient==BOTTOM_TO_TOP || _orient==TOP_TO_BOTTOM);
+    		var v:Boolean = Orientation.isVertical(_orient);
     		var d:Number = v ? item.height : item.width;
 
 			// resize if needed
