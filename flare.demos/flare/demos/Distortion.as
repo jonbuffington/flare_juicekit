@@ -1,20 +1,22 @@
 package flare.demos
 {
-	import flash.events.MouseEvent;
-	import flare.vis.operator.distortion.FisheyeDistortion;
-	import flash.geom.Point;
-	import flare.vis.Visualization;
-	import flare.util.GraphUtil;
-	import flare.vis.operator.layout.NodeLinkTreeLayout;
-	import flash.geom.Rectangle;
-	import flare.vis.operator.layout.Layout;
-	import flash.events.Event;
-	import flare.vis.operator.distortion.BifocalDistortion;
-	import flare.vis.operator.OperatorSwitch;
-	import flash.display.Sprite;
-	import flash.display.DisplayObject;
-	import flare.vis.operator.encoder.PropertyEncoder;
 	import flare.util.Button;
+	import flare.util.GraphUtil;
+	import flare.vis.Visualization;
+	import flare.vis.controls.AnchorControl;
+	import flare.vis.operator.OperatorSwitch;
+	import flare.vis.operator.distortion.BifocalDistortion;
+	import flare.vis.operator.distortion.FisheyeDistortion;
+	import flare.vis.operator.encoder.PropertyEncoder;
+	import flare.vis.operator.layout.Layout;
+	import flare.vis.operator.layout.NodeLinkTreeLayout;
+	
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	public class Distortion extends Demo
 	{
@@ -66,25 +68,15 @@ package flare.demos
 		{
 			oswitch.index = idx;
 			distort = oswitch.getOperatorAt(idx) as Layout;
-		}
-		
-		private function updateMouse(evt:Event):void
-		{
-			// get current anchor, run update if changed
-			var p1:Point = distort.layoutAnchor;
-			distort.layoutAnchor = new Point(vis.mouseX, vis.mouseY);
-			// distortion might snap the anchor to the layout bounds
-			// so we need to re-retrieve the point to get an accurate point
-			var p2:Point = distort.layoutAnchor;
-			if (p1.x != p2.x || p1.y != p2.y) vis.update();
+			stop(); play();
 		}
 		
 		public override function play():void {
-			addEventListener(Event.ENTER_FRAME, updateMouse, false, 0, true);
+			vis.controls.add(new AnchorControl(null, distort));
 		}
 		
 		public override function stop():void {
-			removeEventListener(Event.ENTER_FRAME, updateMouse);
+			vis.controls.clear();
 		}
 
 	}
