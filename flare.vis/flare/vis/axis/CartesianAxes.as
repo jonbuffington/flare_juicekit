@@ -82,6 +82,13 @@ package flare.vis.axis
 			addChild(_yline = new AxisGridLine());
 			addChild(_border = new RectSprite());
 			
+			// set names
+			_xaxis.name = "_xaxis";
+			_yaxis.name = "_yaxis";
+			_xline.name = "_xline";
+			_yline.name = "_yline";
+			_border.name = "_border";
+			
 			// set label anchors
 			_xaxis.horizontalAnchor = TextSprite.CENTER;
 			_xaxis.verticalAnchor   = TextSprite.TOP;

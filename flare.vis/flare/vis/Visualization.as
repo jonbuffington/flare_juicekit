@@ -69,6 +69,7 @@ package flare.vis
 		public function set axes(a:Axes):void {
 			_axes = a;
 			_axes.visualization = this;
+			_axes.name = "_axes";
 			addChildAt(_axes, 0);
 		}
 		/** The axes as an x-y <code>CartesianAxes</code> instance. Returns
@@ -129,6 +130,7 @@ package flare.vis
 		 */
 		public function Visualization(data:Data=null, axes:Axes=null) {
 			addChild(_marks = new Sprite());
+			_marks.name = "_marks";
 			if (data != null) this.data = data;
 			if (axes != null) this.axes = axes;
 			_operators = new OperatorList();
