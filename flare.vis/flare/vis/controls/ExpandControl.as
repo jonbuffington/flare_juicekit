@@ -1,32 +1,29 @@
 package flare.vis.controls
 {
+	import flare.vis.Visualization;
+	import flare.vis.data.NodeSprite;
+	
 	import flash.display.InteractiveObject;
 	import flash.events.MouseEvent;
-	import flare.vis.data.NodeSprite;
-	import flare.vis.Visualization;
-	import flare.animate.Transitioner;
-	import flare.vis.Visualization;
 
 	/**
 	 * Interactive control for expaning and collapsing graph or tree nodes
 	 * by clicking them. This control will only work when applied to a
 	 * Visualization instance.
 	 */
-	public class ExpandControl
+	public class ExpandControl extends Control
 	{
-		private var _vis:Visualization;
 		private var _cur:NodeSprite;
-		
-		/** The Visualization associated with this control. */
-		public function get visualization():Visualization { return _vis; }
+
 		/** Boolean-valued filter function for determining which items
 		 *  this control will attempt to expand or collapse. */
 		public var filter:Function;
+		
 		/** Update function invoked after expanding or collapsing an item.
 		 *  By default, invokes the <code>update</code> method on the
 		 *  visualization with a 1-second transitioner. */
 		public var update:Function = function():void {
-			_vis.update(new Transitioner(1)).play();
+			Visualization(_object).update(1).play();
 		}
 		
 		// --------------------------------------------------------------------
@@ -39,26 +36,32 @@ package flare.vis.controls
 		 * @param update function invokde after expanding or collapsing an
 		 *  item.
 		 */		
-		public function ExpandControl(vis:Visualization, filter:Function=null, 
+		public function ExpandControl(vis:Visualization=null, filter:Function=null, 
 									  update:Function=null)
 		{
-			_vis = vis;
-			if (_vis != null) {
-				_vis.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			}
+			attach(vis);
 			this.filter = filter;
 			if (update != null) this.update = update;
 		}
 		
-		/**
-		 * Detach this control, removing all event listeners and clearing
-		 * all internal state.
-		 */
-		public function detach():void
+		/** @inheritDoc */
+		public override function attach(obj:InteractiveObject):void
 		{
-			if (_vis == null) return;
-			_vis.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			_vis = null;
+			if (obj==null) { detach(); return; }
+			if (!(obj is Visualization)) {
+				throw new Error("This control can only be attached to a Visualization");
+			}
+			super.attach(obj);
+			obj.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		}
+		
+		/** @inheritDoc */
+		public override function detach():InteractiveObject
+		{
+			if (_object != null) {
+				_object.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			}
+			return super.detach();
 		}
 		
 		private function onMouseDown(event:MouseEvent) : void {

@@ -2,11 +2,13 @@
 <flexLibProperties version="1">
   <includeClasses>
     <classEntry path="flare.vis.operator.layout.AxisLayout"/>
+    <classEntry path="flare.vis.controls.Control"/>
     <classEntry path="flare.vis.axis.AxisGridLine"/>
     <classEntry path="flare.vis.data.DataSprite"/>
     <classEntry path="flare.vis.operator.OperatorSwitch"/>
     <classEntry path="flare.vis.scale.LinearScale"/>
     <classEntry path="flare.vis.util.TreeUtil"/>
+    <classEntry path="flare.vis.controls.ControlList"/>
     <classEntry path="flare.vis.operator.layout.RandomLayout"/>
     <classEntry path="flare.vis.controls.ExpandControl"/>
     <classEntry path="flare.vis.palette.SizePalette"/>

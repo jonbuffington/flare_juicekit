@@ -1,11 +1,11 @@
 package flare.vis.controls
 {
-	import flash.display.DisplayObject;
+	import flare.vis.util.graphics.Transforms;
+	
 	import flash.display.InteractiveObject;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flare.vis.util.graphics.Transforms;
 	
 	/**
 	 * Interactive control for panning and zooming a "camera". Any sprite can
@@ -27,7 +27,7 @@ package flare.vis.controls
 	 * 
 	 * <p>By default, the PanZoomControl attaches itself to the
 	 * <code>stage</code> to listen for mouse events. This works fine if there
-	 * is only one collection of objects in the display lists, but can cause
+	 * is only one collection of objects in the display list, but can cause
 	 * trouble if you want to have multiple collections that can be separately
 	 * panned and zoomed. The PanZoomControl constructor takes a second
 	 * argument that specifies a "hit area", a shape in the display list that
@@ -37,16 +37,24 @@ package flare.vis.controls
 	 * the <code>scrollRect</code> property to add clipping bounds to the 
 	 * panning and zooming region.</p>
 	 */
-	public class PanZoomControl
+	public class PanZoomControl extends Control
 	{
 		private var px:Number, py:Number;
+		private var dx:Number, dy:Number;
 		private var mx:Number, my:Number;
 		private var _drag:Boolean = false;
 		
-		private var _cam:DisplayObject;
 		private var _hit:InteractiveObject;
 		private var _stage:Stage;
-				
+		
+		/** The active hit area over which pan/zoom interactions can be performed. */
+		public function get hitArea():InteractiveObject { return _hit; }
+		public function set hitArea(hitArea:InteractiveObject):void {
+			if (_hit != null) onRemove();
+			_hit = hitArea;
+			if (_object.stage != null) onAdd();
+		}
+		
 		/**
 		 * Creates a new PanZoomControl.
 		 * @param camera a display object to treat as the camera
@@ -55,19 +63,37 @@ package flare.vis.controls
 		 *  the panning and zooming should be done. If this argument is null,
 		 *  the stage will be used.
 		 */
-		public function PanZoomControl(camera:DisplayObject,
+		public function PanZoomControl(camera:InteractiveObject=null,
 			hitArea:InteractiveObject=null):void
 		{
-			_cam = camera; if (_cam == null) return;
-			_hit = hitArea;			
-			_cam.addEventListener(Event.ADDED_TO_STAGE, onAdd);
-			_cam.addEventListener(Event.REMOVED_FROM_STAGE, onRemove);
-			if (_cam.stage != null) onAdd();
+			_hit = hitArea;
+			attach(camera);
+		}
+		
+		/** @inheritDoc */
+		public override function attach(obj:InteractiveObject):void
+		{
+			super.attach(obj);
+			if (obj != null) {
+				obj.addEventListener(Event.ADDED_TO_STAGE, onAdd);
+				obj.addEventListener(Event.REMOVED_FROM_STAGE, onRemove);
+				if (obj.stage != null) onAdd();
+			}
+		}
+		
+		/** @inheritDoc */
+		public override function detach():InteractiveObject
+		{
+			onRemove();
+			_object.removeEventListener(Event.ADDED_TO_STAGE, onAdd);
+			_object.removeEventListener(Event.REMOVED_FROM_STAGE, onRemove);
+			_hit = null;
+			return super.detach();
 		}
 		
 		private function onAdd(evt:Event=null):void
 		{
-			_stage = _cam.stage;
+			_stage = _object.stage;
 			if (_hit == null) _hit = _stage;
 			_hit.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			_hit.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
@@ -77,19 +103,6 @@ package flare.vis.controls
 		{
 			_hit.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			_hit.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-		}
-		
-		/**
-		 * Detach this control, removing all event listeners and clearing
-		 * all internal state.
-		 */
-		public function detach():void
-		{
-			onRemove();
-			_cam.removeEventListener(Event.ADDED_TO_STAGE, onAdd);
-			_cam.removeEventListener(Event.REMOVED_FROM_STAGE, onRemove);
-			_hit = null;
-			_cam = null;
 		}
 		
 		private function onMouseDown(event:MouseEvent) : void
@@ -111,10 +124,15 @@ package flare.vis.controls
 			var y:Number = event.stageY;
 			
 			if (!event.ctrlKey) {
-				Transforms.panBy(_cam, x-mx, y-my);
+				dx = dy = NaN;
+				Transforms.panBy(_object, x-mx, y-my);
 			} else {
+				if (isNaN(dx)) {
+					dx = event.stageX;
+					dy = event.stageY;
+				}
 				var dz:Number = 1 + (y-my)/100;
-				Transforms.zoomBy(_cam, dz, px, py);
+				Transforms.zoomBy(_object, dz, dx, dy);
 			}
 			mx = x;
 			my = y;
@@ -122,6 +140,7 @@ package flare.vis.controls
 		
 		private function onMouseUp(event:MouseEvent) : void
 		{
+			dx = dy = NaN;
 			_drag = false;
 			_stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -131,7 +150,7 @@ package flare.vis.controls
 		{
 			var dw:Number = 1.1 * event.delta;
 			var dz:Number = dw < 0 ? 1/Math.abs(dw) : dw;
-			Transforms.zoomBy(_cam, dz);
+			Transforms.zoomBy(_object, dz);
 		}
 		
 	} // end of class PanZoomControl

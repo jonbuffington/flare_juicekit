@@ -1,9 +1,9 @@
 package flare.vis.controls
 {
-	import flash.display.InteractiveObject;
-	import flash.events.MouseEvent;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.InteractiveObject;
+	import flash.events.MouseEvent;
 
 	/**
 	 * Interactive control for responding to mouse hover events. The
@@ -11,7 +11,7 @@ package flare.vis.controls
 	 * should be set with custom functions for performing actions whe the
 	 * mouse cursor hovers over a display object.
 	 */
-	public class HoverControl
+	public class HoverControl extends Control
 	{
 		/** Constant indicating that objects hovered over should not be moved
 		 *  within their parent container changed. */
@@ -24,7 +24,6 @@ package flare.vis.controls
 		 *  previous position when the mouse rolls out. */
 		public static const MOVE_AND_RETURN:int = 2;
 		
-		private var _obj:InteractiveObject;
 		private var _cur:DisplayObject;
 		private var _idx:int;
 		private var _filter:Function;
@@ -44,26 +43,32 @@ package flare.vis.controls
 		 *  the z-ordering of hovered items. One of DONT_MOVE (the default),
 		 *  MOVE_TO_FRONT, or MOVE_AND_RETURN.
 		 */
-		public function HoverControl(container:InteractiveObject,
+		public function HoverControl(container:InteractiveObject=null,
 			filter:Function=null, movePolicy:int=DONT_MOVE)
 		{
-			_obj = container;
-			if (_obj != null) {
-				_obj.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-				_obj.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-			}
+			attach(container);
 			_filter = filter;
 			_movePolicy = movePolicy;
 		}
 		
-		/**
-		 * Detach this control, removing all event listeners and clearing
-		 * all internal state.
-		 */
-		public function detach():void
+		/** @inheritDoc */
+		public override function attach(obj:InteractiveObject):void
 		{
-			_obj.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			_obj.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			super.attach(obj);
+			if (obj != null) {
+				obj.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+				obj.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			}
+		}
+		
+		/** @inheritDoc */
+		public override function detach():InteractiveObject
+		{
+			if (_object != null) {
+				_object.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+				_object.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			}
+			return super.detach();
 		}
 		
 		private function onMouseOver(evt:MouseEvent):void

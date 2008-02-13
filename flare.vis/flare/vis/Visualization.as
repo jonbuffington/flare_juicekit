@@ -5,6 +5,7 @@ package flare.vis
 	import flare.animate.Transitioner;
 	import flare.vis.axis.Axes;
 	import flare.vis.axis.CartesianAxes;
+	import flare.vis.controls.ControlList;
 	import flare.vis.data.Data;
 	import flare.vis.data.Tree;
 	import flare.vis.events.DataEvent;
@@ -52,6 +53,7 @@ package flare.vis
 		private var _data:Data;
 		
 		private var _operators:OperatorList;
+		private var _controls:ControlList;
 		private var _rec:ISchedulable; // for running continuous updates
 		
 		/** The layout bounds of the visualization. This determines the layout
@@ -104,6 +106,9 @@ package flare.vis
 		/** The operator list for defining the visual encodings. */
 		public function get operators():OperatorList { return _operators; }
 		
+		/** The control list containing interactive controls. */
+		public function get controls():ControlList { return _controls; }
+		
 		/** Flag indicating if the visualization should update with every
 		 *  frame. False by default. */
 		public function get continuousUpdates():Boolean { return _rec != null; }
@@ -133,8 +138,12 @@ package flare.vis
 			_marks.name = "_marks";
 			if (data != null) this.data = data;
 			if (axes != null) this.axes = axes;
+			
 			_operators = new OperatorList();
 			_operators.visualization = this;
+			
+			_controls = new ControlList();
+			_controls.visualization = this;
 		}
 		
 		/**

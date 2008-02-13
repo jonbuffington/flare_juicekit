@@ -1,21 +1,22 @@
 package flare.vis.controls
 {
-	import flash.events.MouseEvent;
-	import flash.display.InteractiveObject;
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
 	import flare.vis.data.DataSprite;
+	
+	import flash.display.InteractiveObject;
+	import flash.display.Sprite;
+	import flash.events.MouseEvent;
 	
 	/**
 	 * Interactive control for dragging items. A DragControl will enable
 	 * dragging of all Sprites in a container object by clicking and dragging
 	 * them.
 	 */
-	public class DragControl
+	public class DragControl extends Control
 	{
-		private var _obj:InteractiveObject;
 		private var _cur:Sprite;
-		private var _filter:Function;
+		
+		/** Filter function for limiting the items available for dragging. */
+		public var filter:Function;
 		
 		/** The active item currently being dragged. */
 		public function get activeItem():Sprite { return _cur; }
@@ -26,28 +27,33 @@ package flare.vis.controls
 		 * @param filter a Boolean-valued filter function determining which
 		 *  items should be draggable.
 		 */		
-		public function DragControl(container:InteractiveObject,
+		public function DragControl(container:InteractiveObject=null,
 									filter:Function=null) {
-			_obj = container;
-			_obj.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			_filter = filter;
+			if (container!=null) attach(container);
+			this.filter = filter;
 		}
 		
-		/**
-		 * Detach this control, removing all event listeners and clearing
-		 * all internal state.
-		 */
-		public function detach() : void
+		/** @inheritDoc */
+		public override function attach(obj:InteractiveObject):void
 		{
-			_obj.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			_obj = null;
+			super.attach(obj);
+			obj.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		}
+		
+		/** @inheritDoc */
+		public override function detach() : InteractiveObject
+		{
+			if (_object != null) {
+				_object.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			}
+			return super.detach();
 		}
 		
 		private function onMouseDown(event:MouseEvent) : void {
 			var s:Sprite = event.target as Sprite;
 			if (s==null) return; // exit if not a sprite
 			
-			if (_filter==null || _filter(s)) {
+			if (filter==null || filter(s)) {
 				_cur = s;
 				if (_cur is DataSprite) (_cur as DataSprite).fix();
 				_cur.startDrag();
