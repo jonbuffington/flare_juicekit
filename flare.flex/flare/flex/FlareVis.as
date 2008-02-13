@@ -26,6 +26,13 @@ package flare.flex
 			_vis.update();
 		}
 		
+		/** The interactive controls used by this visualization. This
+		 *  should be an array of IControl instances. */
+		public function set controls(a:Array):void {
+			_vis.controls.list = a;
+			_vis.update();
+		}
+		
 		/** Sets the data visualized by this instance. The input value can be
 		 *  an array of data objects, a Data instance, or a DataSet instance.
 		 *  Any existing data will be removed and new NodeSprite instances will
