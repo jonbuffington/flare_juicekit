@@ -24,6 +24,8 @@ package flare.vis
 	 *  <li>An <code>OperatorList</code> of visualization operators that
 	 *      determine visual encodings for position, color, size and other
 	 *      properties.</li>
+	 *  <li>A <code>ControlList</code> of interactive controls that enable
+	 *      interaction with the visualized data.</li>
 	 *  <li>An <code>Axes</code> instance for presenting axes for metric
 	 *      data visualizations. Axes are often configuring automatically by
 	 *      the visualization's operators.</li>

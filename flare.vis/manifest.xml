@@ -37,4 +37,12 @@
   <component id="QuantileScale" class="flare.vis.scale.QuantileScale" />
   <component id="RootScale" class="flare.vis.scale.RootScale" />
   <component id="TimeScale" class="flare.vis.scale.TimeScale" />
+
+  <component id="ControlList" class="flare.vis.controls.ControlList" />  
+  <component id="AnchorControl" class="flare.vis.controls.AnchorControl" />
+  <component id="DragControl" class="flare.vis.controls.DragControl" />
+  <component id="ExpandControl" class="flare.vis.controls.ExpandControl" />
+  <component id="HoverControl" class="flare.vis.controls.HoverControl" />
+  <component id="PanZoomControl" class="flare.vis.controls.PanZoomControl" />
+  <component id="SelectionControl" class="flare.vis.controls.SelectionControl" />
 </componentPackage>

@@ -138,6 +138,15 @@ package flare.vis.controls
 			return ic;
 		}
 		
+		/**
+		 * Removes all controls from this list.
+		 */
+		public function clear():void
+		{
+			for each (var ic:IControl in _list) { ic.detach(); }
+			Arrays.clear(_list);
+		}
+		
 		// -- MXML ------------------------------------------------------------
 		
 		/** @private */
