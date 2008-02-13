@@ -22,12 +22,12 @@ package flare.vis.operator.layout
 		public static const SETUP:int = 1;
 		public static const NEVER:int = 0;
 		
-		private var _initAxes:int = SETUP;
-		private var _xStacks:Boolean = false;
-		private var _yStacks:Boolean = false;		
-		private var _xField:Property;
-		private var _yField:Property;
-		private var _t:Transitioner;
+		protected var _initAxes:int = SETUP;
+		protected var _xStacks:Boolean = false;
+		protected var _yStacks:Boolean = false;		
+		protected var _xField:Property;
+		protected var _yField:Property;
+		protected var _t:Transitioner;
 		
 		/** The scale type parameter for the x-axis. */
 		protected var _xScaleType:String = ScaleType.LINEAR;
