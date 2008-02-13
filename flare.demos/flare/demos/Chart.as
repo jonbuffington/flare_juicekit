@@ -66,9 +66,10 @@ package flare.demos
 				d.filters = null;
 			}
 			
-			var sc:SelectionControl = new SelectionControl(this, Filters.isDataSprite);
+			var sc:SelectionControl = new SelectionControl(null, Filters.isDataSprite);
 			sc.onSelect = hc.onRollOver;
 			sc.onDeselect = hc.onRollOut;
+			vis.controls.add(sc);
 
 			// add scale update button
 			var bs:Button = new Button("Change Scale");

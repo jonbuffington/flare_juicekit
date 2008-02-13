@@ -41,7 +41,7 @@ package flare.demos
 			vis.update();
 			addChild(vis);
 			
-			var hc:HoverControl = new HoverControl(vis, 
+			var hc:HoverControl = new HoverControl(null, 
 				Filters.isNodeSprite, HoverControl.MOVE_AND_RETURN);
 			hc.onRollOver = function(n:NodeSprite):void {
 				n.lineColor = 0xffFF0000; n.lineWidth = 2;
@@ -52,6 +52,7 @@ package flare.demos
 				n.fillColor = 0xff8888FF;
 				n.fillAlpha = n.lineAlpha = n.depth / 25;
 			}
+			vis.controls.add(hc);
 		}
 		
 		public override function play():void

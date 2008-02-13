@@ -67,8 +67,8 @@ package flare.demos
 			vis.update();
 			addChild(vis);
 			
-			new ExpandControl(vis);
-			new PanZoomControl(vis);
+			vis.controls.add(new ExpandControl());
+			vis.controls.add(new PanZoomControl());
 
 			// add reset button, and tie it to reset the layout
 			for (var i:uint=0; i<os.length; ++i) {
