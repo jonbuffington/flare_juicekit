@@ -1,6 +1,9 @@
 package flare.vis.palette
 {
 	import flare.util.Colors;
+	import flare.vis.scale.OrdinalScale;
+	import flare.vis.scale.QuantitativeScale;
+	import flare.vis.scale.Scale;
 	
 	/**
 	 * Palette for color values, including utility methods for generating
@@ -13,7 +16,6 @@ package flare.vis.palette
 		/** Keyframes at which color values change in the palette. Useful
 		 *  for configuring gradient paint fills. */
 		public function get keyframes():Array { return _keyframes; }
-		
 		
 		/**
 		 * Creates a new ColorPalette.
@@ -37,7 +39,43 @@ package flare.vis.palette
 			return _values[uint(Math.round(v*(_values.length-1)))];
 		}
 		
+		/**
+		 * Retrieves the color corresponding to the input array index.
+		 * @param idx an integer index. The actual index value used is
+		 *  the modulo of the input index by the length of the palette.
+		 * @return the color in the palette at the given index
+		 */
+		public function getColorByIndex(idx:int):uint
+		{
+			if (_values == null || _values.length == 0 || idx < 0)
+				return 0;
+			else
+				return _values[idx % _values.length];
+		}
+		
 		// --------------------------------------------------------------------
+		
+		/**
+		 * Returns a default color palette based on the input scale.
+		 * @param scale the scale of values to map to colors
+		 * @return a default color palette for the input scale
+		 */
+		public static function getDefaultPalette(scale:Scale):ColorPalette
+		{
+			/// TODO: more intelligent color palette selection?
+			
+			if (scale is OrdinalScale)
+			{
+				return category(OrdinalScale(scale).length);
+			}
+			else if (scale is QuantitativeScale)
+			{
+				var qs:QuantitativeScale = QuantitativeScale(scale);				
+				if (qs.dataMin < 0 && qs.dataMax > 0)
+					return diverging();
+			}
+			return ramp();
+		}
 		
 		/** Default size of generated color palettes. */
 		public static const DEFAULT_SIZE:int = 64;

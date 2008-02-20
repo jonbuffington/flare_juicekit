@@ -6,6 +6,10 @@ package flare.vis.scale
 	 */
 	public class ScaleType
 	{
+		/** Constant indicating an unknown scale. */
+		public static const UNKNOWN:String = "unknown";
+		/** Constant indicating a categorical scale. */
+		public static const CATEGORIES:String = "categories";
 		/** Constant indicating an ordinal scale. */
 		public static const ORDINAL:String = "ordinal";
 		/** Constant indicating a linear numeric scale. */

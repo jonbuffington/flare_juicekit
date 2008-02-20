@@ -32,6 +32,7 @@ package flare.vis.scale
 				case Stats.NUMBER:
 					switch (scaleType) {
 						case ScaleType.LINEAR:
+						case ScaleType.UNKNOWN:
 							arg1 = rest.length > 0 ? rest[0] : 10;
 							return linear(stats, arg1);
 						case ScaleType.ROOT:
@@ -48,6 +49,7 @@ package flare.vis.scale
 					}
 				case Stats.DATE:
 					switch (scaleType) {
+						case ScaleType.UNKNOWN:
 						case ScaleType.LINEAR:
 						case ScaleType.TIME:
 							return time(stats);
@@ -132,7 +134,7 @@ package flare.vis.scale
 		 */
 		public static function ordinal(stats:Stats):OrdinalScale
 		{
-			return new OrdinalScale(stats.uniqueValues, false, false);
+			return new OrdinalScale(stats.distinctValues, false, false);
 		}
 		
 	} // end of class Scales

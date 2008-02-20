@@ -40,12 +40,17 @@ package flare.vis.scale
 
 		// -- Properties ------------------------------------------------------
 
+		/** The number of distinct values in this scale. */
+		public function get length():int
+		{
+			return _ordinals.length;
+		}
+
 		/** The ordered data array defining this scale. */
 		public function get ordinals():Array
 		{
 			return _ordinals;
 		}
-
 		public function set ordinals(val:Array):void
 		{
 			_ordinals = val; buildLookup();
@@ -83,8 +88,7 @@ package flare.vis.scale
 			if (_flush) {
 				return Number(_lookup[value]) / (_ordinals.length-1);
 			} else {
-				var step:Number = 1.0 / _ordinals.length;
-				return step / 2 + step * _lookup[value];
+				return (0.5 + _lookup[value]) / _ordinals.length;
 			}
 		}
 		

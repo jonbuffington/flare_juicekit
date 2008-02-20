@@ -24,19 +24,21 @@ package flare.vis.operator.encoder
 		}
 		/** The palette as a ShapePalette instance. */
 		public function get shapes():ShapePalette { return _palette; }
+		public function set shapes(p:ShapePalette):void { _palette = p; }
 		
 		// --------------------------------------------------------------------
 		
 		/** @inheritDoc */
 		public override function set scaleType(st:String):void {
-			if (st != ScaleType.ORDINAL)
-				throw new ArgumentError("Shape encoders only use ordinal scales");
+			if (st != ScaleType.CATEGORIES)
+				throw new ArgumentError(
+					"Shape encoders only use the CATEGORIES scale type");
 		}
 		
 		/** @inheritDoc */
 		public override function set scale(s:Scale):void {
 			if (!(s is OrdinalScale))
-				throw new ArgumentError("Shape encoders only use ordinal scales");
+				throw new ArgumentError("Shape encoders only use OrdinalScales");
 		}
 		
 		/**
@@ -48,7 +50,7 @@ package flare.vis.operator.encoder
 		{
 			super(field, "shape", which);
 			_palette = ShapePalette.defaultPalette();
-			_scaleType = ScaleType.ORDINAL;
+			_scaleType = ScaleType.CATEGORIES;
 		}
 		
 		/** @inheritDoc */

@@ -52,7 +52,12 @@ package flare.vis.controls
 			return super.detach();
 		}
 		
-		private function updateMouse(evt:Event):void
+		/**
+		 * Causes the layout anchor to be updated according to the current
+		 * mouse position.
+		 * @param evt an optional mouse event
+		 */
+		public function updateMouse(evt:Event=null):void
 		{
 			// get current anchor, run update if changed
 			var p1:Point = _layout.layoutAnchor;
