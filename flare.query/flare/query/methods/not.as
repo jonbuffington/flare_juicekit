@@ -1,6 +1,5 @@
 package flare.query.methods
 {
-	import flare.query.Expression;
 	import flare.query.Not;
 
 	/**
