@@ -37,8 +37,6 @@ package flare.demos
 			
 			var field1:String = "data.value1";
 			var field2:String = "data.value2";
-			var stats1:Stats = vis.data.nodes.stats(field1);
-			var stats2:Stats = vis.data.nodes.stats(field2);
 			
 			vis.data.visit(function(d:DataSprite):Boolean {
 				d.fillColor = 0x018888ff;
@@ -49,8 +47,7 @@ package flare.demos
 			vis.operators.add(new AxisLayout(field1, field2));
 			vis.operators.add(new ShapeEncoder(field1));
 			vis.operators.add(new SizeEncoder(field2, Data.NODES, ScaleType.QUANTILE, 5));
-			vis.operators.add(new ColorEncoder(field1,Data.NODES, "lineColor",
-			    ColorPalette.category(stats1.unique), ScaleType.ORDINAL));
+			vis.operators.add(new ColorEncoder(field1,Data.NODES, "lineColor", ScaleType.CATEGORIES));
 			vis.xyAxes.xAxis.fixLabelOverlap = false; // keep overlapping labels
 			vis.update();
 			

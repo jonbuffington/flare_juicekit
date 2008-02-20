@@ -7,7 +7,7 @@ package flare.demos
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.encoder.ColorEncoder;
 	import flare.vis.operator.layout.AxisLayout;
-	import flare.vis.palette.ColorPalette;
+	import flare.vis.scale.ScaleType;
 	import flare.vis.util.graphics.Shapes;
 	
 	import flash.events.MouseEvent;
@@ -26,9 +26,8 @@ package flare.demos
 				size: 1.5
 			});
 
-			vis.operators.add(new AxisLayout("data.x","data.y",true,false));
-			vis.operators.add(new ColorEncoder("data.s",1,"fillColor",
-			    ColorPalette.category(vis.data.nodes.stats("data.s").unique)));
+			vis.operators.add(new AxisLayout("data.x", "data.y", true, false));
+			vis.operators.add(new ColorEncoder("data.s", 1, "fillColor", ScaleType.CATEGORIES));
 			vis.xyAxes.yAxis.showLines = false;
 			vis.update();
 

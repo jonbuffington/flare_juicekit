@@ -10,7 +10,7 @@ package flare.demos
 	import flare.vis.operator.encoder.ColorEncoder;
 	import flare.vis.operator.layout.AxisLayout;
 	import flare.vis.operator.layout.ForceDirectedLayout;
-	import flare.vis.palette.ColorPalette;
+	import flare.vis.scale.ScaleType;
 	import flare.vis.util.Filters;
 	
 	import flash.events.MouseEvent;
@@ -24,10 +24,11 @@ package flare.demos
 			var vis:Visualization = new Visualization(getTimeline(50, 3));
 			vis.bounds = new Rectangle(0, 0, 600, 100);
 			vis.operators.add(new AxisLayout("data.date", "data.count"));
-			vis.operators.add(new ColorEncoder("data.series", Data.EDGES, "lineColor",
-				ColorPalette.category(3)));
-			vis.operators.add(new ColorEncoder("data.series", Data.NODES, "fillColor",
-				ColorPalette.category(3,null,0.5)));
+			vis.operators.add(new ColorEncoder(
+				"data.series", Data.EDGES, "lineColor", ScaleType.CATEGORIES));
+			vis.operators.add(new ColorEncoder(
+				"data.series", Data.NODES, "fillColor", ScaleType.CATEGORIES));
+			vis.data.nodes.setProperty("alpha", 0.5);
 			
 			with (vis.xyAxes.xAxis) {
 				horizontalAnchor = TextSprite.LEFT;
