@@ -1,7 +1,5 @@
 package flare.animate.interpolate
-{
-	import flare.util.Colors;
-	
+{	
 	/**
 	 * Interpolator for color (<code>uint</code>) values.
 	 */ 
