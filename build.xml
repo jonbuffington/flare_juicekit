@@ -364,8 +364,10 @@
       <arg value="-package=flare.data,${doc.flare.data}"/>
       <arg value="-package=flare.data.converters,${doc.flare.data.converters}"/>
       <arg value="-package=flare.display,${doc.flare.display}"/>
+      <arg value="-package=flare.flex,${doc.flare.flex}"/>
       <arg value="-package=flare.physics,${doc.flare.physics}"/>
       <arg value="-package=flare.query,${doc.flare.query}"/>
+      <arg value="-package=flare.query.methods,${doc.flare.query.methods}"/>
       <arg value="-package=flare.util,${doc.flare.util}"/>
       <arg value="-package=flare.vis,${doc.flare.vis}"/>
       <arg value="-package=flare.vis.axis,${doc.flare.vis.axis}"/>
