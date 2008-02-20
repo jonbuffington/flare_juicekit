@@ -5,6 +5,8 @@ package flare.vis.controls
 	import flash.display.Graphics;
 	import flash.display.InteractiveObject;
 	import flash.display.Shape;
+	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 
@@ -17,6 +19,8 @@ package flare.vis.controls
 		private var _r:Rectangle = new Rectangle();
 		private var _drag:Boolean = false;
 		private var _shape:Shape = new Shape();
+		private var _hit:InteractiveObject;
+		private var _stage:Stage;
 		
 		/** Boolean-valued filter function determining which items are eligible
 		 *  for selection. */
@@ -27,6 +31,14 @@ package flare.vis.controls
 		/** Function invokde when an item is removed from the selection. */
 		public var onDeselect:Function;
 		
+		/** The active hit area over which pan/zoom interactions can be performed. */
+		public function get hitArea():InteractiveObject { return _hit; }
+		public function set hitArea(hitArea:InteractiveObject):void {
+			if (_hit != null) onRemove();
+			_hit = hitArea;
+			if (_object.stage != null) onAdd();
+		}
+		
 		/**
 		 * Creates a new SelectionControl.
 		 * @param container the container object to monitor for selections
@@ -34,10 +46,11 @@ package flare.vis.controls
 		 *  items are eligible for selection.
 		 */
 		public function SelectionControl(container:InteractiveObject=null,
-										 filter:Function = null)
+					filter:Function = null, hitArea:InteractiveObject=null)
 		{
-			attach(container);
+			_hit = hitArea;
 			this.filter = filter;
+			attach(container);
 		}
 		
 		/** @inheritDoc */
@@ -49,27 +62,46 @@ package flare.vis.controls
 			}
 			super.attach(obj);
 			if (obj != null) {
-				obj.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-				obj.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-				obj.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
-				DisplayObjectContainer(obj).addChild(_shape);
+				obj.addEventListener(Event.ADDED_TO_STAGE, onAdd);
+				obj.addEventListener(Event.REMOVED_FROM_STAGE, onRemove);
+				if (obj.stage != null) onAdd();
 			}
 		}
 		
 		/** @inheritDoc */
 		public override function detach():InteractiveObject
 		{
+			onRemove();
 			if (_object != null) {
-				_object.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-				_object.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
-				_object.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
-				DisplayObjectContainer(_object).removeChild(_shape);
+				_object.removeEventListener(Event.ADDED_TO_STAGE, onAdd);
+				_object.removeEventListener(Event.REMOVED_FROM_STAGE, onRemove);
 			}
+			_hit = null;
 			return super.detach();
+		}
+		
+		private function onAdd(evt:Event=null):void
+		{
+			_stage = _object.stage;
+			if (_hit == null) _hit = _stage;
+			_hit.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			DisplayObjectContainer(_object).addChild(_shape);
+		}
+		
+		private function onRemove(evt:Event=null):void
+		{
+			if (_hit)
+				_hit.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			if (_object)
+				DisplayObjectContainer(_object).removeChild(_shape);
 		}
 		
 		private function mouseDown(evt:MouseEvent):void
 		{
+			if (_stage == null) return;
+			_stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			_stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			
 			_r.x = _object.mouseX;
 			_r.y = _object.mouseY;
 			_r.width = 0;
@@ -92,6 +124,8 @@ package flare.vis.controls
 		{
 			_drag = false;
 			_shape.graphics.clear();
+			_stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 		}
 		
 		private function renderShape():void {
