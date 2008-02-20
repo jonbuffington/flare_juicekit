@@ -20,7 +20,7 @@ package flare.util
 		private var _comp:Function = null;
 		
 		private var _num:Number = 0;
-		private var _uniq:Number = 0;
+		private var _distinct:Number = 0;
 		private var _elm:Array = null;
 		
 		private var _minObject:Object = null;
@@ -36,17 +36,17 @@ package flare.util
 		/** A sorted array of all the values. */
 		public function get values():Array { return _elm; }
 		/** A sorted array of all unique values in the collection. */
-		public function get uniqueValues():Array {
+		public function get distinctValues():Array {
 			// get array with only unique items
-			var uniqs:Array = [];
-			if (_elm==null || _elm.length == 0) return uniqs;
-			uniqs.push(_elm[0]);
+			var dists:Array = [];
+			if (_elm==null || _elm.length == 0) return dists;
+			dists.push(_elm[0]);
 			for (var i:int=1, j:int=0; i<_num; ++i) {
-				if (!equal(_elm[i], uniqs[j])) {
-					uniqs.push(_elm[i]); ++j;
+				if (!equal(_elm[i], dists[j])) {
+					dists.push(_elm[i]); ++j;
 				}
 			}
-			return uniqs;
+			return dists;
 		}
 		/** The minimum value (for numerical data). */
 		public function get minimum():Number { return _min; }
@@ -62,8 +62,8 @@ package flare.util
 		public function get stderr():Number { return stddev / Math.sqrt(_num); }
 		/** The total number of values. */
 		public function get count():Number { return _num; }
-		/** The total number of unique values. */
-		public function get unique():Number { return _uniq; }
+		/** The total number of distinct values. */
+		public function get distinct():Number { return _distinct; }
 		
 		/** The minimum value (for date/time values). */
 		public function get minDate():Date { return _minObject as Date; }
@@ -135,9 +135,9 @@ package flare.util
 			if (_comp==null) _elm.sort(opt); else _elm.sort(_comp, opt);
 			
 			// count unique values
-			_uniq = 1; var j:uint = 0;
+			_distinct = 1; var j:uint = 0;
 			for (i=1; i<_num; ++i) {
-				if (!equal(_elm[i], _elm[j])) { ++_uniq; j=i;	}
+				if (!equal(_elm[i], _elm[j])) { ++_distinct; j=i;	}
 			}
 			
 			// populate stats
