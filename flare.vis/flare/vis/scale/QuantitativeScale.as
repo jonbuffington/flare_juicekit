@@ -51,7 +51,16 @@ package flare.vis.scale
 			_flush = val; updateScale();
 		}
 		
-		/** The minimum data value. */
+		/** @inheritDoc */
+		public override function get min():Object { return dataMin; }
+		public override function set min(o:Object):void { dataMin = Number(o); }
+		
+		/** @inheritDoc */
+		public override function get max():Object { return dataMax; }
+		public override function set max(o:Object):void { dataMax = Number(o); }
+		
+		/** The minimum data value. This property is the same as the
+		 *  <code>minimum</code> property, but properly typed. */
 		public function get dataMin():Number
 		{
 			return _dmin;
@@ -61,7 +70,8 @@ package flare.vis.scale
 			_dmin = val; updateScale();
 		}
 
-		/** The maximum data value. */
+		/** The maximum data value. This property is the same as the
+		 *  <code>maximum</code> property, but properly typed. */
 		public function get dataMax():Number
 		{
 			return _dmax;

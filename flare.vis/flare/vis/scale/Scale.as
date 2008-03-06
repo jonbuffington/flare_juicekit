@@ -43,6 +43,28 @@ package flare.vis.scale
 			_format = (fmt==null ? fmt : "{0:"+fmt+"}");
 		}
 		
+		/** The minimum data value backing this scale. Note that the actual
+		 *  minimum scale value may be lower if the scale is not flush. */
+		public function get min():Object
+		{
+			throw new Error("Unsupported property");
+		}
+		public function set min(o:Object):void
+		{
+			throw new Error("Unsupported property");
+		}
+		
+		/** The maximum data value backing this scale. Note that the actual
+		 *  maximum scale value may be higher if the scale is not flush. */
+		public function get max():Object
+		{
+			throw new Error("Unsupported property");
+		}
+		public function set max(o:Object):void
+		{
+			throw new Error("Unsupported property");
+		}
+		
 		/**
 		 * Returns a cloned copy of the scale.
 		 * @return a cloned scale.

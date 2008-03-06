@@ -19,6 +19,12 @@ package flare.vis.scale
 		public override function get flush():Boolean { return true; }
 		public override function set flush(val:Boolean):void { /* nothing */ }
 		
+		/** @inheritDoc */
+		public override function get min():Object { return _quantiles[0]; }
+		
+		/** @inheritDoc */
+		public override function get max():Object { return _quantiles[_quantiles.length-1]; }
+		
 		// --------------------------------------------------------------------
 		
 		/**

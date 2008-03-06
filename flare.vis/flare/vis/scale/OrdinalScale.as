@@ -37,7 +37,7 @@ package flare.vis.scale
         {
         	return new OrdinalScale(_ordinals, _flush, true, _format);
         }
-
+        
 		// -- Properties ------------------------------------------------------
 
 		/** The number of distinct values in this scale. */
@@ -65,6 +65,12 @@ package flare.vis.scale
             for (var i:uint = 0; i < _ordinals.length; ++i)
                 _lookup[ordinals[i]] = i;
         }
+		
+		/** @inheritDoc */
+		public override function get min():Object { return _ordinals[0]; }
+		
+		/** @inheritDoc */
+		public override function get max():Object { return _ordinals[_ordinals.length-1]; }
 		
 		// -- Scale Methods ---------------------------------------------------
 		

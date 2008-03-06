@@ -8,7 +8,7 @@ package flare.vis.controls
 	/**
 	 * Interactive control for responding to mouse hover events. The
 	 * <code>onRollOver</code> and <code>onRollOut</code> function properties
-	 * should be set with custom functions for performing actions whe the
+	 * should be set with custom functions for performing actions when the
 	 * mouse cursor hovers over a display object.
 	 */
 	public class HoverControl extends Control

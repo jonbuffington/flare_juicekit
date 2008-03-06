@@ -65,7 +65,17 @@ package flare.vis.scale
 			}
 		}
 		
-		/** The minimum (earliest) Date value in the underlying data. */
+		/** @inheritDoc */
+		public override function get min():Object { return dataMin; }
+		public override function set min(o:Object):void { dataMin = o as Date; }
+		
+		/** @inheritDoc */
+		public override function get max():Object { return dataMax; }
+		public override function set max(o:Object):void { dataMax = o as Date; }
+		
+		/** The minimum (earliest) Date value in the underlying data.
+		 *  This property is the same as the <code>minimum</code>
+		 *  property, but properly typed. */
 		public function get dataMin():Date
 		{
 			return _dmin;
@@ -75,7 +85,9 @@ package flare.vis.scale
 			_dmin = val; updateScale();
 		}
 
-		/** The maximum (latest) Date value in the underlying data. */
+		/** The maximum (latest) Date value in the underlying data.
+		 *  This property is the same as the <code>maximum</code>
+		 *  property, but properly typed. */
 		public function get dataMax():Date
 		{
 			return _dmax;

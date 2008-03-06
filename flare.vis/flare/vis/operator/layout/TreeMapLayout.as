@@ -1,9 +1,9 @@
 package flare.vis.operator.layout
 {
-	import flare.vis.data.NodeSprite;
-	import flash.geom.Rectangle;
-	import flare.util.Arrays;
 	import flare.animate.Transitioner;
+	import flare.vis.data.NodeSprite;
+	
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Layout that places node in a TreeMap layout that optimizes for low
@@ -51,17 +51,13 @@ package flare.vis.operator.layout
 	        computeAreas(root);
 	        
 	        // layout root node
-	        with (_t.$(root)) {
-	        	// disabled due to Flash rendering errors
-	        	//x = (_r.x + _r.width) / 2;
-	        	//y = (_r.y + _r.height) / 2;
-	        	x = 0;
-	        	y = 0;
-	        	u = _r.x;
-	        	v = _r.y;
-	        	w = _r.width;
-	        	h = _r.height;
-	        };
+	        var o:Object = _t.$(root);
+	        o.x = 0;
+	        o.y = 0;
+	        o.u = _r.x;
+	        o.v = _r.y;
+	        o.w = _r.width;
+	        o.h = _r.height;
 	
 	        // layout the tree
 	        updateArea(root, _r);
@@ -85,7 +81,7 @@ package flare.vis.operator.layout
 	        // set raw sizes, compute leaf count
 	        root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
 	        	if (n.childDegree == 0) {
-	        		var sz:Number = n.size;
+	        		var sz:Number = _t.$(n).size;
 	        		n.props[AREA] = sz;
 	        		var p:NodeSprite = n.parentNode;
 	        		for (; p != null; p=p.parentNode)
@@ -136,10 +132,11 @@ package flare.vis.operator.layout
 	    
 	    private function updateArea(n:NodeSprite, r:Rectangle):void
 	    {
-			r.x = n.u;
-			r.y = n.v;
-			r.width = n.w;
-			r.height = n.h;
+	    	var o:Object = _t.$(n);
+			r.x = o.u;
+			r.y = o.v;
+			r.width = o.w;
+			r.height = o.h;
 			return;
 			
 			/*
@@ -241,24 +238,19 @@ package flare.vis.operator.layout
 	        	var nw:Number = n.props[AREA]/hh;
 	        	
 	        	var o:Object = _t.$(n);
-	        	with (_t.$(n)) {
-	        		if (horiz) {
-	        			u = xx + d;
-	        			v = yy;
-	        			w = nw;
-	        			h = hh;
-	        		} else {
-	        			u = xx;
-	        			v = yy + d;
-	        			w = hh;
-	        			h = nw;
-	        		}
-	        		// disabled due to Flash rendering errors
-	        		// x = (u + w) / 2; 
-	        		// y = (v + h) / 2;
-	        		x = 0;
-	        		y = 0;
+				if (horiz) {
+	        		o.u = xx + d;
+	        		o.v = yy;
+	        		o.w = nw;
+	        		o.h = hh;
+	        	} else {
+	        		o.u = xx;
+	        		o.v = yy + d;
+	        		o.w = hh;
+	        		o.h = nw;
 	        	}
+	        	o.x = 0;
+	        	o.y = 0;
 	        	d += nw;
 	        }
 	        
