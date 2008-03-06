@@ -183,6 +183,7 @@ package flare.display
 			// for sub-classes to override...
 		}
 		
+		/** @inheritDoc */
 		public override function toString():String
 		{
 			var s:String = super.toString();
