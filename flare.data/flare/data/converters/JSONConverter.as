@@ -24,8 +24,10 @@ package flare.data.converters
 		 */
 		public function read(input:IDataInput, schema:DataSchema=null):DataSet
 		{
+			var data:Array;
 			return new DataSet(new DataTable(
-				parse(input.readUTFBytes(input.bytesAvailable), schema), schema
+				data = parse(input.readUTFBytes(input.bytesAvailable), schema),
+				schema ? schema : DataUtil.inferSchema(data)
 			));
 		}
 		
@@ -70,5 +72,5 @@ package flare.data.converters
 			return output;
 		}
 		
-	} // end of class JSONCoverter
+	} // end of class JSONConverter
 }

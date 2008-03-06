@@ -8,7 +8,8 @@ package flare.data.converters
 	{
 		private static var _lookup:Object = {
 			"json":new JSONConverter(),
-			"tab":new DelimitedTextConverter("\t")
+			"tab":new DelimitedTextConverter("\t"),
+			"graphml":new GraphMLConverter()
 		};
 		
 		/**

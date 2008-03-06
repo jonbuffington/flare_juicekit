@@ -63,7 +63,6 @@ package flare.data
 		 * @param lines an array of lines of input text
 		 * @return the inferred schema
 		 */
-		/*
 		public static function inferSchema(tuples:Array):DataSchema
 		{
 			if (tuples==null || tuples.length==0) return null;
@@ -86,7 +85,14 @@ package flare.data
 					name = header[col];
 					var value:Object = tuple[name];
 					if (types[col] == -1 || value==null) continue;
-					var type:int = DataUtil.type(value);
+					
+					var type:int = 
+						value is Boolean ? BOOLEAN :
+						value is Date ? DATE :
+						value is int ? INT :
+						value is Number ? NUMBER :
+						value is String ? STRING : OBJECT;
+
 					if (types[col] != type) {
 						types[col] = -1;
 					}
@@ -101,7 +107,6 @@ package flare.data
 			}
 			return schema;
 		}
-		*/
 		
 	} // end of class DataUtil
 }
