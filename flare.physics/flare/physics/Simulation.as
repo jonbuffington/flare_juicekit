@@ -11,7 +11,7 @@ package flare.physics
 		private var _particles:Array = new Array();
 		private var _springs:Array = new Array();
 		private var _forces:Array = new Array();
-		private var _integrator:IIntegrator = new RK4Integrator();
+		private var _integrator:IIntegrator = new VerletIntegrator();
 		private var _bounds:Rectangle = null;
 		
 		/** The default gravity force for this simulation. */

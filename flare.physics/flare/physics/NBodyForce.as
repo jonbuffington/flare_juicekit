@@ -39,19 +39,18 @@ package flare.physics
 		 * @param maxf the maximum allowed force magnitude between particles.
 		 *  Helpful when particles are very close together.
 		 * @param eps an epsilon values for determining a minimum distance
-		 *  between particles (all particle distances less than this value will
-		 *  be treated as being <code>eps</code> units apart)
+		 *  between particles
 		 * @param t the theta parameter for the Barnes-Hut approximation.
 		 *  Determines the level of approximation (default value if 0.9).
 		 */
 		public function NBodyForce(g:Number=-1, d:Number=100, maxf:Number=100,
-								   eps:Number=0.001, t:Number=0.9)
+								   eps:Number=0.01, t:Number=0.9)
 		{
 			_g = g;
 			_d = d;
 			_t = t;
 			_maxf = maxf;
-			_eps = eps;
+			_eps = eps*eps;
 			_root = QuadTreeNode.node();
 		}
 
@@ -115,7 +114,8 @@ package flare.physics
 			var f:Number = 0;
 			var dx:Number = n.cx - p.x;
 			var dy:Number = n.cy - p.y;
-			var dd:Number = Math.max(_eps, Math.sqrt(dx*dx + dy*dy));
+			//var dd:Number = Math.max(_eps, Math.sqrt(dx*dx + dy*dy));
+			var dd:Number = Math.sqrt(dx*dx + dy*dy);
 			var min:Boolean = _d > 0 && dd > _d;
 			
 			// the Barnes-Hut approximation criteria is if the ratio of the
@@ -126,8 +126,7 @@ package flare.physics
             	if ( min ) return;
             	// either only 1 particle or we meet criteria
             	// for Barnes-Hut approximation, so calc force
-            	f = _g * p.mass * n.mass / (dd*dd*dd);
-            	f = (f>0?1:-1) * Math.min(_maxf, Math.abs(f));
+            	f = _g * p.mass * n.mass / Math.pow(dd*dd + _eps, 1.5);
             	p.fx += f*dx; p.fy += f*dy;
         	}
         	else if ( n.hasChildren )
@@ -136,15 +135,14 @@ package flare.physics
             	var sx:Number = (x1+x2)/2
             	var sy:Number = (y1+y2)/2;
             	
-            	if (n.c1 != null) forces(p, n.c1, x1, y1, sx, sy);
-				if (n.c2 != null) forces(p, n.c2, sx, y1, x2, sy);
-				if (n.c3 != null) forces(p, n.c3, x1, sy, sx, y2);
-				if (n.c4 != null) forces(p, n.c4, sx, sy, x2, y2);
+            	if (n.c1) forces(p, n.c1, x1, y1, sx, sy);
+				if (n.c2) forces(p, n.c2, sx, y1, x2, sy);
+				if (n.c3) forces(p, n.c3, x1, sy, sx, y2);
+				if (n.c4) forces(p, n.c4, sx, sy, x2, y2);
 
             	if ( min ) return;
             	if ( n.p != null && n.p != p ) {
-                	f = _g * p.mass * n.p.mass / (dd*dd*dd);
-                	f = (f>0?1:-1) * Math.min(_maxf, Math.abs(f));
+                	f = _g * p.mass * n.p.mass / Math.pow(dd*dd + _eps, 1.5);
                 	p.fx += f*dx; p.fy += f*dy;
             	}
 			}
@@ -273,7 +271,7 @@ class QuadTreeNode
 	public static function node():QuadTreeNode {
 		var n:QuadTreeNode;
 		if (_nodes.length > 0) {
-			n = _nodes.pop() as QuadTreeNode;
+			n = QuadTreeNode(_nodes.pop());
 		} else {
 			n = new QuadTreeNode();
 		}
