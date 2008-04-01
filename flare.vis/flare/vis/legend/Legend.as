@@ -98,7 +98,8 @@ package flare.vis.legend
 		/** Scale instance used to define the legend mapping. */
 		public function get scale():Scale { return _scale; }
 		public function set scale(s:Scale):void {
-			_scale = s; _discrete = scale is OrdinalScale;
+			_scale = s; 
+			if(s != null) _discrete = _scale is OrdinalScale;
 		}
 		/** The LegendRange for this legend, if it is continuous. This
 		 *  value is null if the legend is discrete. */
