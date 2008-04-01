@@ -166,10 +166,9 @@ package flare.query
 			var aggrs:Array = [];
 			for each (var pair:Object in _select) {
 				var expr:Expression = pair.expression;
-				expr.visit(function(e:Expression):Boolean {
+				expr.visit(function(e:Expression):void {
 					if (e is AggregateExpression)
 						aggrs.push(e);
-					return true;
 				});
 			}
 			return aggrs.length==0 ? null : aggrs;

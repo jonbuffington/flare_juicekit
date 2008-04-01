@@ -83,11 +83,10 @@ package flare.query
 		/**
 		 * Sequentially invokes the input function on this expression and all
 		 * sub-expressions. Complete either when all expressions have been
-		 * visited or the input function returns false, thereby signalling an
+		 * visited or the input function returns true, thereby signalling an
 		 * early exit.
 		 * @param f the visiting function to invoke on this expression
-		 * @return true if all sub-expressions were visited, false if the
-		 *  input function signalled an early exit
+		 * @return true if the input function signalled an early exit
 		 */
 		public function visit(f:Function):Boolean
 		{
@@ -97,15 +96,15 @@ package flare.query
 		
 		private function visitHelper(iter:ExpressionIterator, f:Function):Boolean
 		{
-			if (!f(iter.current)) return false;
+			if (f(iter.current) as Boolean) return true;
 			if (iter.down() != null)
 			{
 				do {
-					if (!visitHelper(iter, f)) return false
+					if (visitHelper(iter, f)) return true;
 				} while (iter.next() != null);
 				iter.up();	
 			}
-			return true;
+			return false;
 		}
 		
 		// --------------------------------------------------------------------
