@@ -100,10 +100,9 @@ package flare.tests
 				assertTrue(data.contains(data.nodes[i]));
 				assertTrue(data.nodes.contains(data.nodes[i]));
 			}
-			data.nodes.visit(function(n:NodeSprite):Boolean {
+			data.nodes.visit(function(n:NodeSprite):void {
 				assertTrue(data.contains(n));
 				assertTrue(data.nodes.contains(n));
-				return true;
 			});
 		}
 		
@@ -114,10 +113,9 @@ package flare.tests
 				assertTrue(data.contains(data.edges[i]));
 				assertTrue(data.edges.contains(data.edges[i]));
 			}
-			data.edges.visit(function(e:EdgeSprite):Boolean {
+			data.edges.visit(function(e:EdgeSprite):void {
 				assertTrue(data.contains(e));
 				assertTrue(data.edges.contains(e));
-				return true;
 			});
 		}
 		
@@ -134,18 +132,16 @@ package flare.tests
 			}
 			
 			createNodes(); i=N;
-			data.nodes.visit(function(n:NodeSprite):Boolean {
+			data.nodes.visit(function(n:NodeSprite):void {
 				data.removeNode(n); --i;
 				assertEquals(data.nodes.size, i);
-				return true;
 			});
 			assertEquals(0, i);
 			
 			createEdges(); i=N;
-			data.nodes.visit(function(n:NodeSprite):Boolean {
+			data.nodes.visit(function(n:NodeSprite):void {
 				data.removeNode(n); --i;
 				assertEquals(data.nodes.size, i);
-				return true;
 			});
 			assertEquals(0, i);
 			assertEquals(0, data.edges.size);
@@ -165,10 +161,9 @@ package flare.tests
 			assertEquals(N, data.nodes.size);
 			
 			createEdges(); i=N-1;
-			data.edges.visit(function(e:EdgeSprite):Boolean {
+			data.edges.visit(function(e:EdgeSprite):void {
 				data.removeEdge(e); --i;
 				assertEquals(data.edges.size, i);
-				return true;
 			});
 			assertEquals(0, i);
 			assertEquals(0, data.edges.size);
@@ -182,8 +177,8 @@ package flare.tests
 			var id10:Function = function(o:Object):Boolean {
 				return o.data.id >= 10;
 			};
-			var counter:Function = function(o:Object):Boolean {
-				++count; return true;
+			var counter:Function = function(o:Object):void {
+				++count;
 			};
 			var count:int = 0;
 			
