@@ -68,7 +68,7 @@ package flare.vis.operator.layout
 			var o:Object = _t.$(visualization.marks);
 			o.x = cx; o.y = cy;
 			
-			visualization.data.visit(function(d:DataSprite):Boolean {
+			visualization.data.visit(function(d:DataSprite):void {
 				var aw:Number = (_cw?-1:1) * 2*Math.PI * (_field.getValue(d)/sum);
 				var rh:Number = _width * r;
 				var o:Object = _t.$(d);
@@ -85,7 +85,6 @@ package flare.vis.operator.layout
 				o.v = rh;  // inner radius
 
 				a += aw;
-				return true;
 			}, Data.NODES);
 			
 			_t = null;

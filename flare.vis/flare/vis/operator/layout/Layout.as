@@ -127,8 +127,8 @@ package flare.vis.operator.layout
 				var clear:Boolean = false;
 				
 				// set end points to mid-points
-				visualization.data.edges.visit(function(e:EdgeSprite):Boolean {
-					if (e.points == null) return true;
+				visualization.data.edges.visit(function(e:EdgeSprite):void {
+					if (e.points == null) return;
 					
 					var src:NodeSprite = e.source;
 					var trg:NodeSprite = e.target;
@@ -148,8 +148,6 @@ package flare.vis.operator.layout
 						cp[i+1] = y1 + f * (y2 - y1);
 					}
 					t.$(e).points = cp;
-					
-					return true;
 				});
 				// after transition, clear out control points
 				if (clear) t.onEnd = clearEdgePoints;
@@ -167,11 +165,10 @@ package flare.vis.operator.layout
 		/**
 		 * Removes any control points from a DataSprite instance.
 		 * @param d a DataSprite
-		 * @return true, to signal a visitor to continue
 		 */
-		public function clearPoints(d:DataSprite):Boolean
+		public function clearPoints(d:DataSprite):void
 		{
-			d.points = null; return true;
+			d.points = null;
 		}
 		
 	} // end of class Layout

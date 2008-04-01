@@ -30,7 +30,6 @@ package flare.vis.operator.layout
 		
 		/** Property name for storing parameters for this layout. */
 		public static const PARAMS:String = "radialTreeLayoutParams";
-		private static const MARGIN:int = 30;
 		/** The default radius increment between depth levels. */
 		public static const DEFAULT_RADIUS:int = 50;
 	
@@ -126,14 +125,13 @@ package flare.vis.operator.layout
 	        if (_maxDepth > 0) {
 	        	layout(n, _radiusInc, _theta1, _theta2);
 	        } else if (n.childDegree > 0) {
-	        	n.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
+	        	n.visitTreeDepthFirst(function(n:NodeSprite):void {
             		_t.$(n).radius = 0;
             		_t.$(n).alpha = 0;
             		_t.$(n).mouseEnabled = false;
             		if (n.parentEdge != null) {
             			_t.$(n.parentEdge).alpha = 0;
             		}
-            		return true;
             	});
 	        }
 	        
@@ -147,7 +145,7 @@ package flare.vis.operator.layout
 		private function setScale(bounds:Rectangle):void
 		{
 	        var r:Number = Math.min(bounds.width, bounds.height)/2.0;
-	        if (_maxDepth > 0) _radiusInc = (r-MARGIN) / _maxDepth;
+	        if (_maxDepth > 0) _radiusInc = r / (_maxDepth+1);
 	    }
 		
 	    /**
@@ -205,7 +203,8 @@ package flare.vis.operator.layout
 	        if (d > _maxDepth) _maxDepth = d;       
 	        var aw:Number = 0, diameter:Number = 0;
 	        if (_useNodeSize && d > 0) {
-	        	diameter = 1;
+	        	//diameter = 1;
+	        	diameter = n.expanded && n.childDegree > 0 ? 0 : _t.$(n).size;
 	        } else if (d > 0) {
 	        	var w:Number = n.width, h:Number = n.height;
 	        	diameter = Math.sqrt(w*w+h*h)/d;
@@ -309,9 +308,8 @@ package flare.vis.operator.layout
 	            	var cr:Number = r + _radiusInc;
 	            	var ca:Number = theta1 + nfrac*dtheta + cfrac*dtheta2;
 	            	
-	            	c.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
+	            	c.visitTreeDepthFirst(function(n:NodeSprite):void {
 	            		update(n, cr, minDist(n.angle, ca), 0, false);
-	            		return true;
 	            	});
 	            }
 	            

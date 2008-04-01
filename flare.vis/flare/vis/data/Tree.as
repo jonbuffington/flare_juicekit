@@ -126,10 +126,9 @@ package flare.vis.data
 			p.removeChildEdge(e);
 			
 			// walk disconnected segment to fire updates
-			c.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
+			c.visitTreeDepthFirst(function(n:NodeSprite):void {
 				removeInternal(n.parentEdge, _edges);
 				removeInternal(n, _nodes);
-				return true;
 			});
 			removeInternal(e, _edges);
 			

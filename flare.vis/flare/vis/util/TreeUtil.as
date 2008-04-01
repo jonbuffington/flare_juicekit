@@ -30,12 +30,11 @@ package flare.vis.util
 			var q:Array = [n], nn:NodeSprite;
 			while (q.length > 0) {
 				n = q.shift();
-				n.visitEdges(function(e:EdgeSprite):Boolean {
+				n.visitEdges(function(e:EdgeSprite):void {
 					nn = e.other(n);
-					if (t.nodes.contains(nn)) return true;
+					if (t.nodes.contains(nn)) return;
 					t.addChildEdge(e);
 					q.push(nn);
-					return true;
 				}, NodeSprite.GRAPH_LINKS);
 			}
 			return t;
@@ -62,12 +61,11 @@ package flare.vis.util
 		
 		private static function depthFirstHelper(n:NodeSprite, t:Tree):void
 		{
-			n.visitEdges(function(e:EdgeSprite):Boolean {
+			n.visitEdges(function(e:EdgeSprite):void {
 				var nn:NodeSprite = e.other(n);
-				if (t.nodes.contains(nn)) return true;
+				if (t.nodes.contains(nn)) return;
 				t.addChildEdge(e);
 				if (nn.degree > 1) depthFirstHelper(nn, t);
-				return true;
 			}, NodeSprite.GRAPH_LINKS);
 		}
 		
@@ -109,9 +107,8 @@ package flare.vis.util
 			
 			// initialize the heap
 			var heap:FibonacciHeap = new FibonacciHeap();
-			d.nodes.visit(function(nn:NodeSprite):Boolean {
+			d.nodes.visit(function(nn:NodeSprite):void {
 				nn.props.heapNode = heap.insert(nn, Number.POSITIVE_INFINITY);
-				return true;
 			});
 			heap.decreaseKey(n.props.heapNode, 0);
 			
@@ -123,22 +120,20 @@ package flare.vis.util
 				e = n.props.treeEdge as EdgeSprite;
 				if (e != null) t.addChildEdge(e);
 				
-				n.visitEdges(function(e:EdgeSprite):Boolean {
+				n.visitEdges(function(e:EdgeSprite):void {
 					var nn:NodeSprite = e.other(n);
 					var hnn:HeapNode = nn.props.heapNode;
 					if (hnn.inHeap && (weight=w(e)) < hnn.key) {
 						nn.props.treeEdge = e; // set tree edge
 						heap.decreaseKey(hnn, weight);
 					}
-					return true;
 				}, NodeSprite.GRAPH_LINKS);
 			}
 			
 			// clean-up and return
-			d.nodes.visit(function(nn:NodeSprite):Boolean {
+			d.nodes.visit(function(nn:NodeSprite):void {
 				delete nn.props.treeEdge;
 				delete nn.props.heapNode;
-				return true;
 			});
 			return t;
 		}

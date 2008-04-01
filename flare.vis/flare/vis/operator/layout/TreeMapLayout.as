@@ -74,12 +74,12 @@ package flare.vis.operator.layout
 	    	var leafCount:int = 0;
         
 	        // reset all sizes to zero
-	        root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
-	        	n.props[AREA] = 0; return true;
+	        root.visitTreeDepthFirst(function(n:NodeSprite):void {
+	        	n.props[AREA] = 0;
 	        });
         
 	        // set raw sizes, compute leaf count
-	        root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
+	        root.visitTreeDepthFirst(function(n:NodeSprite):void {
 	        	if (n.childDegree == 0) {
 	        		var sz:Number = _t.$(n).size;
 	        		n.props[AREA] = sz;
@@ -88,15 +88,14 @@ package flare.vis.operator.layout
 	        			p.props[AREA] += sz;
 	        		++leafCount;
 	        	}
-	        	return true;
 	        });
         
 	        // scale sizes by display area factor
 	        var b:Rectangle = layoutBounds;
 	        var area:Number = (b.width-1)*(b.height-1);
 	        var scale:Number = area / root.props[AREA];
-	        root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
-	        	n.props[AREA] *= scale; return true;
+	        root.visitTreeDepthFirst(function(n:NodeSprite):void {
+	        	n.props[AREA] *= scale;
 	        });
 	    }
 	    

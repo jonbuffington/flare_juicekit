@@ -3,22 +3,38 @@ package flare.vis.data.render
 	import flare.vis.data.DataSprite;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
-	import flash.display.Graphics;
-	import flash.geom.Point;
 	import flare.vis.util.graphics.GraphicsUtil;
 	import flare.vis.util.graphics.Shapes;
+	
+	import flash.display.Graphics;
 
 	/**
 	 * Renderer that draws edges as lines. The EdgeRenderer supports straight
 	 * lines, poly lines, and curves as Bezier or cardinal splines. The type
 	 * of edge drawn is determined from an EdgeSprite's <code>shape</code>
 	 * property and control points found in the <code>points</code> property.
+	 * The line rendering properties are set by the <code>setLineStyle</code>
+	 * method, which can be overridden by subclasses. By default, the line
+	 * rendering settings are determined using default property values set
+	 * on this class (for example, the <code>scaleMode<code> and 
+	 * <code>caps</code> properties).
 	 */
 	public class EdgeRenderer implements IRenderer
 	{
 		private static var _instance:EdgeRenderer = new EdgeRenderer();
 		/** Static EdgeRenderer instance. */
 		public static function get instance():EdgeRenderer { return _instance; }
+		
+		/** Pixel hinting flag for line rendering. */
+		public var pixelHinting:Boolean = false;
+		/** Scale mode for line rendering (normal by default). */
+		public var scaleMode:String = "normal";
+		/** The joint style for line rendering. */
+		public var joints:String = null;
+		/** The caps style for line rendering. */
+		public var caps:String = null;
+		/** The miter limit for line rendering. */
+		public var miterLimit:int = 3;
 		
 		/** @inheritDoc */
 		public function render(d:DataSprite):void
@@ -69,9 +85,8 @@ package flare.vis.data.render
 			var lineAlpha:Number = e.lineAlpha;
 			if (lineAlpha == 0) return;
 			
-			var sm:String = e.props.scaleMode;
-			if (sm == null) sm = "normal";
-			g.lineStyle(e.lineWidth, e.lineColor, lineAlpha, e.props.pixelHinting, sm);
+			g.lineStyle(e.lineWidth, e.lineColor, lineAlpha, 
+				pixelHinting, scaleMode, caps, joints, miterLimit);
 		}
 
 	} // end of class EdgeRenderer

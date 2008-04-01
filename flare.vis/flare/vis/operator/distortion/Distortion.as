@@ -115,9 +115,8 @@ package flare.vis.operator.distortion
 		/**
 		 * Distortion method for processing a DataSprite.
 		 * @param d a DataSprite to distort
-		 * @return true, to signal a visitors to continue
 		 */
-		protected function distort(d:DataSprite):Boolean
+		protected function distort(d:DataSprite):void
 		{
 			var o:Object = _t.$(d), ss:Number;
 			if (_resetSize) {
@@ -137,7 +136,6 @@ package flare.vis.operator.distortion
 					o.scaleY *= ss;
 				}
 			}
-			return true;
 		}
 		
 		/**

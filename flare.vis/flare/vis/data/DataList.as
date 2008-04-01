@@ -174,46 +174,44 @@ package flare.vis.data
 		
 		/**
 		 * Iterates over the contents of the list, invoking a visitor function
-		 * on each element of the list. The visitor function should return a
-		 * Boolean value: if true the iteration will continue, if false the
-		 * iteration will stop with an early exit.
+		 * on each element of the list. If the visitor function returns a
+		 * Boolean true value, the iteration will stop with an early exit.
 		 * @param visitor the visitor function to be invoked on each item
 		 * @param reverse optional flag indicating if the list should be
 		 *  visited in reverse order
 		 * @param filter an optional boolean-valued function indicating which
 		 *  items should be visited
-		 * @return true if the visitation completed, false if an early exit
-		 *  occurred
+		 * @return true if the visitation was interrupted with an early exit
 		 */		
 		public function visit(visitor:Function, reverse:Boolean=false,
 			filter:Function=null):Boolean
 		{
 			_visiting++; // mark a visit in process
 			var a:Array = _list; // use our own reference to the list
-			var i:uint, b:Boolean = true;
+			var i:uint, b:Boolean = false;
 			
 			if (reverse && filter==null) {
 				for (i=a.length; --i>=0;)
-					if (!visitor(a[i])) {
-						b = false; break;
+					if (visitor(a[i]) as Boolean) {
+						b = true; break;
 					}
 			}
 			else if (reverse) {
 				for (i=a.length; --i>=0;)
-					if (filter(a[i]) && !visitor(a[i])) {
-						b = false; break;
+					if (filter(a[i]) && (visitor(a[i]) as Boolean)) {
+						b = true; break;
 					}
 			}
 			else if (filter==null) {
 				for (i=0; i<a.length; ++i)
-					if (!visitor(a[i])) {
-						b = false; break;
+					if (visitor(a[i]) as Boolean) {
+						b = true; break;
 					}
 			}
 			else {
 				for (i=0; i<a.length; ++i)
-					if (filter(a[i]) && !visitor(a[i])) {
-						b = false; break;
+					if (filter(a[i]) && (visitor(a[i]) as Boolean)) {
+						b = true; break;
 					}
 			}
 			_visiting = Math.max(0, --_visiting); // unmark a visit in process
@@ -371,6 +369,12 @@ package flare.vis.data
 		flash_proxy override function getProperty(name:*):*
 		{
         	return _list[name];
+    	}
+    	
+    	/** @private */
+    	flash_proxy override function setProperty(name:*, value:*):void
+    	{
+    		this.setProperty(name, value);
     	}
 		
 		/** @private */

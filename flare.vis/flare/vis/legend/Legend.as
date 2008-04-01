@@ -99,7 +99,7 @@ package flare.vis.legend
 		public function get scale():Scale { return _scale; }
 		public function set scale(s:Scale):void {
 			_scale = s; 
-			if(s != null) _discrete = _scale is OrdinalScale;
+			_discrete = s ? _scale is OrdinalScale : true;
 		}
 		/** The LegendRange for this legend, if it is continuous. This
 		 *  value is null if the legend is discrete. */

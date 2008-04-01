@@ -14,10 +14,9 @@ package flare.vis.operator.layout
 		{
 			if (t==null) t = Transitioner.DEFAULT;
 			var r:Rectangle = layoutBounds;
-			visualization.data.nodes.visit(function(d:DataSprite):Boolean {
+			visualization.data.nodes.visit(function(d:DataSprite):void {
 				t.$(d).x = r.x + r.width * Math.random();
 				t.$(d).y = r.y + r.height * Math.random();
-				return true;
 			});
 		}
 		

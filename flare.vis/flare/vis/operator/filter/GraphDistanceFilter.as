@@ -46,10 +46,9 @@ package flare.vis.operator.filter
 	        var q:Array = [], depths:Dictionary = new Dictionary();
 			for each (var fn:NodeSprite in focusNodes) {				
 				depths[fn] = 0;
-				fn.visitEdges(function(e:EdgeSprite):Boolean {
+				fn.visitEdges(function(e:EdgeSprite):void {
 					depths[e] = 1;
 					q.push(e);
-					return true;
 				}, links);
 			}
 			
@@ -61,17 +60,16 @@ package flare.vis.operator.filter
 				depths[xn] = d;
 				if (d == distance) continue; // stop traversal at max distance
 				
-				xn.visitEdges(function(e:EdgeSprite):Boolean {
+				xn.visitEdges(function(e:EdgeSprite):void {
 					if (depths[e] == undefined) {
 						depths[e] = d+1;
 						q.push(e);
 					}
-					return true;
 				}, links);
 			}
 			
 			// now set visibility based on traversal results
-	        visualization.data.visit(function(ds:DataSprite):Boolean {
+	        visualization.data.visit(function(ds:DataSprite):void {
 	        	var visible:Boolean = (depths[ds] != undefined);
 	        	var alpha:Number = visible ? 1 : 0;
 				var obj:Object = t.$(ds);
@@ -86,7 +84,6 @@ package flare.vis.operator.filter
 				} else {
 					obj.visible = visible;
 				}
-	        	return true;
 	        }, Data.ALL);
 		}
 		

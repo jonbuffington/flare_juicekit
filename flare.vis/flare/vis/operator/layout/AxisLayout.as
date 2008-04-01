@@ -148,7 +148,7 @@ package flare.vis.operator.layout
 			var xmap:Object = _xStacks ? new Object() : null;
 			var ymap:Object = _yStacks ? new Object() : null;
 			
-			visualization.data.nodes.visit(function(d:DataSprite):Boolean {
+			visualization.data.nodes.visit(function(d:DataSprite):void {
 				var dx:Object, dy:Object, x:Number, y:Number, s:Number, z:Number;
 				var o:Object = _t.$(d);
 				dx = _xField.getValue(d); dy = _yField.getValue(d);
@@ -179,7 +179,6 @@ package flare.vis.operator.layout
 						o.h = y - y0;
 					}
 				}
-				return true;
 			});
 			
 			_t = null;
@@ -191,22 +190,21 @@ package flare.vis.operator.layout
 			var xmax:Number = 0;
 			var ymax:Number = 0;
 			
-			visualization.data.nodes.visit(function(d:DataSprite):Boolean {
-					var x:Object = _xField.getValue(d);
-					var y:Object = _yField.getValue(d);
-					var v:Number;
-					
-					if (_xStacks) {
-						v = isNaN(xmap[y]) ? 0 : xmap[y];
-						xmap[y] = v = (Number(x) + v);
-						if (v > xmax) xmax = v;
-					}
-					if (_yStacks) {
-						v = isNaN(ymap[x]) ? 0 : ymap[x];
-						ymap[x] = v = (Number(y) + v);
-						if (v > ymax) ymax = v;
-					}
-					return true;
+			visualization.data.nodes.visit(function(d:DataSprite):void {
+				var x:Object = _xField.getValue(d);
+				var y:Object = _yField.getValue(d);
+				var v:Number;
+				
+				if (_xStacks) {
+					v = isNaN(xmap[y]) ? 0 : xmap[y];
+					xmap[y] = v = (Number(x) + v);
+					if (v > xmax) xmax = v;
+				}
+				if (_yStacks) {
+					v = isNaN(ymap[x]) ? 0 : ymap[x];
+					ymap[x] = v = (Number(y) + v);
+					if (v > ymax) ymax = v;
+				}
 			});
 			
 			var axes:CartesianAxes = visualization.xyAxes;

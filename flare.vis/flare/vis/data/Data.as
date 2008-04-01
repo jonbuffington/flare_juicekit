@@ -412,9 +412,8 @@ package flare.vis.data
 			if (!_nodes.contains(n)) return false;
 			
 			var base:Data = this;
-			n.visitEdges(function(e:EdgeSprite):Boolean {
+			n.visitEdges(function(e:EdgeSprite):void {
 				removeEdge(e);
-				return true;
 			}, NodeSprite.GRAPH_LINKS | NodeSprite.REVERSE);
 			
 			// finally, remove this node from the data set
@@ -461,7 +460,7 @@ package flare.vis.data
 		/**
 		 * Visit items, invoking a function on all visited elements.
 		 * @param v the function to invoke on each element. If the function
-		 *  return false, the visitation is ended with an early exit
+		 *  return true, the visitation is ended with an early exit
 		 * @param opt visit options flag, indicating the data group(s) to visit
 		 *  (e.g., NODES or EDGES) and if the visitation traversal should be
 		 *  done in reverse (the REVERSE flag). The default is a forwards
@@ -469,18 +468,16 @@ package flare.vis.data
 		 * @param filter an optional predicate function indicating which
 		 *  elements should be visited. Only items for which this function
 		 *  returns true will be visited.
-		 * @return true if the visitation ended without an early exit
+		 * @return true if the visitation was interrupted with an early exit
 		 */
 		public function visit(v:Function, opt:int=ALL, filter:Function=null):Boolean
 		{
-			var b:Boolean=true, rev:Boolean = (opt & REVERSE) > 0;
-			if (opt & EDGES && _edges.size > 0) {
-				b = _edges.visit(v, rev, filter);
-			}
-			if (b && opt & NODES && _nodes.size > 0) {
-				b = _nodes.visit(v, rev, filter);
-			}
-			return b;
+			var rev:Boolean = (opt & REVERSE) > 0;
+			if (opt & EDGES && _edges.size > 0 && _edges.visit(v, rev, filter))
+				return true;
+			if (opt & NODES && _nodes.size > 0 && _nodes.visit(v, rev, filter))
+				return true;
+			return false;
 		}
 		
 		
@@ -544,11 +541,11 @@ package flare.vis.data
 			if (t==null) { _tree = null; return; }
 			
 			var ok:Boolean;
-			ok = t.root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
+			ok = !t.root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
 				if (n.parentEdge != null) {
-					if (!_edges.contains(n.parentEdge)) return false;
+					if (!_edges.contains(n.parentEdge)) return true;
 				}
-				return _nodes.contains(n);
+				return !_nodes.contains(n);
 			});
 			if (ok) _tree = t;
 		}

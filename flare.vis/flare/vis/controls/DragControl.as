@@ -4,6 +4,7 @@ package flare.vis.controls
 	
 	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	/**
@@ -14,6 +15,12 @@ package flare.vis.controls
 	public class DragControl extends Control
 	{
 		private var _cur:Sprite;
+		private var _mx:Number, _my:Number;
+		
+		/** Indicates if drag should be followed at frame rate only.
+		 *  If false, drag events can be processed faster than the frame
+		 *  rate, however, this may pre-empt other processing. */
+		public var trackAtFrameRate:Boolean = false;
 		
 		/** Filter function for limiting the items available for dragging. */
 		public var filter:Function;
@@ -55,29 +62,34 @@ package flare.vis.controls
 			
 			if (filter==null || filter(s)) {
 				_cur = s;
+				_mx = _object.mouseX;
+				_my = _object.mouseY;
 				if (_cur is DataSprite) (_cur as DataSprite).fix();
-				_cur.startDrag();
+
 				_cur.stage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
 				_cur.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			}
 			event.stopPropagation();
 		}
 		
-		private function onDrag(event:MouseEvent) : void {
-			// ensure that position updates are handled correctly
-			// we hack this in because flash isn't invoking x,y overrides
-			// TODO: find cleaner fix? ie, a public position update method?
-			_cur.x = _cur.x + 1e-12;
-			_cur.y = _cur.y + 1e-12;
-			// ensure that render event is made for the next frame
-			event.updateAfterEvent();
+		private function onDrag(event:Event) : void {
+			var x:Number = _object.mouseX;
+			if (x != _mx) {
+				_cur.x += (x - _mx);
+				_mx = x;
+			}
+			
+			var y:Number = _object.mouseY;
+			if (y != _my) {
+				_cur.y += (y - _my);
+				_my = y;
+			}
 		}
 		
 		private function onMouseUp(event:MouseEvent) : void {
 			if (_cur != null) {
 				_cur.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				_cur.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
-				_cur.stopDrag();
 				
 				if (_cur is DataSprite) (_cur as DataSprite).unfix();
 				event.stopPropagation();

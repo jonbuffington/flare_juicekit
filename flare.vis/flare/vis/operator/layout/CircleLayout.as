@@ -104,7 +104,7 @@ package flare.vis.operator.layout
 	                weight = inertia;
 	                n.v = weight * n.u;
 	                
-	                n.visitEdges(function(e:EdgeSprite):Boolean
+	                n.visitEdges(function(e:EdgeSprite):void
 	                {
 	                	// retrieve the edge weight
 	                	var w:Number = _weight==null ? 1.0 : e.props[_weight];
@@ -114,7 +114,6 @@ package flare.vis.operator.layout
 	                	// add weighted distance to barycenter
 	                	n.v += w * e.other(n).u;
 	                	weight += w;
-	                	return true;
 	                });
 	                
 	                // normalize to get final barycenter value

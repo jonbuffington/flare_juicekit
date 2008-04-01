@@ -74,10 +74,9 @@ package flare.vis.operator.encoder
 			t = (t==null || _ignoreTrans ? Transitioner.DEFAULT : t);
 			if (_values == null) return;
 			
-			visualization.data.visit(function(d:DataSprite):Boolean {
+			visualization.data.visit(function(d:DataSprite):void {
 				for (var p:String in _values)
 					t.setValue(d, p, _values[p]);
-				return true;
 			}, _which, _filter);
 		}
 		

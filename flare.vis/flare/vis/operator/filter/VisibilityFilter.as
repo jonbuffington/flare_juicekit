@@ -58,11 +58,10 @@ package flare.vis.operator.filter
 		{
 			t = (t==null ? Transitioner.DEFAULT : t);
 			
-			visualization.data.visit(function(d:DataSprite):Boolean {
+			visualization.data.visit(function(d:DataSprite):void {
 				var visible:Boolean = predicate(d);
 				t.$(d).alpha = visible ? 1 : 0;
 				t.$(d).visible = visible;
-				return true;
 			}, which, filter);
 		}
 		

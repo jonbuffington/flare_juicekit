@@ -162,8 +162,8 @@ package flare.vis.data
 		 */		
 		public function isConnected(n:NodeSprite, opt:uint=ALL_LINKS):Boolean
 		{
-			return !visitNodes(
-				function(d:NodeSprite):Boolean { return !(n==d); },
+			return visitNodes(
+				function(d:NodeSprite):Boolean { return n==d; },
 				opt);
 		}
 
@@ -334,65 +334,67 @@ package flare.vis.data
 		/**
 		 * Visits this node's edges, invoking a function on each visited edge.
 		 * @param f the function to invoke on the edges. If the function
-		 *  returns false, the visitation is ended with an early exit.
+		 *  returns true, the visitation is ended with an early exit.
 		 * @param opt flag indicating which sets of edges should be visited
-		 * @return true if the visitation did not end with an early exit
+		 * @return true if the visitation was interrupted with an early exit
 		 */
 		public function visitEdges(f:Function, opt:uint=ALL_LINKS):Boolean
 		{
 			var rev:Boolean = (opt & REVERSE) > 0;
 			if (opt & IN_LINKS && _inEdges != null) { 
-				if (!visitEdgeHelper(f, _inEdges, rev)) return false;
+				if (visitEdgeHelper(f, _inEdges, rev)) return true;
 			}
 			if (opt & OUT_LINKS && _outEdges != null) {
-				if (!visitEdgeHelper(f, _outEdges, rev)) return false;
+				if (visitEdgeHelper(f, _outEdges, rev)) return true;
 			}
 			if (opt & CHILD_LINKS && _childEdges != null) {
-				if (!visitEdgeHelper(f, _childEdges, rev)) return false;
+				if (visitEdgeHelper(f, _childEdges, rev)) return true;
 			}
 			if (opt & PARENT_LINK && _parentEdge != null) {
-				if (!f(_parentEdge)) return false;
+				if (f(_parentEdge)) return true;
 			}
-			return true;
+			return false;
 		}
 		
 		private function visitEdgeHelper(f:Function, a:Array, r:Boolean):Boolean
 		{
-			var i:uint;
+			var i:uint, v:*;
 			if (r) {
-				for (i=a.length; --i>=0;)
-					if (!f(a[i])) return false;
+				for (i=a.length; --i>=0;) {
+					if (f(a[i]) as Boolean) return true;
+				}
 			} else {
-				for (i=0; i<a.length; ++i)
-					if (!f(a[i])) return false;
+				for (i=0; i<a.length; ++i) {
+					if (f(a[i]) as Boolean) return true;
+				}
 			}
-			return true;
+			return false;
 		}
 		
 		/**
 		 * Visits the nodes connected to this node by edges, invoking a
 		 * function on each visited node.
 		 * @param f the function to invoke on the nodes. If the function
-		 *  returns false, the visitation is ended with an early exit.
+		 *  returns true, the visitation is ended with an early exit.
 		 * @param opt flag indicating which sets of edges should be traversed
-		 * @return true if the visitation did not end with an early exit
+		 * @return true if the visitation was interrupted with an early exit
 		 */
 		public function visitNodes(f:Function, opt:uint=ALL_LINKS):Boolean
 		{
 			var rev:Boolean = (opt & REVERSE) > 0;
 			if (opt & IN_LINKS && _inEdges != null) {
-				if (!visitNodeHelper(f, _inEdges, rev)) return false;
+				if (visitNodeHelper(f, _inEdges, rev)) return true;
 			}
 			if (opt & OUT_LINKS && _outEdges != null) {
-				if (!visitNodeHelper(f, _outEdges, rev)) return false;
+				if (visitNodeHelper(f, _outEdges, rev)) return true;
 			}
 			if (opt & CHILD_LINKS && _childEdges != null) {
-				if (!visitNodeHelper(f, _childEdges, rev)) return false;
+				if (visitNodeHelper(f, _childEdges, rev)) return true;
 			}
 			if (opt & PARENT_LINK && _parentEdge != null) {
-				if (!f(_parentEdge.other(this))) return false;
+				if (f(_parentEdge.other(this))) return true;
 			}
-			return true;
+			return false;
 		}
 		
 		private function visitNodeHelper(f:Function, a:Array, r:Boolean):Boolean
@@ -400,39 +402,39 @@ package flare.vis.data
 			var i:uint;
 			if (r) {
 				for (i=a.length; --i>=0;)
-					if (!f(a[i].other(this))) return false;
+					if (f(a[i].other(this)) as Boolean) return true;
 			} else {
 				for (i=0; i<a.length; ++i)
-					if (!f(a[i].other(this))) return false;
+					if (f(a[i].other(this)) as Boolean) return true;
 			}
-			return true;
+			return false;
 		}
 		
 		/**
 		 * Visits the subtree rooted at this node using a depth first search,
 		 * invoking the input function on each visited node.
 		 * @param f the function to invoke on the nodes. If the function
-		 *  returns false, the visitation is ended with an early exit.
+		 *  returns true, the visitation is ended with an early exit.
 		 * @param preorder if true, nodes are visited in a pre-order traversal;
 		 *  if false, they are visited in a post-order traversal
-		 * @return true if the visitation did not end with an early exit
+		 * @return true if the visitation was interrupted with an early exit
 		 */
 		public function visitTreeDepthFirst(f:Function, preorder:Boolean=false):Boolean
 		{
-			if (preorder && !f(this)) return false;
+			if (preorder && (f(this) as Boolean)) return true;
 			for (var i:uint = 0; i<childDegree; ++i) {
-				if (!getChildNode(i).visitTreeDepthFirst(f)) return false;
+				if (getChildNode(i).visitTreeDepthFirst(f)) return true;
 			}
-			if (!preorder && !f(this)) return false;
-			return true;
+			if (!preorder && (f(this) as Boolean)) return false;
+			return false;
 		}
 		
 		/**
 		 * Visits the subtree rooted at this node using a breadth first search,
 		 * invoking the input function on each visited node.
 		 * @param f the function to invoke on the nodes. If the function
-		 *  returns false, the visitation is ended with an early exit.
-		 * @return true if the visitation did not end with an early exit
+		 *  returns true, the visitation is ended with an early exit.
+		 * @return true if the visitation was interrupted with an early exit
 		 */
 		public function visitTreeBreadthFirst(f:Function):Boolean
 		{
@@ -440,11 +442,11 @@ package flare.vis.data
 			
 			q.push(this);
 			while (q.length > 0) {
-				if (!f(x=q.shift())) return false;
+				if (f(x=q.shift()) as Boolean) return true;
 				for (var i:uint = 0; i<x.childDegree; ++i)
 					q.push(x.getChildNode(i));
 			}
-			return true;
+			return false;
 		}
 		
 	} // end of class NodeSprite

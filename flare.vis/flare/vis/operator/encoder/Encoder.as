@@ -111,9 +111,8 @@ package flare.vis.operator.encoder
 			_t = (t!=null ? t : Transitioner.DEFAULT);
 			
 			if (visualization == null) return;
-			visualization.data.visit(function(d:DataSprite):Boolean {
+			visualization.data.visit(function(d:DataSprite):void {
 				_t.$(d)[_target] = encode(_source.getValue(d));
-				return true;
 			}, _which, _filter);
 			
 			_t = null;
