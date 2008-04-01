@@ -10,23 +10,15 @@ package flare.physics
 	{
 		private var _dc:Number;
 		
+		/** The drag co-efficient. */
+		public function get drag():Number { return _dc; }
+		public function set drag(dc:Number):void { _dc = dc; }
+		
 		/**
 		 * Creates a new DragForce with given drag co-efficient.
 		 * @param dc the drag co-efficient.
 		 */
-		public function DragForce(dc:Number) {
-			_dc = dc;
-		}
-		
-		/** The drag co-efficient. */
-		public function get drag():Number
-		{
-			return _dc;
-		}
-		
-		/** The drag co-efficient. */
-		public function set drag(dc:Number):void
-		{
+		public function DragForce(dc:Number=0.1) {
 			_dc = dc;
 		}
 		

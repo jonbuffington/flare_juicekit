@@ -8,37 +8,21 @@ package flare.physics
 		private var _gx:Number;
 		private var _gy:Number;
 		
+		/** The gravitational acceleration in the horizontal dimension. */
+		public function get gravityX():Number { return _gx; }
+		public function set gravityX(gx:Number):void { _gx = gx; }
+		
+		/** The gravitational acceleration in the vertical dimension. */
+		public function get gravityY():Number { return _gy; }
+		public function set gravityY(gy:Number):void { _gy = gy; }
+		
 		/**
 		 * Creates a new gravity force with given acceleration values.
 		 * @param gx the gravitational acceleration in the horizontal dimension
 		 * @param gy the gravitational acceleration in the vertical dimension
 		 */
-		public function GravityForce(gx:Number, gy:Number) {
+		public function GravityForce(gx:Number=0, gy:Number=0) {
 			_gx = gx;
-			_gy = gy;
-		}
-		
-		/** The gravitational acceleration in the horizontal dimension. */
-		public function get gravityX():Number
-		{
-			return _gx;
-		}
-		
-		/** The gravitational acceleration in the horizontal dimension. */
-		public function set gravityX(gx:Number):void
-		{
-			_gx = gx;
-		}
-		
-		/** The gravitational acceleration in the vertical dimension. */
-		public function get gravityY():Number
-		{
-			return _gy;
-		}
-		
-		/** The gravitational acceleration in the vertical dimension. */
-		public function set gravityY(gy:Number):void
-		{
 			_gy = gy;
 		}
 		

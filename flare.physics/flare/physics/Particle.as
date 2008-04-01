@@ -8,14 +8,20 @@ package flare.physics
 	{
 		/** The mass (or charge) of the particle. */
 		public var mass:Number;
+		/** The number of springs (degree) attached to this particle. */
+		public var degree:Number;
 		/** The x position of the particle. */
 		public var x:Number;
 		/** The y position of the particle. */
 		public var y:Number;
 		/** The x velocity of the particle. */
 		public var vx:Number;
+		/** A temporary x velocity variable. */
+		public var _vx:Number;
 		/** The y velocity of the particle. */
 		public var vy:Number;
+		/** A temporary y velocity variable. */
+		public var _vy:Number;
 		/** The x force exerted on the particle. */
 		public var fx:Number;
 		/** The y force exerted on the particle. */
@@ -59,10 +65,11 @@ package flare.physics
 			vx:Number=0, vy:Number=0, fixed:Boolean=false):void
 		{
 			this.mass = mass;
+			this.degree = 0;
 			this.x = x;
 			this.y = y;
-			this.vx = vx;
-			this.vy = vy;
+			this.vx = this._vx = vx;
+			this.vy = this._vy = vy;
 			this.fx = 0;
 			this.fy = 0;
 			this.age = 0;

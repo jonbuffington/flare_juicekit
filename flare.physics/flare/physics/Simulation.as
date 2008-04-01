@@ -11,7 +11,6 @@ package flare.physics
 		private var _particles:Array = new Array();
 		private var _springs:Array = new Array();
 		private var _forces:Array = new Array();
-		private var _integrator:IIntegrator = new VerletIntegrator();
 		private var _bounds:Rectangle = null;
 		
 		/** The default gravity force for this simulation. */
@@ -39,6 +38,7 @@ package flare.physics
 		public function get bounds():Rectangle { return _bounds; }
 		public function set bounds(b:Rectangle):void {
 			if (_bounds == b) return;
+			if (b == null) { _bounds = null; return; }
 			if (_bounds == null) { _bounds = new Rectangle(); }
 			// ensure x is left-most and y is top-most
 			_bounds.x = b.x + (b.width < 0 ? b.width : 0);
@@ -55,8 +55,8 @@ package flare.physics
 		 * @param attraction the gravitational attraction (or repulsion, for
 		 *  negative values) between particles.
 		 */
-		public function Simulation(gx:Number, gy:Number,
-			drag:Number=0.001, attraction:Number=0)
+		public function Simulation(gx:Number=0, gy:Number=0,
+			drag:Number=0.1, attraction:Number=-5)
 		{
 			_forces.push(new GravityForce(gx, gy));
 			_forces.push(new NBodyForce(attraction));
@@ -113,9 +113,8 @@ package flare.physics
 			// remove springs
 			for (var i:uint = _springs.length; --i >= 0; ) {
 				var s:Spring = _springs[i];
-				if (s.p1 == p || s.p2 == p) {
+				if (s.p1 == p || s.p2 == p)
 					removeSpring(i);
-				}
 			}
 			// remove from particles
 			reclaimParticle(p);
@@ -136,6 +135,8 @@ package flare.physics
 							      tension:Number, damping:Number):Spring
 		{
 			var s:Spring = getSpring(p1, p2, restLength, tension, damping);
+			p1.degree++;
+			p2.degree++;
 			_springs.push(s);
 			return s;
 		}
@@ -149,7 +150,10 @@ package flare.physics
 		public function removeSpring(idx:uint):Boolean
 		{
 			if (idx >= _springs.length) return false;
-			reclaimSpring(_springs[idx]);
+			var s:Spring = _springs[idx];
+			s.p1.degree--;
+			s.p2.degree--;
+			reclaimSpring(s);
 			_springs.splice(idx, 1);
 			return true;
 		}
@@ -178,17 +182,52 @@ package flare.physics
 		 * Advance the simulation for the specified time interval.
 		 * @param dt the time interval to step the simulation (default 1)
 		 */
-		public function tick(dt:Number=1):void {
-			// father time and the grim reaper
-			var p:Particle;
-			for (var i:uint=0; i<_particles.length; ++i) {
-				p = _particles[i];
-				p.age += dt;
-				if (p.die) removeParticle(i);
+		public function tick(dt:Number=1):void
+		{	
+			var p:Particle, s:Spring, i:uint, ax:Number, ay:Number;
+			var dt1:Number = dt/2, dt2:Number = dt*dt/2;
+			
+			// remove springs connected to dead particles
+			for (i=_springs.length; --i>=0;) {
+				s = _springs[i];
+				if (s.die || s.p1.die || s.p2.die) {
+					s.p1.degree--;
+					s.p2.degree--;
+					reclaimSpring(s);
+					_springs.splice(i, 1);
+				}
 			}
 			
-			// update
-			_integrator.integrate(this, dt);
+			// update particles using Verlet integration
+			for (i=_particles.length; --i>=0;) {
+				p = _particles[i];
+				p.age += dt;
+				if (p.die) { // remove dead particles
+					reclaimParticle(p);
+					_particles.splice(i, 1);
+				} else if (p.fixed) {
+					p.vx = p.vy = 0;
+				} else {
+					ax = p.fx / p.mass; ay = p.fy / p.mass;
+					p.x  += p.vx*dt + ax*dt2;
+					p.y  += p.vy*dt + ay*dt2;
+					p._vx = p.vx + ax*dt1;
+					p._vy = p.vy + ay*dt1;
+				}
+			}
+			// evaluate the forces
+			eval();
+			// update particle velocities
+			for (i=_particles.length; --i>=0;) {
+				p = _particles[i];
+				if (!p.fixed) {
+					ax = dt1 / p.mass;
+					p.vx = p._vx + p.fx * ax;
+					p.vy = p._vy + p.fy * ax;
+				}
+			}
+			
+			// enfore bounds
 			if (_bounds) enforceBounds();
 		}
 		
@@ -199,11 +238,17 @@ package flare.physics
 			var maxY:Number = _bounds.y + _bounds.height;
 			
 			for each (var p:Particle in _particles) {
-				if (p.x < minX) p.x = minX;
-				else if (p.x > maxX) p.x = maxX;
-				
-				if (p.y < minY) p.y = minY;
-				else if (p.y > maxY) p.y = maxY;
+				if (p.x < minX) {
+					p.x = minX; p.vx = 0;
+				} else if (p.x > maxX) {
+					p.x = maxX; p.vx = 0;
+				}
+				if (p.y < minY) {
+					p.y = minY; p.vy = 0;
+				}
+				else if (p.y > maxY) {
+					p.y = maxY; p.vy = 0;
+				}
 			}
 		}
 		
@@ -213,13 +258,13 @@ package flare.physics
 		public function eval():void {
 			var i:uint, p:Particle;
 			// reset forces
-			for (i = _particles.length; --i >= 0; ) {
+			for (i=_particles.length; --i >= 0; ) {
 				p = _particles[i];
 				p.fx = p.fy = 0;
 			}
 			// collect forces
-			for (i = 0; i<_forces.length; ++i) {
-				(_forces[i] as IForce).apply(this);
+			for (i=0; i<_forces.length; ++i) {
+				IForce(_forces[i]).apply(this);
 			}
 		}
 		

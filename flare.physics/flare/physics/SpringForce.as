@@ -13,7 +13,7 @@ package flare.physics
 	 * co-efficient, and v1 and v2 are the velocities of the particles.</p>
 	 */
 	public class SpringForce implements IForce
-	{
+	{		
 		/**
 		 * Applies this force to a simulation.
 		 * @param sim the Simulation to apply the force to
@@ -24,17 +24,24 @@ package flare.physics
 			var dx:Number, dy:Number, dn:Number, dd:Number, k:Number, fx:Number, fy:Number;
 			
 			for (var i:uint=0; i<sim.springs.length; ++i) {
-				s = sim.springs[i] as Spring; 
+				s = Spring(sim.springs[i]);
 				p1 = s.p1;
-				p2 = s.p2;
+				p2 = s.p2;				
 				dx = p1.x - p2.x;
 				dy = p1.y - p2.y;
 				dn = Math.sqrt(dx*dx + dy*dy);
-				dd = dn==0 ? 0.001 : dn;
+				dd = dn<1 ? 1 : dn;
 				
 				k  = s.tension * (dn - s.restLength);
 				k += s.damping * (dx*(p1.vx-p2.vx) + dy*(p1.vy-p2.vy)) / dd;
 				k /= dd;
+				
+				// provide a random direction when needed
+				if (dn==0) {
+					dx = 0.01 * (0.5-Math.random());
+					dy = 0.01 * (0.5-Math.random());
+				}
+				
 				fx = -k * dx;
 				fy = -k * dy;
 				

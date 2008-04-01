@@ -19,6 +19,8 @@ package flare.physics
 		public var damping:Number;
 		/** Flag indicating if this spring is enabled. */
 		public var enabled:Boolean;
+		/** Flag indicating that the spring is scheduled for removal. */
+		public var die:Boolean;
 		/** Tag property for storing an arbitrary value. */
 		public var tag:uint;
 		
@@ -52,6 +54,14 @@ package flare.physics
 			this.restLength = restLength;
 			this.tension = tension;
 			this.damping = damping;
+		}
+		
+		/**
+		 * "Kills" this spring, scheduling it for removal in the next
+		 * simulation cycle.
+		 */
+		public function kill():void {
+			this.die = true;
 		}
 		
 	} // end of class Spring

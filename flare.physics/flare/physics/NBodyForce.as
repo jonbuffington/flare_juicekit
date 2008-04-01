@@ -16,41 +16,60 @@ package flare.physics
 	 * <ul>
 	 *   <li><a href="http://www.cs.berkeley.edu/~demmel/cs267/lecture26/lecture26.html">James Demmel's UC Berkeley lecture notes</a>
 	 *   <li><a href="http://www.physics.gmu.edu/~large/lr_forces/desc/bh/bhdesc.html">Description of the Barnes-Hut algorithm</a>
-	 *   <li><a href="http://www.ifa.hawaii.edu/~barnes/treecode/treeguide.html">Joshua Barnes' recent implementation</a>
+	 *   <li><a href="http://www.ifa.hawaii.edu/~barnes/treecode/treeguide.html">Joshua Barnes' implementation</a>
 	 * </ul></p>
 	 */
 	public class NBodyForce implements IForce
 	{
 		private var _g:Number;     // gravitational constant
-		private var _d:Number;     // effective distance
 		private var _t:Number;     // barnes-hut theta
+		private var _max:Number;   // max effective distance
+		private var _min:Number;   // min effective distance
 		private var _eps:Number;   // epsilon for determining 'same' location
-		private var _maxf:Number;  // maximum force value
 		
 		private var _x1:Number, _y1:Number, _x2:Number, _y2:Number;
 		private var _root:QuadTreeNode;
+		
+		/** The gravitational constant to use. 
+		 *  Negative values produce a repulsive force. */
+		public function get gravitation():Number { return _g; }
+		public function set gravitation(g:Number):void { _g = g; }
+		
+		/** The maximum distance over which forces are exerted. 
+		 *  Any greater distances will be ignored. */
+		public function get maxDistance():Number { return _max; }
+		public function set maxDistance(d:Number):void { _max = d; }
+		
+		/** The minumum effective distance over which forces are exerted.
+		 * 	Any lesser distances will be treated as the minimum. */
+		public function get minDistance():Number { return _min; }
+		public function set minDistance(d:Number):void { _min = d; }
+		
+		// --------------------------------------------------------------------
 		
 		/**
 		 * Creates a new NBodyForce with given parameters.
 		 * @param g the gravitational constant to use.
 		 *  Negative values produce a repulsive force.
-		 * @param d a maximum distance over which the force should operate.
+		 * @param maxd a maximum distance over which the force should operate.
 		 *  Particles separated by more than this distance will not interact.
-		 * @param maxf the maximum allowed force magnitude between particles.
+		 * @param mind the minimum distance over which the force should operate.
+		 *  Particles closer than this distance will interact as if they were
+		 *  the minimum distance apart. This helps avoid extreme forces.
 		 *  Helpful when particles are very close together.
 		 * @param eps an epsilon values for determining a minimum distance
 		 *  between particles
 		 * @param t the theta parameter for the Barnes-Hut approximation.
 		 *  Determines the level of approximation (default value if 0.9).
 		 */
-		public function NBodyForce(g:Number=-1, d:Number=100, maxf:Number=100,
+		public function NBodyForce(g:Number=-1, max:Number=200, min:Number=2,
 								   eps:Number=0.01, t:Number=0.9)
 		{
 			_g = g;
-			_d = d;
+			_max = max;
+			_min = min;
+			_eps = eps;
 			_t = t;
-			_maxf = maxf;
-			_eps = eps*eps;
 			_root = QuadTreeNode.node();
 		}
 
@@ -114,19 +133,23 @@ package flare.physics
 			var f:Number = 0;
 			var dx:Number = n.cx - p.x;
 			var dy:Number = n.cy - p.y;
-			//var dd:Number = Math.max(_eps, Math.sqrt(dx*dx + dy*dy));
 			var dd:Number = Math.sqrt(dx*dx + dy*dy);
-			var min:Boolean = _d > 0 && dd > _d;
+			var max:Boolean = _max > 0 && dd > _max;
+			if (dd==0) { // add direction when needed
+				dx = _eps * (0.5-Math.random());
+				dy = _eps * (0.5-Math.random());
+			}
 			
 			// the Barnes-Hut approximation criteria is if the ratio of the
         	// size of the quadtree box to the distance between the point and
         	// the box's center of mass is beneath some threshold theta.
         	if ( (!n.hasChildren && n.p != p) || ((x2-x1)/dd < _t) )
         	{
-            	if ( min ) return;
+            	if ( max ) return;
             	// either only 1 particle or we meet criteria
             	// for Barnes-Hut approximation, so calc force
-            	f = _g * p.mass * n.mass / Math.pow(dd*dd + _eps, 1.5);
+            	dd = dd<_min ? _min : dd;
+            	f = _g * p.mass * n.mass / (dd*dd*dd)
             	p.fx += f*dx; p.fy += f*dy;
         	}
         	else if ( n.hasChildren )
@@ -140,9 +163,10 @@ package flare.physics
 				if (n.c3) forces(p, n.c3, x1, sy, sx, y2);
 				if (n.c4) forces(p, n.c4, sx, sy, x2, y2);
 
-            	if ( min ) return;
+            	if ( max ) return;
             	if ( n.p != null && n.p != p ) {
-                	f = _g * p.mass * n.p.mass / Math.pow(dd*dd + _eps, 1.5);
+            		dd = dd<_min ? _min : dd;
+                	f = _g * p.mass * n.p.mass / (dd*dd*dd);
                 	p.fx += f*dx; p.fy += f*dy;
             	}
 			}
