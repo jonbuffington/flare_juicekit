@@ -63,9 +63,8 @@ package flare.demos
 		
 		public static function updateData(data:Data):void
 		{
-			data.nodes.visit(function(d:DataSprite):Boolean {
+			data.nodes.visit(function(d:DataSprite):void {
 				d.data.x = int(1 + 10*Math.random());
-				return true;
 			});
 		}
 		

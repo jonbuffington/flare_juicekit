@@ -27,7 +27,7 @@ package flare.demos
 		{
 			name = "Smoke";
 			_shapes = new Array();
-			_sim = new Simulation(0, -0.1, 0.001);
+			_sim = new Simulation(0, -0.1, 0.001, 0);
 			_dict = new Dictionary();
 			_last = null;
 		}

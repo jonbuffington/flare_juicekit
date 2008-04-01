@@ -28,12 +28,11 @@ package flare.demos
 			var e:EdgeSprite, n:NodeSprite;
 			
 			var vis:Visualization = new Visualization(tree);
-			vis.tree.nodes.visit(function(n:NodeSprite):Boolean {
+			vis.tree.nodes.visit(function(n:NodeSprite):void {
 				n.size = Math.random();
 				n.shape = Shapes.BLOCK;
 				n.fillColor = 0xff8888FF; n.lineColor = 0;
 				n.fillAlpha = n.lineAlpha = n.depth / 25;
-				return true;
 			});
 			vis.data.edges.setProperty("visible", false);
 			vis.operators.add(new TreeMapLayout());

@@ -6,8 +6,7 @@ package flare.demos
 	import flare.util.Button;
 	import flare.util.GraphUtil;
 	import flare.vis.Visualization;
-	import flare.vis.controls.ExpandControl;
-	import flare.vis.controls.PanZoomControl;
+	import flare.vis.controls.DragControl;
 	import flare.vis.data.Data;
 	import flare.vis.data.NodeSprite;
 	import flare.vis.operator.OperatorSwitch;
@@ -58,17 +57,18 @@ package flare.demos
 			vis.marks.y = anchors[1].y;
 
 			vis.operators.add(os);
-			vis.tree.nodes.visit(function(n:NodeSprite):Boolean {
+			vis.tree.nodes.visit(function(n:NodeSprite):void {
 				n.fillColor = 0xaaaaaa; n.fillAlpha = 0.5;
 				n.lineColor = 0xdddddd; n.lineAlpha = 0.8;
 				n.lineWidth = 1;
-				return (n.buttonMode = true);
+				n.buttonMode = true;
 			});
 			vis.update();
 			addChild(vis);
 			
-			vis.controls.add(new ExpandControl());
-			vis.controls.add(new PanZoomControl());
+			//vis.controls.add(new ExpandControl());
+			//vis.controls.add(new PanZoomControl());
+			vis.controls.add(new DragControl());
 
 			// add reset button, and tie it to reset the layout
 			for (var i:uint=0; i<os.length; ++i) {

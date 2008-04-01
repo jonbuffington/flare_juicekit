@@ -18,10 +18,9 @@ package flare.demos
 			
 			// create pie chart
 			var vis:Visualization = new Visualization(getData(16));
-			vis.data.visit(function(d:DataSprite):Boolean {
-				d.shape = Shapes.WEDGE;
-				d.lineAlpha = 0;
-				return true;
+			vis.data.nodes.setProperties({
+				shape: Shapes.WEDGE,
+				lineAlpha: 0
 			});
 			vis.operators.add(new PieLayout("data.value", 0.7));
 			vis.operators.add(new ColorEncoder("data.value",1,"fillColor"));
@@ -38,10 +37,9 @@ package flare.demos
 			btn.addEventListener(MouseEvent.CLICK, function(evt:MouseEvent):void
 			{
 				var t:Transitioner = new Transitioner(1);
-				vis.data.visit(function(d:DataSprite):Boolean {
+				vis.data.nodes.visit(function(d:DataSprite):void {
 					t.$(d).v = collapse ? 0 : d.h * 0.7;
-					return true;
-				}, Data.NODES);
+				});
 				collapse = !collapse;
 				t.play();
 			});

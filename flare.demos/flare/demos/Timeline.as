@@ -51,12 +51,16 @@ package flare.demos
 			{
 				// create new force-directed layout that enforces the bounds
 				var fdl:ForceDirectedLayout = new ForceDirectedLayout(true);
+				fdl.defaultSpringLength = 20;
 				fdl.layoutBounds = new Rectangle(0, 0, 600, 400);
 				vis.operators.setOperatorAt(0, fdl);
 				vis.continuousUpdates = true;
-				fdl.hideAxes(new Transitioner(1)).play();
+				
+				var t:Transitioner = new Transitioner(1);
+				vis.data.nodes.setProperties({buttonMode:true, scaleX:2, scaleY:2}, t);
+				fdl.hideAxes(t).play();
+				
 				new DragControl(vis, Filters.isNodeSprite);
-				vis.data.nodes.setProperty("buttonMode", true);
 				removeChild(btn);
 			});
 			addChild(btn);

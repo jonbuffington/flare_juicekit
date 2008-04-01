@@ -38,11 +38,10 @@ package flare.demos
 			var field1:String = "data.value1";
 			var field2:String = "data.value2";
 			
-			vis.data.visit(function(d:DataSprite):Boolean {
+			vis.data.visit(function(d:DataSprite):void {
 				d.fillColor = 0x018888ff;
 				d.lineColor = 0xcc000088;
 				d.lineWidth = 3;
-				return true;
 			});
 			vis.operators.add(new AxisLayout(field1, field2));
 			vis.operators.add(new ShapeEncoder(field1));

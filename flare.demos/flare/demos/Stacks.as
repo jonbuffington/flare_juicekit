@@ -30,12 +30,11 @@ package flare.demos
 			vis.bounds.width = WIDTH-100;
 			vis.bounds.height = HEIGHT-90;
 			vis.operators.add(new StackedAreaLayout(dataset.columns));
-			vis.data.visit(function(d:DataSprite):Boolean {
+			vis.data.nodes.visit(function(d:DataSprite):void {
 				d.fillColor = Colors.rgba(0xAA,0xAA,100 + uint(155*Math.random()));
 				d.fillAlpha = 1;
 				d.lineAlpha = 0;
 				d.shape = Shapes.POLYGON;
-				return true;
 			});
 			vis.update();
 			addChild(vis);
@@ -49,7 +48,7 @@ package flare.demos
 			{
 				t = new Transitioner(1.5);
 				thresh = 0.25 + 0.75 * Math.random();
-				vis.data.visit(filter);
+				vis.data.nodes.visit(filter);
 				
 				t.onStart = function():void { stage.quality = StageQuality.LOW; }
 				t.onEnd = function():void { stage.quality = StageQuality.HIGH; }
@@ -60,10 +59,9 @@ package flare.demos
 			addChild(b);
 		}
 		
-		public function filter(d:DataSprite):Boolean
+		public function filter(d:DataSprite):void
 		{
 			t.$(d).visible = Math.random() < thresh;
-			return true;
 		}
 	
 		public static function getData(N:int):Object
