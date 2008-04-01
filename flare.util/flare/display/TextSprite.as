@@ -74,7 +74,6 @@ package flare.display
 		
 		private var _mode:int = -1;
 		private var _bmap:Bitmap;
-		private var _mask:Shape;
 		private var _tf:TextField;
 		private var _fmt:TextFormat;
 		private var _locked:Boolean = false;
@@ -82,37 +81,6 @@ package flare.display
 		
 		private var _hAnchor:int = LEFT;
 		private var _vAnchor:int = TOP;
-		
-		/**
-		 * Gets the alpha value for a rectangular mask shape that is present
-		 * when the text mode is DEVICE.
-		 */
-		public function get maskAlpha():Number {
-			return _mask != null ? _mask.alpha : NaN;
-		}
-		/**
-		 * Sets the alpha value for a rectangular mask shape that is present
-		 * when the text mode is DEVICE.
-		 */
-		public function set maskAlpha(a:Number):void {
-			if (_mask != null) _mask.alpha = a;
-		}
-		
-		/**
-		 * Gets the fill color for a rectangular mask shape that is present
-		 * when the text mode is DEVICE.
-		 */
-		public function get maskColor():uint { return _maskColor; }
-		/**
-		 * Sets the fill color for a rectangular mask shape that is present
-		 * when the text mode is DEVICE.
-		 */
-		public function set maskColor(c:uint):void {
-			if (_maskColor != c) {
-				_maskColor = c;
-				if (_mode == DEVICE) dirty();
-			}
-		}
 		
 		/**
 		 * The TextField instance backing this TextSprite.
@@ -147,6 +115,7 @@ package flare.display
 		public function set font(f:String):void {
 			_fmt.font = f;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -156,6 +125,7 @@ package flare.display
 		public function set color(c:uint):void {
 			_fmt.color = c;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -165,6 +135,7 @@ package flare.display
 		public function set size(s:Number):void {
 			_fmt.size = s;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -174,6 +145,7 @@ package flare.display
 		public function set bold(b:Boolean):void {
 			_fmt.bold = b;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -183,6 +155,7 @@ package flare.display
 		public function set italic(b:Boolean):void {
 			_fmt.italic = b;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -192,6 +165,7 @@ package flare.display
 		public function set underline(b:Boolean):void {
 			_fmt.underline = b;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -201,6 +175,7 @@ package flare.display
 		public function set kerning(b:Boolean):void {
 			_fmt.kerning = b;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -210,6 +185,7 @@ package flare.display
 		public function set letterSpacing(s:int):void {
 			_fmt.letterSpacing = s;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/**
@@ -262,11 +238,7 @@ package flare.display
 					break;
 				case EMBED:
 					_tf.embedFonts = false;
-					removeChild(_tf);
-					break;
 				case DEVICE:
-					_mask = null;
-					removeChild(_mask);
 					removeChild(_tf);
 					break;
 			}
@@ -277,12 +249,8 @@ package flare.display
 					break;
 				case EMBED:
 					_tf.embedFonts = true;
-					addChild(_tf);
-					break;
 				case DEVICE:
-					_mask = new Shape(); drawMask(); _mask.alpha = 0;
 					addChild(_tf);
-					addChild(_mask);
 					break;
 			}
 			_mode = mode;
@@ -293,8 +261,6 @@ package flare.display
 		{
 			if (_mode == BITMAP) {
 				rasterize();
-			} else if (_mode == DEVICE) {
-				drawMask();
 			}
 			layout();
 		}
@@ -314,16 +280,6 @@ package flare.display
 				case MIDDLE: d.y = -d.height / 2; break;
 				case BOTTOM: d.y = -d.height; break;
 			}
-		}
-		
-		/** @private */
-		protected function drawMask():void
-		{
-			_mask.graphics.clear();
-			var r:Rectangle = _tf.getBounds(this);
-			_mask.graphics.beginFill(_maskColor);
-			_mask.graphics.drawRect(r.x, r.y, r.width, r.height);
-			_mask.graphics.endFill();
 		}
 		
 		/** @private */
