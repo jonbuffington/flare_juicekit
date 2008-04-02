@@ -97,7 +97,11 @@ package flare.display
 		 */
 		private function onAddToStage(evt:Event):void
 		{
-			if (_dirty) { _dirty = CLEAN; render(); }
+			if (_dirty) {
+				if (!__installed) install(stage);
+				__dirtyList.push(this);
+				stage.invalidate();
+			}
 		}
 
 		/**
