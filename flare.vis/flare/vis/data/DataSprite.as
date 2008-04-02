@@ -220,7 +220,6 @@ package flare.vis.data
 		public function DataSprite() {
 			super();
 			_prop.self = this;
-			render();
 		}
 		
 		/** @inheritDoc */
