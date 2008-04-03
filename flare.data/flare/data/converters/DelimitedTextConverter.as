@@ -12,7 +12,7 @@ package flare.data.converters
 
 	/**
 	 * Converts data between delimited text (e.g., tab delimited) and
-	 * arrays of ActionScript objects.
+	 * flare DataSet instances.
 	 */
 	public class DelimitedTextConverter implements IDataConverter
 	{

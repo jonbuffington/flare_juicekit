@@ -15,7 +15,7 @@ package flare.data.converters
 
 	/**
 	 * Converts data between JSON (JavaScript Object Notation) strings and
-	 * arrays of ActionScript objects.
+	 * flare DataSet instances.
 	 */
 	public class JSONConverter implements IDataConverter
 	{

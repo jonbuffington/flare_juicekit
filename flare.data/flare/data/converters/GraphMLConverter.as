@@ -10,15 +10,29 @@ package flare.data.converters
 	import flash.utils.IDataInput;
 	import flash.utils.IDataOutput;
 
+	/**
+	 * Converts data between GraphML markup and flare DataSet instances.
+	 * <a href="http://graphml.graphdrawing.org/">GraphML</a> is a
+	 * standardized XML format supporting graph structure and typed data
+	 * schemas for both nodes and edges.
+	 */
 	public class GraphMLConverter implements IDataConverter
 	{    
 		// -- reader ----------------------------------------------------------
 		
+		/** @inheritDoc */
 		public function read(input:IDataInput, schema:DataSchema=null):DataSet
 		{
 			return parse(XML(input.readUTFBytes(input.bytesAvailable)), schema);
 		}
 		
+		/**
+		 * Parses a GraphML XML object into a DataSet instance.
+		 * @param graphml the XML object containing GraphML markup
+		 * @param schema a DataSchema (typically null, as GraphML contains
+		 *  schema information)
+		 * @return the parsed DataSet instance
+		 */
 		public function parse(graphml:XML, schema:DataSchema=null):DataSet
 		{
 			var lookup:Object = {};
@@ -111,6 +125,7 @@ package flare.data.converters
 
 		// -- writer ----------------------------------------------------------
 		
+		/** @inheritDoc */
 		public function write(data:DataSet, output:IDataOutput=null):IDataOutput
 		{			
 			// init GraphML
