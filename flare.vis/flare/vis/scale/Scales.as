@@ -24,9 +24,10 @@ package flare.vis.scale
 		 *  or the number base for a logarithmic scale.
 		 */
 		public static function scale(stats:Stats,
-			scaleType:String=ScaleType.LINEAR, ...rest):Scale
+			scaleType:String=null, ...rest):Scale
 		{
 			var arg1:Number, arg2:Number;
+			if (!scaleType) scaleType = ScaleType.LINEAR;
 			
 			switch (stats.dataType) {
 				case Stats.NUMBER:
