@@ -4,9 +4,11 @@
   <!-- =================================================================== -->
   <!-- Import Flex Ant Tasks, Set Flex Home and asdoc                      -->
   <!-- =================================================================== -->
-  <taskdef resource="flexTasks.tasks" classpath="${basedir}/etc/flexTasks.jar" />
+  <property name="LOCALE" value="en_US"/>
   <property name="FLEX_HOME" value="C:/pkg/flex/"/>
   <property name="asdoc" value="${FLEX_HOME}bin/asdoc.exe"/>
+  <taskdef resource="flexTasks.tasks"
+           classpath="${FLEX_HOME}ant/lib/flexTasks.jar" />
 
   <!-- =================================================================== -->
   <!-- Properties                                                          -->
@@ -47,11 +49,11 @@
     <echo message=""/>
     <echo message=" available targets are:"/>
     <echo message=""/>
-    <echo message="   all        --> builds flare and demos in ${build.dir}"/>
+    <echo message="   all        --> builds flare and demos in ./build}"/>
     <echo message="   flare      --> builds the flare libraries in ./build"/>
     <echo message="   demos      --> builds the demos app in ./build"/>
     <echo message="   tests      --> builds the tests app in ./build"/>
-    <echo message="   docs       --> builds reference documentation in ${docs.dir}"/>
+    <echo message="   docs       --> builds reference documentation in ./docs/api"/>
     <echo message="   dist       --> creates the distribution in ./dist"/>
     <echo message="   clean      --> restores distribution to original state"/>
     <echo message="   usage      --> (default) displays this build menu"/>
@@ -217,7 +219,7 @@
   <!-- =================================================================== -->
   <!-- Compile flare.vis                                                   -->
   <!-- =================================================================== -->
-  <target name="vis" depends="util,physics,animate">
+  <target name="vis" depends="util,physics,animate,data">
     <!-- First we have to collect all the AS files -->
     <path id="vis.files">
       <fileset dir="${vis.dir}">
@@ -283,6 +285,8 @@
       </compiler.library-path>
       <compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
         <include name="libs" />
+        <!-- compc throws a fit without the locale resource bundles :( -->
+        <include name="locale/${LOCALE}" />
       </compiler.library-path>
     </compc>
   </target>
