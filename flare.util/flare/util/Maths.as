@@ -339,12 +339,14 @@ package flare.util
             var i:uint = b / 2;
             while (a < b)
             {   // binary search over the boundaries
-                if (quantiles[i] == x)
+                if (quantiles[i] == x) {
+                	for (; i>0 && quantiles[i-1] == x; --i);
                     break;
-                else if (quantiles[i] < x)
+                } else if (quantiles[i] < x) {
                     a = i+1;
-                else
+                } else {
                     b = i;
+                }
                 i = a + ((b - a) >> 1);
             }
             return Number(i) / (quantiles.length-1);
