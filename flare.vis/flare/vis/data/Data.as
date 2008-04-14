@@ -565,7 +565,14 @@ package flare.vis.data
 		{
 			var list:DataList = (which==NODES ? _nodes : _edges);
 			var stats:Stats = list.stats(field);
-			var scale:Scale = Scales.scale(stats, scaleType);
+			var scale:Scale;
+			if (rest.length > 1) {
+				scale = Scales.scale(stats, scaleType, rest[0], rest[1]);
+			} else if (rest.length > 0) {
+				scale = Scales.scale(stats, scaleType, rest[0]);
+			} else {
+				scale = Scales.scale(stats, scaleType);
+			}
 			// TODO: lookup formatting info (?)
 			return scale;
 		}

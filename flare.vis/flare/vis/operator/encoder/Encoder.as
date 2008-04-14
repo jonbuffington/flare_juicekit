@@ -112,7 +112,7 @@ package flare.vis.operator.encoder
 			
 			if (visualization == null) return;
 			visualization.data.visit(function(d:DataSprite):void {
-				_t.$(d)[_target] = encode(_source.getValue(d));
+				_t.setValue(d, _target, encode(_source.getValue(d)));
 			}, _which, _filter);
 			
 			_t = null;
