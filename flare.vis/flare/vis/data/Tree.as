@@ -15,6 +15,7 @@ package flare.vis.data
 		public override function set root(n:NodeSprite):void {
 			if (_root == null) {
 				super.addNode(n); _root = n; _root.parentIndex = -1;
+				addDescendants(_root);
 			} else {
 				throw new ArgumentError("Can't set root unless the tree is empty." +
 				"If you want to set an entirely new root, call clear() first.");
@@ -71,8 +72,9 @@ package flare.vis.data
 			var n1:NodeSprite = e.source, b1:Boolean = _nodes.contains(n1);
 			var n2:NodeSprite = e.target, b2:Boolean = _nodes.contains(n2);
 			
-			if (b1 && b2)
+			if (b1 && b2) {
 				throw new ArgumentError("One node must not be in the tree");
+			}
 			if (!(b1 || b2))
 				throw new ArgumentError("One node must already be in the tree");
 				
@@ -84,6 +86,23 @@ package flare.vis.data
 			
 			super.addNode(c);
 			return super.addEdge(e);
+		}
+		
+		/**
+		 * Registers all tree descendants with this Tree instance. 
+		 * @param n a sub-tree root that has already been added to this Tree
+		 */
+		protected function addDescendants(n:NodeSprite):void
+		{
+			for (var i:int=0; i<n.childDegree; ++i) {
+				var e:EdgeSprite = n.getChildEdge(i);
+				var c:NodeSprite = e.other(n);
+				c.parentEdge = e;
+				c.parentIndex = i;
+				super.addNode(c);
+				super.addEdge(e);
+				addDescendants(c);
+			}
 		}
 		
 		/**

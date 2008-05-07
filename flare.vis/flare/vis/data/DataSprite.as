@@ -225,7 +225,11 @@ package flare.vis.data
 		/** @inheritDoc */
 		public override function render() : void
 		{
-			if (_renderer != null) { _renderer.render(this); }
+			if (_renderer != null) {
+				_renderer.render(this);
+			} else {
+				this.graphics.clear();
+			}
 		}
 
 	} // end of class DataSprite

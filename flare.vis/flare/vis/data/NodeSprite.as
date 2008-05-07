@@ -423,9 +423,10 @@ package flare.vis.data
 		{
 			if (preorder && (f(this) as Boolean)) return true;
 			for (var i:uint = 0; i<childDegree; ++i) {
-				if (getChildNode(i).visitTreeDepthFirst(f)) return true;
+				if (getChildNode(i).visitTreeDepthFirst(f, preorder))
+					return true;
 			}
-			if (!preorder && (f(this) as Boolean)) return false;
+			if (!preorder && (f(this) as Boolean)) return true;
 			return false;
 		}
 		

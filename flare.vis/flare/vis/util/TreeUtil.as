@@ -108,7 +108,7 @@ package flare.vis.util
 			// initialize the heap
 			var heap:FibonacciHeap = new FibonacciHeap();
 			d.nodes.visit(function(nn:NodeSprite):void {
-				nn.props.heapNode = heap.insert(nn, Number.POSITIVE_INFINITY);
+				nn.props.heapNode = heap.insert(nn);
 			});
 			heap.decreaseKey(n.props.heapNode, 0);
 			

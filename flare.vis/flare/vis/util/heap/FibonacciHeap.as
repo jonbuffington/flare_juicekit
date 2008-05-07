@@ -73,7 +73,8 @@ package flare.vis.util.heap
 		 * @param key the key value used to sort the heap node
 		 * @return the newly added heap node
 		 */		
-		public function insert(data:Object, key:Number):HeapNode
+		public function insert(data:Object,
+			key:Number=Number.POSITIVE_INFINITY):HeapNode
 		{
 			var n:HeapNode = new HeapNode(data, key);
 			n.inHeap = true;

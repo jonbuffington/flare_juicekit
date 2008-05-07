@@ -141,19 +141,20 @@ package flare.vis.operator.layout
 		 */
 		protected function init():void
 		{
-			var data:Data = visualization.data;
+			var data:Data = visualization.data, o:Object;
 			var p:Particle, s:Spring, n:NodeSprite, e:EdgeSprite;
 			
 			// initialize all simulation entries
 			for each (n in data.nodes) {
 				p = n.props.particle;
+				o = _t.$(n);
 				if (p == null) {
-					n.props.particle = (p = _sim.addParticle(_mass, n.x, n.y));
-					p.fixed = n.fixed;
+					n.props.particle = (p = _sim.addParticle(_mass, o.x, o.y));
+					p.fixed = o.fixed;
 				} else {
-					p.x = n.x;
-					p.y = n.y;
-					p.fixed = n.fixed;
+					p.x = o.x;
+					p.y = o.y;
+					p.fixed = o.fixed;
 				}
 				p.tag = _gen;
 			}
