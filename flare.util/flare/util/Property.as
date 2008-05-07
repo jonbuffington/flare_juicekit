@@ -136,5 +136,21 @@ package flare.util
 			}
 		}
 		
+		/**
+		 * Deletes a dynamically-bound property from an object.
+		 * @param x the object from which to delete the property
+		 */
+		public function deleteValue(x:Object):void
+		{
+			if (_chain == null) {
+				delete x[_field];
+			} else {
+				for (var i:uint=0; i<_chain.length-1; ++i) {
+					x = x[_chain[i]];
+				}
+				delete x[_chain[i]];
+			}
+		}
+		
 	} // end of class Property
 }

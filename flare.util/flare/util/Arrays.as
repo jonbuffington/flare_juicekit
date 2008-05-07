@@ -18,30 +18,102 @@ package flare.util
 		 * Returns the maximum value in an array. Comparison is determined
 		 * using the greater-than operator against arbitrary types.
 		 * @param a the array
+		 * @param p an optional property from which to extract the value.
+		 *  If this is null, the immediate contents of the array are compared.
 		 * @return the maximum value
 		 */
-		public static function max(a:Array):Number
+		public static function max(a:Array, p:Property=null):Number
 		{
 			var x:Number = Number.MIN_VALUE;
-			for (var i:uint=0; i<a.length; ++i) {
-				if (a[i] > x) x = a[i];
+			if (p) {
+				var v:Number;
+				for (var i:uint=0; i<a.length; ++i) {
+					v = p.getValue(a[i]);
+					if (v > x) x = v;
+				}
+			} else {
+				for (i=0; i<a.length; ++i) {
+					if (a[i] > x) x = a[i];
+				}
 			}
 			return x;
+		}
+		
+		/**
+		 * Returns the index of a maximum value in an array. Comparison is
+		 * determined using the greater-than operator against arbitrary types.
+		 * @param a the array
+		 * @param p an optional property from which to extract the value.
+		 *  If this is null, the immediate contents of the array are compared.
+		 * @return the index of a maximum value
+		 */
+		public static function maxIndex(a:Array, p:Property=null):Number
+		{
+			var x:Number = Number.MIN_VALUE;
+			var idx:int = -1;
+			
+			if (p) {
+				var v:Number;
+				for (var i:uint=0; i<a.length; ++i) {
+					v = p.getValue(a[i]);
+					if (v > x) { x = v; idx = i; }
+				}
+			} else {
+				for (i=0; i<a.length; ++i) {
+					if (a[i] > x) { x = a[i]; idx = i; }
+				}
+			}
+			return idx;
 		}
 		
 		/**
 		 * Returns the minimum value in an array. Comparison is determined
 		 * using the less-than operator against arbitrary types.
 		 * @param a the array
+		 * @param p an optional property from which to extract the value.
+		 *  If this is null, the immediate contents of the array are compared.
 		 * @return the minimum value
 		 */
-		public static function min(a:Array):Number
+		public static function min(a:Array, p:Property=null):Number
 		{
 			var x:Number = Number.MAX_VALUE;
-			for (var i:uint=0; i<a.length; ++i) {
-				if (a[i] < x) x = a[i];
+			if (p) {
+				var v:Number;
+				for (var i:uint=0; i<a.length; ++i) {
+					v = p.getValue(a[i]);
+					if (v < x) x = v;
+				}
+			} else {
+				for (i=0; i<a.length; ++i) {
+					if (a[i] < x) x = a[i];
+				}
 			}
 			return x;
+		}
+		
+		/**
+		 * Returns the index of a minimum value in an array. Comparison is
+		 * determined using the less-than operator against arbitrary types.
+		 * @param a the array
+		 * @param p an optional property from which to extract the value.
+		 *  If this is null, the immediate contents of the array are compared.
+		 * @return the index of a minimum value
+		 */
+		public static function minIndex(a:Array, p:Property=null):Number
+		{
+			var x:Number = Number.MAX_VALUE, idx:int = -1;
+			if (p) {
+				var v:Number;
+				for (var i:uint=0; i<a.length; ++i) {
+					v = p.getValue(a[i]);
+					if (v < x) { x = v; idx = i; }
+				}
+			} else {
+				for (i=0; i<a.length; ++i) {
+					if (a[i] < x) { x = a[i]; idx = i; }
+				}
+			}
+			return idx;
 		}
 		
 		/**

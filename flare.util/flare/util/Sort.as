@@ -78,7 +78,7 @@ package flare.util
 		 * @return -1 if a < b, 1 if a > b, 0 otherwise.
 		 */
 		public static function defaultComparator(a:*, b:*):int {
-			return a<b ? -1 : a>b ? 1 : 0;
+			return a>b ? 1 : a<b ? -1 : 0;
 		}
 		
 		/**

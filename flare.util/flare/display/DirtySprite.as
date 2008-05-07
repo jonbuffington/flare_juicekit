@@ -88,6 +88,7 @@ package flare.display
 		public function DirtySprite() {
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddToStage,
 								  false, 0, true); // use weak reference
+			__dirtyList.push(this);
 		}
 		
 		/**
@@ -97,9 +98,8 @@ package flare.display
 		 */
 		private function onAddToStage(evt:Event):void
 		{
-			if (_dirty) {
-				if (!__installed) install(stage);
-				__dirtyList.push(this);
+			if (_dirty == DIRTY) {
+				if (!__installed) install(stage);	
 				stage.invalidate();
 			}
 		}
@@ -114,9 +114,9 @@ package flare.display
 		{
 			if (_dirty == DIRTY) return;
 			
-			if (stage && !_dirty) {	
+			__dirtyList.push(this);
+			if (stage) {	
 				if (!__installed) install(stage);
-				__dirtyList.push(this);
 				stage.invalidate();
 			}
 			_dirty = DIRTY;
