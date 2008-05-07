@@ -177,6 +177,9 @@ package flare.physics
 		private function insert(p:Particle, n:QuadTreeNode,
 			x1:Number, y1:Number, x2:Number, y2:Number):void
 		{
+			// ignore particles with NaN coordinates
+			if (isNaN(p.x) || isNaN(p.y)) return;
+			
 			// try to insert particle p at node n in the quadtree
         	// by construction, each leaf will contain either 1 or 0 particles
         	if ( n.hasChildren ) {
