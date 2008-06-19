@@ -98,6 +98,8 @@ package flare.tests
 	            {format:":0.########e-0", input:4.321e-56, result:"4.321e-56"},
 	            {format:":0.0",input:7.1E-15, result:"0.0"},
 	            {format:":0.0",input:1+7.1E-15, result:"1.0"},
+	            {format:":0.0",input:0.9999999999, result:"1.0"},
+	            {format:":0.#######",input:0.9999999999, result:"1"},
 	            // standard formatters
 	            {format:":c", input:12345, result:"$12,345.00"},
 	            {format:":C04", input:12345, result:"$12,345.0000"},

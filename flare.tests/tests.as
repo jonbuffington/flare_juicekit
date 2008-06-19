@@ -3,6 +3,7 @@ package {
 	import flare.tests.DataIOTests;
 	import flare.tests.DataTests;
 	import flare.tests.ExpressionTests;
+	import flare.tests.MatrixTests;
 	import flare.tests.SortTests;
 	import flare.tests.StringFormatTests;
 	import flare.tests.TreeTests;
@@ -21,6 +22,7 @@ package {
 			addTest(new TreeTests());
 			addTest(new SortTests());
 			addTest(new DataIOTests());
+			addTest(new MatrixTests());
 			run();
 		}
 		

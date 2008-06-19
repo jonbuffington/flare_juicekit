@@ -2,22 +2,25 @@ package flare.demos
 {
 	import flare.animate.Sequence;
 	import flare.animate.Transition;
+	import flare.animate.TransitionEvent;
 	import flare.animate.Transitioner;
 	import flare.util.Button;
 	import flare.util.GraphUtil;
 	import flare.vis.Visualization;
-	import flare.vis.controls.DragControl;
+	import flare.vis.controls.ExpandControl;
 	import flare.vis.data.Data;
 	import flare.vis.data.NodeSprite;
 	import flare.vis.operator.OperatorSwitch;
+	import flare.vis.operator.label.Labeler;
 	import flare.vis.operator.layout.CircleLayout;
 	import flare.vis.operator.layout.ForceDirectedLayout;
 	import flare.vis.operator.layout.IndentedTreeLayout;
 	import flare.vis.operator.layout.NodeLinkTreeLayout;
 	import flare.vis.operator.layout.Orientation;
 	import flare.vis.operator.layout.RadialTreeLayout;
-	import flare.vis.util.graphics.Shapes;
+	import flare.vis.util.Shapes;
 	
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -27,7 +30,7 @@ package flare.demos
 		private var vis:Visualization;
 		private var os:OperatorSwitch;
 		private var anchors:Array;
-		private var shape:int = 0;
+		private var shape:String = null;
 		
 		public function GraphView() {
 			name = "GraphView";
@@ -55,6 +58,10 @@ package flare.demos
 			os.index = 1;
 			vis.marks.x = anchors[1].x;
 			vis.marks.y = anchors[1].y;
+			
+			for (var j:int=0; j<data.nodes.size; ++j) {
+				data.nodes[j].data.label = String(j);
+			}
 
 			vis.operators.add(os);
 			vis.tree.nodes.visit(function(n:NodeSprite):void {
@@ -66,9 +73,9 @@ package flare.demos
 			vis.update();
 			addChild(vis);
 			
-			//vis.controls.add(new ExpandControl());
+			vis.controls.add(new ExpandControl());
 			//vis.controls.add(new PanZoomControl());
-			vis.controls.add(new DragControl());
+			//vis.controls.add(new DragControl());
 
 			// add reset button, and tie it to reset the layout
 			for (var i:uint=0; i<os.length; ++i) {
@@ -84,7 +91,7 @@ package flare.demos
 				addChild(b);
 			}
 			
-			var btn:Button = new Button("Starburst");
+			var btn:Button = new Button("Sunburst");
 			btn.addEventListener(MouseEvent.CLICK, function(evt:MouseEvent):void
 			{
 				toStarburst().play();
@@ -103,7 +110,7 @@ package flare.demos
 			vis.operators[0].index = idx;
 			
 			var seq:Sequence;
-			if (shape != 0) {
+			if (shape) {
 				seq = new Sequence(
 					vis.data.nodes.setProperties({scaleX:0, scaleY:0}, 0.5),
 					vis.data.nodes.setProperties({shape:0, lineColor:0xffdddddd}, 0.5),
@@ -114,16 +121,19 @@ package flare.demos
 				seq = new Sequence();
 			}
 			
-			shape = 0;
+			shape = null;
 			if (idx > 0) {
-				seq.onEnd = function():void {
-					var t:Transitioner = new Transitioner(2);
-					t.$(vis.marks).x = anchors[idx].x;
-					t.$(vis.marks).y = anchors[idx].y;
-					vis.update(t).play();
-				};
+				seq.addEventListener(TransitionEvent.END,
+					function(evt:Event):void {
+						var t:Transitioner = new Transitioner(2);
+						t.$(vis.marks).x = anchors[idx].x;
+						t.$(vis.marks).y = anchors[idx].y;
+						vis.update(t).play();
+					}
+				);
 			} else {
-				seq.onEnd = function():void { vis.continuousUpdates = true; };
+				seq.addEventListener(TransitionEvent.END,
+					function(evt:Event):void {vis.continuousUpdates = true;});
 			}
 			return seq;
 		}

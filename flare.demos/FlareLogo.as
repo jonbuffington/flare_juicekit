@@ -1,15 +1,18 @@
 package
 {
-	import flash.display.Sprite;
-	import flare.animate.Transitioner;
-	import flash.display.DisplayObject;
-	import flare.animate.Sequence;
-	import flare.animate.Tween;
 	import flare.animate.Easing;
-	import flash.filters.GlowFilter;
-	import flare.animate.Pause;
-	import flare.animate.Transition;
 	import flare.animate.Parallel;
+	import flare.animate.Pause;
+	import flare.animate.Sequence;
+	import flare.animate.Transition;
+	import flare.animate.TransitionEvent;
+	import flare.animate.Transitioner;
+	import flare.animate.Tween;
+	
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.filters.GlowFilter;
 
 	public class FlareLogo extends Sprite
 	{
@@ -59,7 +62,8 @@ package
 				layoutT(con, new Transitioner(3), 0),
 				new Pause(21)
 			);
-			seq.onEnd = function():void { seq.play(); }
+			seq.addEventListener(TransitionEvent.END,
+				function(evt:Event):void { seq.play(); });
 			_dance = seq;
 			
 			// do the glow...
@@ -70,7 +74,8 @@ package
 			
 			var glow:Sequence = new Sequence(g1,g2);
 			glow.easing = Easing.easeInOutPoly(2);
-			glow.onEnd = function():void { glow.play(); }
+			glow.addEventListener(TransitionEvent.END,
+				function(evt:Event):void { glow.play();	});
 			_glow = glow;
 		}
 		

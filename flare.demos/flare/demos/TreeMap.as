@@ -1,24 +1,18 @@
 package flare.demos
 {
-	import flash.events.Event;
+	import flare.util.GraphUtil;
+	import flare.vis.Visualization;
+	import flare.vis.controls.HoverControl;
+	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
 	import flare.vis.data.Tree;
-	import flare.vis.data.EdgeSprite;
-	import flare.vis.operator.layout.Layout;
+	import flare.vis.events.SelectionEvent;
 	import flare.vis.operator.layout.TreeMapLayout;
-	import flash.geom.Rectangle;
-	import flare.util.GraphUtil;
-	import flare.vis.data.DataSprite;
-	import flash.display.StageQuality;
-	import flare.util.Colors;
-	import flare.vis.Visualization;
-	import flash.events.MouseEvent;
-	import flash.display.Sprite;
-	import flash.display.DisplayObjectContainer;
-	import flare.vis.util.graphics.Shapes;
-	import flare.vis.data.Data;
-	import flare.vis.controls.HoverControl;
 	import flare.vis.util.Filters;
+	import flare.vis.util.Shapes;
+	
+	import flash.display.StageQuality;
+	import flash.geom.Rectangle;
 	
 	public class TreeMap extends Demo
 	{
@@ -40,18 +34,24 @@ package flare.demos
 			vis.update();
 			addChild(vis);
 			
-			var hc:HoverControl = new HoverControl(null, 
+			var hc:HoverControl = new HoverControl(
 				Filters.isNodeSprite, HoverControl.MOVE_AND_RETURN);
-			hc.onRollOver = function(n:NodeSprite):void {
-				n.lineColor = 0xffFF0000; n.lineWidth = 2;
-				n.fillColor = 0xffFFFFAAAA; 
-			};
-			hc.onRollOut = function(n:NodeSprite):void {
-				n.lineColor = 0; n.lineWidth = 0;
-				n.fillColor = 0xff8888FF;
-				n.fillAlpha = n.lineAlpha = n.depth / 25;
-			}
+			hc.addEventListener(SelectionEvent.SELECT, rollOver);
+			hc.addEventListener(SelectionEvent.DESELECT, rollOut);
 			vis.controls.add(hc);
+		}
+		
+		private function rollOver(evt:SelectionEvent):void {
+			var n:NodeSprite = evt.node;
+			n.lineColor = 0xffFF0000; n.lineWidth = 2;
+			n.fillColor = 0xffFFFFAAAA;
+		}
+		
+		private function rollOut(evt:SelectionEvent):void {
+			var n:NodeSprite = evt.node;
+			n.lineColor = 0; n.lineWidth = 0;
+			n.fillColor = 0xff8888FF;
+			n.fillAlpha = n.lineAlpha = n.depth / 25;
 		}
 		
 		public override function play():void

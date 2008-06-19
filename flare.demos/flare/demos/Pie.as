@@ -5,7 +5,7 @@ package flare.demos
 	import flare.vis.operator.layout.PieLayout;
 	import flare.vis.operator.encoder.ColorEncoder;
 	import flare.vis.data.DataSprite;
-	import flare.vis.util.graphics.Shapes;
+	import flare.vis.util.Shapes;
 	import flash.events.MouseEvent;
 	import flare.animate.Tween;
 	import flare.animate.Transitioner;
@@ -23,7 +23,7 @@ package flare.demos
 				lineAlpha: 0
 			});
 			vis.operators.add(new PieLayout("data.value", 0.7));
-			vis.operators.add(new ColorEncoder("data.value",1,"fillColor"));
+			vis.operators.add(new ColorEncoder("data.value","nodes","fillColor"));
 			vis.update();
 			
 			addChild(vis);

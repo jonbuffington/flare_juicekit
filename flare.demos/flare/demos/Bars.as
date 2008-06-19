@@ -1,14 +1,14 @@
 package flare.demos
 {
 	import flare.animate.Transitioner;
+	import flare.scale.ScaleType;
 	import flare.util.Button;
 	import flare.vis.Visualization;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.encoder.ColorEncoder;
 	import flare.vis.operator.layout.AxisLayout;
-	import flare.vis.scale.ScaleType;
-	import flare.vis.util.graphics.Shapes;
+	import flare.vis.util.Shapes;
 	
 	import flash.events.MouseEvent;
 	
@@ -27,7 +27,7 @@ package flare.demos
 			});
 
 			vis.operators.add(new AxisLayout("data.x", "data.y", true, false));
-			vis.operators.add(new ColorEncoder("data.s", 1, "fillColor", ScaleType.CATEGORIES));
+			vis.operators.add(new ColorEncoder("data.s", "nodes", "fillColor", ScaleType.CATEGORIES));
 			vis.xyAxes.yAxis.showLines = false;
 			vis.update();
 

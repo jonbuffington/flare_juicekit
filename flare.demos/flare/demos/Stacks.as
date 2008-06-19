@@ -1,19 +1,18 @@
 package flare.demos
 {
-	import flare.vis.data.Data;
-	import flare.vis.Visualization;
-	import flare.vis.operator.layout.StackedAreaLayout;
-	import flare.vis.data.DataSprite;
-	import flare.util.Colors;
-	import flare.vis.util.graphics.Shapes;
-	import flash.display.StageQuality;
-	import flash.events.MouseEvent;
+	import flare.animate.TransitionEvent;
 	import flare.animate.Transitioner;
-	import flare.animate.Tween;
-	import flare.vis.operator.layout.Layout;
-	import flare.vis.axis.CartesianAxes;
-	import flare.vis.scale.OrdinalScale;
 	import flare.util.Button;
+	import flare.util.Colors;
+	import flare.vis.Visualization;
+	import flare.vis.data.Data;
+	import flare.vis.data.DataSprite;
+	import flare.vis.operator.layout.StackedAreaLayout;
+	import flare.vis.util.Shapes;
+	
+	import flash.display.StageQuality;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
 	
 	public class Stacks extends Demo
 	{
@@ -24,7 +23,7 @@ package flare.demos
 		public function Stacks() {
 			name = "Stacks";
 			
-			var dataset:Object = getData(200);
+			var dataset:Object = getData(500);
 			
 			vis = new Visualization(dataset.data);
 			vis.bounds.width = WIDTH-100;
@@ -50,8 +49,10 @@ package flare.demos
 				thresh = 0.25 + 0.75 * Math.random();
 				vis.data.nodes.visit(filter);
 				
-				t.onStart = function():void { stage.quality = StageQuality.LOW; }
-				t.onEnd = function():void { stage.quality = StageQuality.HIGH; }
+				t.addEventListener(TransitionEvent.START,
+					function(e:Event):void {stage.quality = StageQuality.LOW});
+				t.addEventListener(TransitionEvent.END,
+					function(e:Event):void {stage.quality = StageQuality.HIGH});
 				
 				vis.update(t).play();
 			});

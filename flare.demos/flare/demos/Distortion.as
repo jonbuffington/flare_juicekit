@@ -72,7 +72,7 @@ package flare.demos
 		}
 		
 		public override function play():void {
-			vis.controls.add(new AnchorControl(null, distort));
+			vis.controls.add(new AnchorControl(distort));
 		}
 		
 		public override function stop():void {

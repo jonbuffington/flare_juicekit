@@ -33,6 +33,7 @@ doc.flare.vis.operator=The flare.vis.operator package provides classes for visua
 doc.flare.vis.operator.distortion=The flare.vis.operator.distortion package provides classes for distorting the position and size of visualized data.
 doc.flare.vis.operator.filter=The flare.vis.operator.filter package provides classes for visually filtering items by setting their visibility.
 doc.flare.vis.operator.encoder=The flare.vis.operator.encoding package provides classes for visually encoding properties such as color&#44; shape&#44; and size.
+doc.flare.vis.operator.label=The flare.vis.operator.label package provides classes for creating and positioning labels.
 doc.flare.vis.operator.layout=The flare.vis.operator.layout package provides classes for calculating the spatial position of visualized data.
 doc.flare.vis.palette=The flare.vis.palette package provides classes for color&#44; shape&#44; and size palettes for visual encoding.
 doc.flare.vis.util=The flare.vis.util package provides classes with utility functions for graphics and filtering.

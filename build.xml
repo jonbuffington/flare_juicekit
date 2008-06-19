@@ -20,15 +20,11 @@
   <property name="name" value="prefuse.flare"/>
   <property name="version" value="alpha"/>
 
-  <property name="util.dir" value="${basedir}/flare.util"/>
-  <property name="animate.dir" value="${basedir}/flare.animate"/>
-  <property name="data.dir" value="${basedir}/flare.data"/>
-  <property name="query.dir" value="${basedir}/flare.query"/>
-  <property name="physics.dir" value="${basedir}/flare.physics"/>
-  <property name="vis.dir" value="${basedir}/flare.vis"/>
-  <property name="flex.dir" value="${basedir}/flare.flex"/>
-  <property name="demos.dir" value="${basedir}/flare.demos"/>
-  <property name="tests.dir" value="${basedir}/flare.tests"/>
+  <property name="flare.src" value="${basedir}/flare/src"/>
+  <property name="flare.lib" value="${basedir}/flare/lib"/>
+  <property name="demos.src" value="${basedir}/flare.demos"/>
+  <property name="tests.src" value="${basedir}/flare.tests"/>
+  <property name="tests.lib" value="${basedir}/flare.tests/lib"/>
 
   <property name="build.dir" value="${basedir}/build"/>
   <property name="dist.dir" value="${basedir}/build/dist"/>
@@ -72,231 +68,42 @@
     <mkdir dir="${build.dir}"/>
   </target>
 
+
   <!-- =================================================================== -->
-  <!-- Compile flare.util                                                  -->
+  <!-- Compile flare toolkit                                               -->
   <!-- =================================================================== -->
-  <target name="util" depends="prepare">
+  <target name="flare" depends="prepare">
     <!-- First we have to collect all the AS files -->
-    <path id="util.files">
-      <fileset dir="${util.dir}">
+    <path id="flare.files">
+      <fileset dir="${flare.src}">
         <include name="**/**"/>
       </fileset>
     </path>
     <pathconvert 
-      property="util.classes" 
+      property="flare.classes" 
       pathsep=" " 
       dirsep="." 
-      refid="util.files">
-      <map from="${util.dir}/" to=""/>
+      refid="flare.files">
+      <map from="${flare.src}/" to=""/>
       <mapper>
          <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
       </mapper>
     </pathconvert>
 
     <!-- Now we build the .swc -->
-    <compc output="${build.dir}/flare.util.swc" include-classes="${util.classes}">
-        <source-path path-element="${util.dir}/"/>      
+    <compc output="${build.dir}/flare.swc" include-classes="${flare.classes}">
+      <source-path path-element="${flare.src}/"/>
+      <source-path path-element="${flare.lib}/"/>
     </compc>
   </target>
 
-  <!-- =================================================================== -->
-  <!-- Compile flare.physics                                               -->
-  <!-- =================================================================== -->
-  <target name="physics" depends="prepare">
-    <!-- First we have to collect all the AS files -->
-    <path id="physics.files">
-      <fileset dir="${physics.dir}">
-        <include name="**/**"/>
-      </fileset>
-    </path>
-    <pathconvert 
-      property="physics.classes" 
-      pathsep=" " 
-      dirsep="." 
-      refid="physics.files">
-      <map from="${physics.dir}/" to=""/>
-      <mapper>
-         <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
-      </mapper>
-    </pathconvert>
-
-    <!-- Now we build the .swc -->
-    <compc output="${build.dir}/flare.physics.swc" include-classes="${physics.classes}">
-        <source-path path-element="${physics.dir}/"/>      
-    </compc>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Compile flare.animate                                               -->
-  <!-- =================================================================== -->
-  <target name="animate" depends="util">
-    <!-- First we have to collect all the AS files -->
-    <path id="animate.files">
-      <fileset dir="${animate.dir}">
-        <include name="**/**"/>
-      </fileset>
-    </path>
-    <pathconvert 
-      property="animate.classes" 
-      pathsep=" " 
-      dirsep="." 
-      refid="animate.files">
-      <map from="${animate.dir}/" to=""/>
-      <mapper>
-         <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
-      </mapper>
-    </pathconvert>
-
-    <!-- Now we build the .swc -->
-    <compc output="${build.dir}/flare.animate.swc" include-classes="${animate.classes}">
-      <source-path path-element="${animate.dir}/"/>
-      <compiler.library-path dir="${build.dir}">
-        <include name="flare.util.swc"/>
-      </compiler.library-path>   
-    </compc>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Compile flare.data                                                  -->
-  <!-- =================================================================== -->
-  <target name="data" depends="util">
-    <!-- First we have to collect all the AS files -->
-    <path id="data.files">
-      <fileset dir="${data.dir}">
-        <include name="**/**"/>
-      </fileset>
-    </path>
-    <pathconvert 
-      property="data.classes" 
-      pathsep=" " 
-      dirsep="." 
-      refid="data.files">
-      <map from="${data.dir}/" to=""/>
-      <mapper>
-         <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
-      </mapper>
-    </pathconvert>
-
-    <!-- Now we build the .swc -->
-    <compc output="${build.dir}/flare.data.swc" include-classes="${data.classes}">
-      <source-path path-element="${data.dir}/"/>
-      <compiler.library-path dir="${build.dir}">
-        <include name="flare.util.swc"/>
-      </compiler.library-path>   
-    </compc>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Compile flare.query                                                 -->
-  <!-- =================================================================== -->
-  <target name="query" depends="util">
-    <!-- First we have to collect all the AS files -->
-    <path id="query.files">
-      <fileset dir="${query.dir}">
-        <include name="**/**"/>
-      </fileset>
-    </path>
-    <pathconvert 
-      property="query.classes" 
-      pathsep=" " 
-      dirsep="." 
-      refid="query.files">
-      <map from="${query.dir}/" to=""/>
-      <mapper>
-         <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
-      </mapper>
-    </pathconvert>
-
-    <!-- Now we build the .swc -->
-    <compc output="${build.dir}/flare.query.swc" include-classes="${query.classes}">
-      <source-path path-element="${query.dir}/"/>
-      <compiler.library-path dir="${build.dir}">
-        <include name="flare.util.swc"/>
-      </compiler.library-path>   
-    </compc>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Compile flare.vis                                                   -->
-  <!-- =================================================================== -->
-  <target name="vis" depends="util,physics,animate,data">
-    <!-- First we have to collect all the AS files -->
-    <path id="vis.files">
-      <fileset dir="${vis.dir}">
-        <include name="**/**"/>
-      </fileset>
-    </path>
-    <pathconvert 
-      property="vis.classes" 
-      pathsep=" " 
-      dirsep="." 
-      refid="vis.files">
-      <map from="${vis.dir}/" to=""/>
-      <mapper>
-         <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
-      </mapper>
-    </pathconvert>
-
-    <!-- Now we build the .swc -->
-    <compc output="${build.dir}/flare.vis.swc" include-classes="${vis.classes}">
-      <source-path path-element="${vis.dir}/"/>
-      <compiler.library-path dir="${build.dir}">
-        <include name="flare.util.swc"/>
-        <include name="flare.data.swc"/>
-        <include name="flare.animate.swc"/>
-        <include name="flare.physics.swc"/>
-      </compiler.library-path>
-      <compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
-        <include name="libs" />
-      </compiler.library-path>
-    </compc>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- Compile flare.flex                                                   -->
-  <!-- =================================================================== -->
-  <target name="flex" depends="vis">
-    <!-- First we have to collect all the AS files -->
-    <path id="flex.files">
-      <fileset dir="${flex.dir}">
-        <include name="**/**"/>
-      </fileset>
-    </path>
-    <pathconvert 
-      property="flex.classes" 
-      pathsep=" " 
-      dirsep="." 
-      refid="flex.files">
-      <map from="${flex.dir}/" to=""/>
-      <mapper>
-         <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
-      </mapper>
-    </pathconvert>
-
-    <!-- Now we build the .swc -->
-    <compc output="${build.dir}/flare.flex.swc" include-classes="${flex.classes}">
-      <source-path path-element="${flex.dir}/"/>
-      <compiler.library-path dir="${build.dir}">
-        <include name="flare.vis.swc"/>
-        <include name="flare.util.swc"/>
-        <include name="flare.data.swc"/>
-        <include name="flare.animate.swc"/>
-        <include name="flare.physics.swc"/>
-      </compiler.library-path>
-      <compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
-        <include name="libs" />
-        <!-- compc throws a fit without the locale resource bundles :( -->
-        <include name="locale/${LOCALE}" />
-      </compiler.library-path>
-    </compc>
-  </target>
 
   <!-- =================================================================== -->
   <!-- Compile demos                                                       -->
   <!-- =================================================================== -->
   <target name="demos" depends="flare">
     <path id="demos.files">
-      <fileset dir="${demos.dir}">
+      <fileset dir="${demos.src}">
         <include name="**/**"/>
       </fileset>
     </path>
@@ -305,18 +112,15 @@
       pathsep=" " 
       dirsep="." 
       refid="demos.files">
-      <map from="${demos.dir}/" to=""/>
+      <map from="${demos.src}/" to=""/>
       <mapper>
          <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
       </mapper>
     </pathconvert>
 
-    <mxmlc file="${demos.dir}/demos.as" output="${build.dir}/flare.demos.swf">
+    <mxmlc file="${demos.src}/demos.as" output="${build.dir}/flare.demos.swf">
       <compiler.library-path dir="${build.dir}">
-        <include name="flare.util.swc"/>
-        <include name="flare.animate.swc"/>
-        <include name="flare.physics.swc"/>
-        <include name="flare.vis.swc"/>
+        <include name="flare.swc"/>
       </compiler.library-path>
     </mxmlc>
   </target>
@@ -325,31 +129,23 @@
   <!-- =================================================================== -->
   <!-- Compile tests                                                       -->
   <!-- =================================================================== -->
-  <!--
   <target name="tests" depends="prepare,flare">
-    <mxmlc file="${tests.dir}/tests.as" output="${build.dir}/flare.tests.swf">
+    <mxmlc file="${tests.src}/tests.as" output="${build.dir}/flare.tests.swf">
       <compiler.library-path dir="${build.dir}">
-        <include name="flare.util.swc"/>
-        <include name="flare.animate.swc"/>
-        <include name="flare.physics.swc"/>
-        <include name="flare.vis.swc"/>
+        <include name="flare.swc"/>
       </compiler.library-path>
-      <compiler.library-path dir="${tests.dir}/lib">
+      <compiler.library-path dir="${tests.lib}">
         <include name="unitest.swc"/>
       </compiler.library-path>
     </mxmlc>
   </target>
-  -->
-  
-  <!-- =================================================================== -->
-  <!-- Build flare libraries in ./build                                    -->
-  <!-- =================================================================== -->
-  <target name="flare" depends="util,animate,query,data,physics,vis,flex"/>
+
 
   <!-- =================================================================== -->
   <!-- Build all in ./build                                                -->
   <!-- =================================================================== -->
   <target name="all" depends="flare,demos"/>
+
 
   <!-- =================================================================== -->
   <!-- Build reference documentation in docs                               -->
@@ -363,7 +159,12 @@
       <arg value="-footer=${doc.copyright}. Created ${datetime}."/>
       <!-- ridiculously enough, it appears all package descriptions must
            be provided using command line arguments...                     -->
-      <arg value="-package=flare.animate,${doc.flare.animate}"/>
+      <arg value="-package=flare.analytics,${doc.flare.analytics}"/>
+      <arg value="-package=flare.analytics.cluster,${doc.flare.analytics.cluster}"/>
+      <arg value="-package=flare.analytics.graph,${doc.flare.analytics.graph}"/>
+      <arg value="-package=flare.analytics.optimization,${doc.flare.analytics.optimization}"/>
+      <arg value="-package=flare.analytics.util,${doc.flare.analytics.util}"/>
+	<arg value="-package=flare.animate,${doc.flare.animate}"/>
       <arg value="-package=flare.animate.interpolate,${doc.flare.animate.interpolate}"/>
       <arg value="-package=flare.data,${doc.flare.data}"/>
       <arg value="-package=flare.data.converters,${doc.flare.data.converters}"/>
@@ -372,6 +173,7 @@
       <arg value="-package=flare.physics,${doc.flare.physics}"/>
       <arg value="-package=flare.query,${doc.flare.query}"/>
       <arg value="-package=flare.query.methods,${doc.flare.query.methods}"/>
+      <arg value="-package=flare.scale,${doc.flare.scale}"/>
       <arg value="-package=flare.util,${doc.flare.util}"/>
       <arg value="-package=flare.vis,${doc.flare.vis}"/>
       <arg value="-package=flare.vis.axis,${doc.flare.vis.axis}"/>
@@ -384,14 +186,13 @@
       <arg value="-package=flare.vis.operator.distortion,${doc.flare.vis.operator.distortion}"/>
       <arg value="-package=flare.vis.operator.filter,${doc.flare.vis.operator.filter}"/>
       <arg value="-package=flare.vis.operator.encoder,${doc.flare.vis.operator.encoder}"/>
+      <arg value="-package=flare.vis.operator.label,${doc.flare.vis.operator.label}"/>
       <arg value="-package=flare.vis.operator.layout,${doc.flare.vis.operator.layout}"/>
       <arg value="-package=flare.vis.palette,${doc.flare.vis.palette}"/>
-      <arg value="-package=flare.vis.scale,${doc.flare.vis.scale}"/>
       <arg value="-package=flare.vis.util,${doc.flare.vis.util}"/>
-      <arg value="-package=flare.vis.util.graphics,${doc.flare.vis.util.graphics}"/>
-      <arg value="-package=flare.vis.util.heap,${doc.flare.vis.util.heap}"/>
      </exec>
   </target>
+
 
   <!-- =================================================================== -->
   <!-- Build distribution in ./dist                                        -->
@@ -402,6 +203,11 @@
     <!-- copy flare libraries -->
     <copy todir="${dist.dir}">
       <fileset dir="${basedir}" casesensitive="yes">
+        <include name="flare/**"/>
+        <include name="flare.tests/**"/>
+        <include name="flare.demos/**"/>
+        <include name="etc/**"/>
+        <include name="*"/>
         <exclude name="build/**"/>
         <exclude name="**/.*"/>
         <exclude name="**/bin/**"/>

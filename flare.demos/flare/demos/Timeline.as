@@ -1,7 +1,10 @@
 package flare.demos
 {
+	import flare.analytics.optimization.AspectRatioBanker;
 	import flare.animate.Transitioner;
+	import flare.display.RectSprite;
 	import flare.display.TextSprite;
+	import flare.scale.ScaleType;
 	import flare.util.Button;
 	import flare.util.Maths;
 	import flare.vis.Visualization;
@@ -10,7 +13,6 @@ package flare.demos
 	import flare.vis.operator.encoder.ColorEncoder;
 	import flare.vis.operator.layout.AxisLayout;
 	import flare.vis.operator.layout.ForceDirectedLayout;
-	import flare.vis.scale.ScaleType;
 	import flare.vis.util.Filters;
 	
 	import flash.events.MouseEvent;
@@ -21,8 +23,8 @@ package flare.demos
 		public function Timeline() {
 			name = "Timeline";
 			
-			var vis:Visualization = new Visualization(getTimeline(50, 3));
-			vis.bounds = new Rectangle(0, 0, 600, 100);
+			var vis:Visualization = new Visualization(getTimeline(50,3));
+			vis.operators.add(new AspectRatioBanker("data.count", true, 700, 300));
 			vis.operators.add(new AxisLayout("data.date", "data.count"));
 			vis.operators.add(new ColorEncoder(
 				"data.series", Data.EDGES, "lineColor", ScaleType.CATEGORIES));
@@ -30,11 +32,12 @@ package flare.demos
 				"data.series", Data.NODES, "fillColor", ScaleType.CATEGORIES));
 			vis.data.nodes.setProperty("alpha", 0.5);
 			
+			vis.operators[1].xScale.flush = true;
+			
 			with (vis.xyAxes.xAxis) {
 				horizontalAnchor = TextSprite.LEFT;
 				verticalAnchor = TextSprite.MIDDLE;
 				labelAngle = Math.PI / 2;
-				axisScale.flush = true;	
 			}
 			vis.update();
 			addChild(vis);
@@ -50,17 +53,28 @@ package flare.demos
 			btn.addEventListener(MouseEvent.CLICK, function(evt:MouseEvent):void
 			{
 				// create new force-directed layout that enforces the bounds
+				var r:Rectangle = new Rectangle(0, 0, vis.bounds.width, 460);
 				var fdl:ForceDirectedLayout = new ForceDirectedLayout(true);
+				fdl.simulation.nbodyForce.gravitation = -10;
 				fdl.defaultSpringLength = 20;
-				fdl.layoutBounds = new Rectangle(0, 0, 600, 400);
-				vis.operators.setOperatorAt(0, fdl);
+				fdl.layoutBounds = r;
+				vis.operators.clear();
+				vis.operators.add(fdl);
 				vis.continuousUpdates = true;
+				
+				// add a border around the layout bounds
+				var b:RectSprite = new RectSprite(-5,-5,r.width+10,r.height+10);
+				b.lineColor = 0xffcccccc;
+				b.fillColor = 0;
+				b.alpha = 0;
+				vis.addChildAt(b, 0);
 				
 				var t:Transitioner = new Transitioner(1);
 				vis.data.nodes.setProperties({buttonMode:true, scaleX:2, scaleY:2}, t);
+				t.$(b).alpha = 1;
 				fdl.hideAxes(t).play();
 				
-				new DragControl(vis, Filters.isNodeSprite);
+				vis.controls.add(new DragControl(Filters.isNodeSprite));
 				removeChild(btn);
 			});
 			addChild(btn);
@@ -74,8 +88,8 @@ package flare.demos
 			var x:Number, f:Number;
 			
 			var data:Data = new Data();
-			for (var i:uint=0; i<N; ++i) {
-				for (var j:uint=0; j<M; ++j) {
+			for (var j:uint=0; j<M; ++j) {
+				for (var i:uint=0; i<N; ++i) {
 					f = i/(N-1);
 					x = t0.time + f*(t1.time - t0.time);
 					data.addNode({

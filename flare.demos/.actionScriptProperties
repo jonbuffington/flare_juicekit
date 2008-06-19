@@ -17,11 +17,7 @@
           <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_agent.swc" useDefaultLinkType="false"/>
         </excludedEntries>
       </libraryPathEntry>
-      <libraryPathEntry kind="3" linkType="1" path="/flare.animate/bin/flare.animate.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/flare.physics/bin/flare.physics.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/flare.util/bin/flare.util.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/flare.vis/bin/flare.vis.swc" useDefaultLinkType="false"/>
-      <libraryPathEntry kind="3" linkType="1" path="/flare.data/bin/flare.data.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="/flare/bin/flare.swc" useDefaultLinkType="false"/>
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>

@@ -188,12 +188,12 @@ package flare.tests
 			
 			// visit all, count nodes only
 			count = 0;
-			data.visit(counter, Data.ALL, Filters.isNodeSprite);
+			data.visit(counter, null, false, Filters.isNodeSprite);
 			assertEquals(data.nodes.size, count);
 			
 			// visit all, count edges only
 			count = 0;
-			data.visit(counter, Data.ALL, Filters.isEdgeSprite);
+			data.visit(counter, null, false, Filters.isEdgeSprite);
 			assertEquals(data.edges.size, count);
 		}
 		

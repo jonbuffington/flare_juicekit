@@ -1,4 +1,5 @@
 package {
+	import flare.animate.TransitionEvent;
 	import flare.animate.Transitioner;
 	import flare.demos.Animation;
 	import flare.demos.Bars;
@@ -14,6 +15,7 @@ package {
 	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 
 	[SWF(width="800", height="550", backgroundColor="#ffffff", frameRate="30")]
@@ -91,16 +93,14 @@ package {
 			var t:Transitioner = new Transitioner(1);
 			t.$(_buttons).alpha = 0;
 			t.$(_logo).alpha = 0;
-			t.onEnd = function():void {
-				_buttons.visible = false;
-			};
+			t.addEventListener(TransitionEvent.END,
+				function(evt:Event):void { _buttons.visible = false; });
 			t.play();
 						
 			t = new Transitioner(1);
 			t.delay = 0.5;
-			t.onStart = function():void {
-				_demos[_cur].play();
-			}
+			t.addEventListener(TransitionEvent.START,
+				function(evt:Event):void { _demos[_cur].play(); });
 			t.$(_cancel).alpha = 1;
 			t.$(_demo).alpha = 1;
 			t.play();
@@ -114,12 +114,13 @@ package {
 			var t:Transitioner = new Transitioner(1);
 			t.$(_demo).alpha = 0;
 			t.$(_cancel).alpha = 0;
-			t.onEnd = function():void {
+			
+			t.addEventListener(TransitionEvent.END, function(evt:Event):void {
 				_demos[_cur].stop();
 				_demo.removeChild(_demos[_cur] as Sprite);
 				_cur = 0;
 				_cancel.visible = false;
-			}
+			});
 			t.play();
 			
 			t = new Transitioner(1);

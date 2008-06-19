@@ -7,6 +7,7 @@ package flare.tests
 	import flare.animate.interpolate.NumberInterpolator;
 	import flare.animate.interpolate.PointInterpolator;
 	import flare.animate.interpolate.RectangleInterpolator;
+	import flare.util.Arrays;
 	import flare.util.Colors;
 	
 	import flash.geom.Matrix;
@@ -84,8 +85,8 @@ package flare.tests
 		public function testArrayInterp():void {
 			var s:Array = [0, 0, 0, 0, 0];
 			var t:Array = [1, 1, 1, 1, 1];
-			var o:Object = {v:s};
-			var ai:ArrayInterpolator = new ArrayInterpolator(o, "v", o.v, t);
+			var o:Object = {v:Arrays.copy(s)};
+			var ai:ArrayInterpolator = new ArrayInterpolator(o, "v", s, t);
 			
 			for (var f:Number=0; f<=1.0; f+=0.1) {
 				ai.interpolate(f);
@@ -95,7 +96,7 @@ package flare.tests
 			assertNotEquals(s, o.v);
 			assertNotEquals(t, o.v);
 			
-			ai.reset(o, "v", s, o.v);
+			ai.reset(o, "v", s, t);
 			for (f=0; f<=1.0; f+=0.1) {
 				ai.interpolate(f);
 				for (i=0; i<s.length; ++i)

@@ -1,15 +1,15 @@
  package flare.demos
 {
+	import flare.animate.TransitionEvent;
 	import flare.animate.Transitioner;
-	import flash.utils.Timer;
-	import flash.events.TimerEvent;
-	import flash.events.Event;
 	import flare.vis.data.DataSprite;
-	import flash.filters.GlowFilter;
-	import flash.filters.DropShadowFilter;
-	import flash.filters.BlurFilter;
-	import flash.geom.Rectangle;
 	import flare.vis.data.render.ShapeRenderer;
+	
+	import flash.events.Event;
+	import flash.filters.BlurFilter;
+	import flash.filters.DropShadowFilter;
+	import flash.filters.GlowFilter;
+	import flash.utils.Timer;
 	
 	public class Animation extends Demo
 	{
@@ -71,19 +71,20 @@
 		
 		public override function play():void
 		{
-			var rev:Boolean = false;
-			trans.onEnd = function():void {
-				trans.play(rev = !rev);
-			}
+			trans.addEventListener(TransitionEvent.END, replay);
 			trans.play();
 			this.addEventListener(Event.ENTER_FRAME, onRotate);
 		}
 		
 		public override function stop():void
 		{
-			trans.onEnd = null;
+			trans.removeEventListener(TransitionEvent.END, replay);
 			trans.stop();
 			this.removeEventListener(Event.ENTER_FRAME, onRotate);
+		}
+
+		private function replay(event:Event):void {
+			trans.play(!trans.reverse);
 		}
 
 		private function onRotate(event:Event) : void {

@@ -1,20 +1,23 @@
 package flare.demos
 {
+	import flare.animate.TransitionEvent;
 	import flare.animate.Transitioner;
+	import flare.scale.ScaleType;
 	import flare.util.Button;
-	import flare.util.Stats;
 	import flare.vis.Visualization;
 	import flare.vis.controls.HoverControl;
 	import flare.vis.controls.SelectionControl;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
+	import flare.vis.data.ScaleBinding;
+	import flare.vis.events.SelectionEvent;
+	import flare.vis.operator.OperatorList;
 	import flare.vis.operator.distortion.BifocalDistortion;
 	import flare.vis.operator.encoder.ColorEncoder;
+	import flare.vis.operator.encoder.PropertyEncoder;
 	import flare.vis.operator.encoder.ShapeEncoder;
 	import flare.vis.operator.encoder.SizeEncoder;
 	import flare.vis.operator.layout.AxisLayout;
-	import flare.vis.palette.ColorPalette;
-	import flare.vis.scale.ScaleType;
 	import flare.vis.util.Filters;
 	
 	import flash.events.Event;
@@ -45,7 +48,7 @@ package flare.demos
 			});
 			vis.operators.add(new AxisLayout(field1, field2));
 			vis.operators.add(new ShapeEncoder(field1));
-			vis.operators.add(new SizeEncoder(field2, Data.NODES, ScaleType.QUANTILE, 5));
+			vis.operators.add(new SizeEncoder(field2, Data.NODES));
 			vis.operators.add(new ColorEncoder(field1,Data.NODES, "lineColor", ScaleType.CATEGORIES));
 			vis.xyAxes.xAxis.fixLabelOverlap = false; // keep overlapping labels
 			vis.update();
@@ -53,27 +56,26 @@ package flare.demos
 			vis.x = 45;
 			vis.y = 15;
 			
-			// add mouse over
-			var hc:HoverControl = new HoverControl(vis, Filters.isDataSprite);
-			hc.onRollOver = function(d:DataSprite):void {
-				d.filters = [new GlowFilter(0xFFFF55, 0.8, 6, 6, 10)];
+			// selection callbacks
+			var select:Function = function(evt:SelectionEvent):void {
+				evt.object.filters = [new GlowFilter(0xFFFF55, 0.8, 6, 6, 10)];
 			};
-			hc.onRollOut = function(d:DataSprite):void {
-				d.filters = null;
-			}
+			var deselect:Function = function(evt:SelectionEvent):void {
+				evt.object.filters = null;
+			};
 			
-			var sc:SelectionControl = new SelectionControl(null, Filters.isDataSprite);
-			sc.onSelect = hc.onRollOver;
-			sc.onDeselect = hc.onRollOut;
+			// add rubber-band selection
+			var sc:SelectionControl = new SelectionControl(Filters.isDataSprite);
+			sc.addEventListener(SelectionEvent.SELECT, select);
+			sc.addEventListener(SelectionEvent.DESELECT, deselect);
 			vis.controls.add(sc);
 
 			// add scale update button
 			var bs:Button = new Button("Change Scale");
 			bs.addEventListener(MouseEvent.CLICK, function(evt:MouseEvent):void {
 				// change the x-axis scale and animate the result
-				var al:AxisLayout = vis.operators[0] as AxisLayout;
-				al.xScaleType = 
-					al.xScaleType==ScaleType.LOG ? ScaleType.LINEAR : ScaleType.LOG;
+				var xb:ScaleBinding = (vis.operators[0] as AxisLayout).xScale;
+				xb.scaleType = xb.scaleType=="log" ? "linear" : "log";
 				vis.update(new Transitioner(2)).play();
 			});
 			bs.x = 10; bs.y = HEIGHT - 10 - bs.height;
@@ -96,9 +98,11 @@ package flare.demos
 					distort.layoutAnchor = new Point(vis.mouseX, vis.mouseY);
 					// animate into distorted view, add frame listener
 					var t:Transitioner = vis.update(new Transitioner(1));
-					t.onEnd = function():void {
-						addEventListener(Event.ENTER_FRAME, mouseUpdate);	
-					};
+					t.addEventListener(TransitionEvent.END,
+						function(evt:Event):void {
+							addEventListener(Event.ENTER_FRAME, mouseUpdate);
+						}
+					);
 					t.play();
 				}
 			});
