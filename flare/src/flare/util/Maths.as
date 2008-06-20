@@ -258,7 +258,7 @@ package flare.util
         public static function invLinearInterp(x:Number, min:Number, max:Number):Number
         {
             var denom:Number = (max - min);
-            return (denom < EPSILON ? 0 : (x - min) / denom);
+            return (denom < EPSILON && denom > -EPSILON ? 0 : (x - min) / denom);
         }
         
         /**
@@ -275,7 +275,7 @@ package flare.util
         {
             min = symLog(min, b);
             var denom:Number = symLog(max, b) - min;
-            return (denom < EPSILON ? 0.5 : (symLog(x, b) - min) / denom);
+            return (denom < EPSILON && denom > -EPSILON ? 0 : (symLog(x, b) - min) / denom);
         }
         
         /**
@@ -292,7 +292,7 @@ package flare.util
         {
             min = adjLog(min, b);
             var denom:Number = adjLog(max, b) - min;
-            return (denom < EPSILON ? 0.5 : (adjLog(x, b) - min) / denom);
+            return (denom < EPSILON && denom > -EPSILON ? 0 : (adjLog(x, b) - min) / denom);
         }
         
         /**
@@ -308,7 +308,7 @@ package flare.util
         {
             min = symSqrt(min);
             var denom:Number = symSqrt(max) - min;
-            return (denom < EPSILON ? 0.5 : (symSqrt(x) - min) / denom);
+            return (denom < EPSILON && denom > -EPSILON ? 0 : (symSqrt(x) - min) / denom);
         }
         
         /**
@@ -325,7 +325,7 @@ package flare.util
         {
             min = symRoot(min,p);
             var denom:Number = symRoot(max,p) - min;
-            return (denom < EPSILON ? 0.5 : (symRoot(x,p) - min) / denom);
+            return (denom < EPSILON  && denom > -EPSILON ? 0 : (symRoot(x,p) - min) / denom);
         }
 
 		/**
