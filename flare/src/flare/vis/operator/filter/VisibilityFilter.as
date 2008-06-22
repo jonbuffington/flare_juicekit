@@ -4,6 +4,7 @@ package flare.vis.operator.filter
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.Operator;
+	import flare.vis.util.Filters;
 
 	/**
 	 * Filter operator that sets item visibility based on a filtering
@@ -24,6 +25,8 @@ package flare.vis.operator.filter
 	 */
 	public class VisibilityFilter extends Operator
 	{
+		private var _filter:Function;
+		
 		/** Predicate function determining item visibility. */
 		public var predicate:Function;
 
@@ -36,8 +39,10 @@ package flare.vis.operator.filter
 		 *  only determines which items are visited by this operator. Only
 		 *  items for which this function return true will be considered by the
 		 *  VisibilityFilter. If the function is null, all items will be
-		 *  considered. */
-		public var filter:Function;
+		 *  considered.
+		 *  @see flare.vis.util.Filters */
+		public function get filter():Function { return _filter; }
+		public function set filter(f:*):void { _filter = Filters.instance(f); }
 		
 		/** Immediate mode sets the visibility settings immediately, bypassing
 		 *  any transitioner provided. */

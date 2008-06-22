@@ -410,7 +410,7 @@ package flare.vis.util
 		{
 			var N:int = (npts < 0 ? p.length/2 : npts);
 			var k:int = N<4 ? 3 : 4, nplusk:int = N+k;
-			var i:int, j:int, s:int, subdiv:int = 34;
+			var i:int, j:int, s:int, subdiv:int = 40;
 			var x:Number, y:Number, step:Number, u:Number;
 			
 			// if only two points, draw a line between them

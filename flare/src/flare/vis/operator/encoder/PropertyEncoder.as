@@ -2,8 +2,9 @@ package flare.vis.operator.encoder
 {
 	import flare.animate.Transitioner;
 	import flare.vis.data.Data;
-	import flare.vis.data.DataSprite;
+	import flare.vis.data.DataList;
 	import flare.vis.operator.Operator;
+	import flare.vis.util.Filters;
 
 	/**
 	 * A property encoder simply sets a group of properties to static
@@ -34,9 +35,10 @@ package flare.vis.operator.encoder
 		
 		/** Boolean function indicating which items to process. Only items
 		 *  for which this function return true will be considered by the
-		 *  Encoder. If the function is null, all items will be considered. */
+		 *  labeler. If the function is null, all items will be considered.
+		 *  @see flare.vis.util.Filters */
 		public function get filter():Function { return _filter; }
-		public function set filter(f:Function):void { _filter = f; }
+		public function set filter(f:*):void { _filter = Filters.instance(f); }
 		
 		public function get ignoreTransitioner():Boolean { return _ignoreTrans; }
 		public function set ignoreTransitioner(b:Boolean):void { _ignoreTrans = b; }
@@ -72,11 +74,8 @@ package flare.vis.operator.encoder
 		{
 			t = (t==null || _ignoreTrans ? Transitioner.DEFAULT : t);
 			if (_values == null) return;
-			
-			visualization.data.visit(function(d:DataSprite):void {
-				for (var p:String in _values)
-					t.setValue(d, p, _values[p]);
-			}, _group, false, _filter);
+			var list:DataList = visualization.data.groups[_group];
+			list.setProperties(_values, t, _filter);
 		}
 		
 	} // end of class PropertyEncoder

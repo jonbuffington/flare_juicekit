@@ -1,14 +1,16 @@
 package flare.vis.data
 {
 	import flare.animate.Transitioner;
+	import flare.query.Expression;
 	import flare.util.Arrays;
 	import flare.util.Property;
 	import flare.util.Sort;
 	import flare.util.Stats;
+	import flare.vis.util.Filters;
 	
+	import flash.utils.flash_proxy;
 	import flash.utils.Dictionary;
 	import flash.utils.Proxy;
-	import flash.utils.flash_proxy;
 
 	/**
 	 * A list of nodes or edges maintained by a Data instance. Items contained
@@ -147,7 +149,7 @@ package flare.vis.data
 		 * Sort DataSprites according to their properties. This method performs
 		 * a one-time sorting. To establish a consistent sort order robust over
 		 * the addition of new items, use the <code>sort</code> property.
-		 * @param a the sort arguments.
+		 * @param args the sort arguments.
 		 * 	If a String is provided, the data will be sorted in ascending order
 		 *   according to the data field named by the string.
 		 *  If an Array is provided, the data will be sorted according to the
@@ -156,12 +158,10 @@ package flare.vis.data
 		 *   ascending order (the default). If false, the data is sorted in
 		 *   descending order.
 		 */
-		public function sortBy(a:*):void
+		public function sortBy(...args):void
 		{
-			var args:Array;
-			if (a is String) args = [a];
-			else if (a is Array)  args = a;
-			else throw new ArgumentError("Illegal input: "+a);
+			if (args.length == 0) return;
+			if (args[0] is Array) args = args[0];
 			
 			var f:Function = Sort.sorter(args);
 			_list.sort(f);
@@ -181,13 +181,14 @@ package flare.vis.data
 		 * @return true if the visitation was interrupted with an early exit
 		 */		
 		public function visit(visitor:Function, reverse:Boolean=false,
-			filter:Function=null):Boolean
+			filter:*=null):Boolean
 		{
 			_visiting++; // mark a visit in process
 			var a:Array = _list; // use our own reference to the list
 			var i:uint, b:Boolean = false;
+			var f:Function = Filters.instance(filter);
 			
-			if (reverse && filter==null) {
+			if (reverse && f==null) {
 				for (i=a.length; --i>=0;)
 					if (visitor(a[i]) as Boolean) {
 						b = true; break;
@@ -195,11 +196,11 @@ package flare.vis.data
 			}
 			else if (reverse) {
 				for (i=a.length; --i>=0;)
-					if (filter(a[i]) && (visitor(a[i]) as Boolean)) {
+					if (f(a[i]) && (visitor(a[i]) as Boolean)) {
 						b = true; break;
 					}
 			}
-			else if (filter==null) {
+			else if (f==null) {
 				for (i=0; i<a.length; ++i)
 					if (visitor(a[i]) as Boolean) {
 						b = true; break;
@@ -207,7 +208,7 @@ package flare.vis.data
 			}
 			else {
 				for (i=0; i<a.length; ++i)
-					if (filter(a[i]) && (visitor(a[i]) as Boolean)) {
+					if (f(a[i]) && (visitor(a[i]) as Boolean)) {
 						b = true; break;
 					}
 			}
@@ -264,8 +265,15 @@ package flare.vis.data
 		public function applyDefaults(o:Object):void
 		{
 			if (_defs == null) return;
+			
 			for (var name:String in _defs) {
-				Property.$(name).setValue(o, _defs[name]);
+				var value:* = _defs[name];
+				if (value is Property) {
+					value = Property(value).getValue(o);
+				} else if (value is Expression) {
+					value = Expression(value).eval(o);
+				}
+				Property.$(name).setValue(o, value);
 			}
 		}
 		
@@ -280,13 +288,29 @@ package flare.vis.data
 		 *  values. If the input is a number, a new Transitioner with duration
 		 *  set to the input value will be used. The input is null by default,
 		 *  in which case object values are updated immediately.
+		 * @param filter an optional Boolean-valued filter function for
+		 * 	limiting which items are visited
 		 * @return the transitioner used to update the values
 		 */
-		public function setProperty(name:String, value:*, t:*=null):Transitioner
+		public function setProperty(name:String, value:*, t:*=null,
+			filter:*=null):Transitioner
 		{
+			var o:Object;
 			var trans:Transitioner = Transitioner.instance(t);
-			for (var i:uint=0; i<_list.length; ++i)
-				trans.setValue(_list[i], name, value);
+			var f:Function = Filters.instance(filter);
+			var p:Property = value as Property;
+			var e:Expression = value as Expression;
+			
+			if (p) {
+				for each (o in _list) if (f==null || f(o))
+					trans.setValue(o, name, p.getValue(trans.$(o)));
+			} else if (e) {
+				for each (o in _list) if (f==null || f(o))
+					trans.setValue(o, name, e.eval(trans.$(o)));
+			} else {
+				for each (o in _list) if (f==null || f(o))
+					trans.setValue(o, name, value);
+			}
 			return trans;
 		}
 		
@@ -298,15 +322,32 @@ package flare.vis.data
 		 *  values. If the input is a number, a new Transitioner with duration
 		 *  set to the input value will be used. The input is null by default,
 		 *  in which case object values are updated immediately.
+		 * @param filter an optional Boolean-valued filter function for
+		 * 	limiting which items are visited
 		 * @return the transitioner used to update the values
 		 */
-		public function setProperties(vals:Object, t:*=null):Transitioner
+		public function setProperties(vals:Object, t:*=null,
+			filter:*=null):Transitioner
 		{
+			var o:Object;
 			var trans:Transitioner = Transitioner.instance(t);
+			var f:Function = Filters.instance(filter);
+			
 			for (var name:String in vals) {
 				var value:* = vals[name];
-				for (var i:uint=0; i<_list.length; ++i)
-					trans.setValue(_list[i], name, value);
+				var p:Property = value as Property;
+				var e:Expression = value as Expression;
+				
+				if (p) {
+					for each (o in _list) if (f==null || f(o))
+						trans.setValue(o, name, p.getValue(trans.$(o)));
+				} else if (e) {
+					for each (o in _list) if (f==null || f(o))
+						trans.setValue(o, name, e.eval(trans.$(o)));
+				} else {
+					for each (o in _list) if (f==null || f(o))
+						trans.setValue(o, name, value);
+				}
 			}
 			return trans;
 		}

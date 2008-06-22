@@ -7,6 +7,7 @@ package flare.vis.operator.encoder
 	import flare.vis.data.ScaleBinding;
 	import flare.vis.operator.Operator;
 	import flare.vis.palette.Palette;
+	import flare.vis.util.Filters;
 
 	/**
 	 * Base class for Operators that perform encoding of visual variables such
@@ -40,9 +41,10 @@ package flare.vis.operator.encoder
 
 		/** Boolean function indicating which items to process. Only items
 		 *  for which this function return true will be considered by the
-		 *  Encoder. If the function is null, all items will be considered. */
+		 *  labeler. If the function is null, all items will be considered.
+		 *  @see flare.vis.util.Filters */
 		public function get filter():Function { return _filter; }
-		public function set filter(f:Function):void { _filter = f; }
+		public function set filter(f:*):void { _filter = Filters.instance(f); }
 
 		/** The name of the data group for which to compute the encoding. */
 		public function get group():String { return _binding.group; }

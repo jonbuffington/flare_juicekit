@@ -44,10 +44,6 @@ package flare.vis.controls
 		private var _idx:int;
 		private var _movePolicy:int;
 		
-		/** Boolean-valued filter function determining which items are
-		 *  activated by the mouse hover. */
-		public var filter:Function = null;
-		
 		// --------------------------------------------------------------------
 		
 		/**
@@ -60,7 +56,7 @@ package flare.vis.controls
 		 * @param rollOver an optional SelectionEvent listener for roll-overs
 		 * @param rollOut an optional SelectionEvent listener for roll-outs
 		 */
-		public function HoverControl(filter:Function=null, movePolicy:int=DONT_MOVE,
+		public function HoverControl(filter:*=null, movePolicy:int=DONT_MOVE,
 			rollOver:Function=null, rollOut:Function=null)
 		{
 			this.filter = filter;
@@ -94,7 +90,7 @@ package flare.vis.controls
 		private function onMouseOver(evt:MouseEvent):void
 		{
 			var n:DisplayObject = evt.target as DisplayObject;
-			if (n==null || (filter!=null && !filter(n))) return;
+			if (n==null || (_filter!=null && !_filter(n))) return;
 			
 			_cur = n;
 			

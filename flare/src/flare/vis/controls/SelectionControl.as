@@ -27,10 +27,6 @@ package flare.vis.controls
 		private var _hit:InteractiveObject;
 		private var _stage:Stage;
 		
-		/** Boolean-valued filter function determining which items are eligible
-		 *  for selection. */
-		public var filter:Function = null;
-		
 		/** The active hit area over which selection
 		 *  interactions can be performed. */
 		public function get hitArea():InteractiveObject { return _hit; }
@@ -64,7 +60,7 @@ package flare.vis.controls
 		 * @param select an optional SelectionEvent listener for selections
 		 * @param deselect an optional SelectionEvent listener for deselections
 		 */
-		public function SelectionControl(filter:Function=null,
+		public function SelectionControl(filter:*=null,
 			hitArea:InteractiveObject=null, select:Function=null,
 			deselect:Function=null)
 		{
@@ -187,7 +183,7 @@ package flare.vis.controls
 		
 		private function selTest(d:DisplayObject):void
 		{
-			if (filter!=null && !filter(d)) return;
+			if (_filter!=null && !_filter(d)) return;
 			var a:Boolean = d.hitTestObject(_shape0);
 			var b:Boolean = d.hitTestObject(_shape1);
 			

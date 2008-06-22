@@ -2,10 +2,13 @@ package flare.vis.operator.label
 {
 	import flare.animate.Transitioner;
 	import flare.display.TextSprite;
+	import flare.query.Expression;
 	import flare.util.Property;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.Operator;
+	import flare.vis.util.Filters;
+	import flare.vis.util.Shapes;
 	
 	import flash.display.Sprite;
 	import flash.text.TextFormat;
@@ -13,7 +16,11 @@ package flare.vis.operator.label
 	/**
 	 * Labeler that adds labels for items in a visualization. By default, this
 	 * operator adds labels that are centered on each data sprite; this can be
-	 * changed by configuring the offset and anchor settings.
+	 * changed by configuring the offset and anchor settings. For later access
+	 * and manipulation, all created labels are stored in the
+	 * <code>props.label</code> property of the labeled data sprites. This
+	 * property can be changed by setting the <code>access</code> property of
+	 * this class.
 	 */
 	public class Labeler extends Operator
 	{
@@ -25,6 +32,7 @@ package flare.vis.operator.label
 		private var _policy:String;
 		private var _labels:Sprite;
 		private var _group:String;
+		private var _filter:Function;
 		
 		private var _source:Property;
 		private var _access:Property = Property.$("props.label");
@@ -32,18 +40,27 @@ package flare.vis.operator.label
 		/** @private */
 		protected var _t:Transitioner;
 		
+		/** The name of the property in which to store created labels.
+		 *  The default is "props.label". */
+		public function get access():String { return _access.name; }
+		public function set access(s:String):void { _access = Property.$(s); }
+		
 		/** The name of the data group to label. */
 		public function get group():String { return _group; }
 		public function set group(g:String):void { _group = g; setup(); }
 		
-		/** The source property that provides the label text. */
+		/** The source property that provides the label text. This
+		 *  property will be ignored if the <code>textFunction<code>
+		 *  property is non-null. */
 		public function get source():String { return _source.name; }
 		public function set source(s:String):void { _source = Property.$(s); }
 		
 		/** Boolean function indicating which items to process. Only items
 		 *  for which this function return true will be considered by the
-		 *  labeler. If the function is null, all items will be considered. */
-		public var filter:Function = null;
+		 *  labeler. If the function is null, all items will be considered.
+		 *  @see flare.vis.util.Filters */
+		public function get filter():Function { return _filter; }
+		public function set filter(f:*):void { _filter = Filters.instance(f); }
 		
 		/** A sprite containing the labels, if a layer policy is used. */
 		public function get labels():Sprite { return _labels; }
@@ -53,8 +70,14 @@ package flare.vis.operator.label
 		 *  CHILD (for adding labels as children of data objects). */
 		public function get labelPolicy():String { return _policy; }
 		
+		/** Optional function for determining label text. */
+		public var textFunction:Function = null;
+		
 		/** The text format to apply to labels. */
 		public var textFormat:TextFormat;
+		/** The text mode to use for the TextSprite labels.
+		 *  @see flare.display.TextSprite */
+		public var textMode:int = TextSprite.BITMAP;
 		/** The horizontal alignment for labels.
 		 *  @see flare.display.TextSprite */
 		public var horizontalAnchor:int = TextSprite.CENTER;
@@ -70,19 +93,35 @@ package flare.vis.operator.label
 		
 		/**
 		 * Creates a new Labeler. 
-		 * @param source the property from which to retrieve the label text
+		 * @param source the property from which to retrieve the label text.
+		 *  If this value is a string or property instance, the label text will
+		 *  be pulled directly from the named property. If this value is a
+		 *  Function or Expression instance, the value will be used to set the
+		 *  <code>textFunction<code> property and the label text will be
+		 *  determined by evaluating that function.
 		 * @param group the data group to process
 		 * @param format optional text formatting information for labels
 		 * @param policy the label creation policy. One of LAYER (for adding a
 		 *  separate label layer) or CHILD (for adding labels as children of
 		 *  data objects)
+		 * @param filter a Boolean-valued filter function determining which
+		 *  items will be given labels
 		 */
-		public function Labeler(source:String, group:String=Data.NODES,
-			format:TextFormat=null, policy:String=CHILD)
+		public function Labeler(source:*, group:String=Data.NODES,
+			format:TextFormat=null, policy:String=CHILD, filter:*=null)
 		{
-			_source = Property.$(source);
+			if (source is String) {
+				_source = Property.$(source);
+			} else if (source is Property) {
+				_source = source;
+			} else if (source is Function) {
+				textFunction = source;
+			} else if (source is Expression) {
+				textFunction = source.eval;
+			}
 			_group = group;
 			textFormat = format ? format : new TextFormat("Helvetica,Arial",11);
+			this.filter = filter;
 			
 			_policy = policy;
 			if (policy==LAYER) {
@@ -121,8 +160,13 @@ package flare.vis.operator.label
 			var o:Object, x:Number, y:Number, a:Number, v:Boolean;
 			if (_policy == LAYER) {
 				o = _t.$(d);
-				x = o.x;
-				y = o.y;
+				if (o.shape == Shapes.BLOCK) {
+					x = o.u + o.w/2;
+					y = o.v + o.h/2;
+				} else {
+					x = o.x;
+					y = o.y;
+				}
 				a = o.alpha;
 				v = o.visible;
 				o = _t.$(label);
@@ -144,7 +188,11 @@ package flare.vis.operator.label
 		 */
 		protected function getLabelText(d:DataSprite):String
 		{
-			return _source.getValue(d);
+			if (textFunction != null) {
+				return textFunction(d);
+			} else {
+				return _source.getValue(d);
+			}
 		}
 		
 		/**
@@ -162,7 +210,7 @@ package flare.vis.operator.label
 			if (!label && !create) {
 				return null;
 			} else if (!label) {
-				label = new TextSprite();
+				label = new TextSprite("", null, textMode);
 				label.text = getLabelText(d);
 				label.visible = visible;
 				label.applyFormat(textFormat);
@@ -175,10 +223,12 @@ package flare.vis.operator.label
 				} else {
 					d.addChild(label);
 					label.mouseEnabled = false;
+					label.mouseChildren = false;
 					label.x = xOffset;
 					label.y = yOffset;
 				}
 			}
+			label.textMode = textMode;
 			label.horizontalAnchor = horizontalAnchor;
 			label.verticalAnchor = verticalAnchor;
 			return label;

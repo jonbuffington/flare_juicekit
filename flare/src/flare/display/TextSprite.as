@@ -235,11 +235,10 @@ package flare.display
 		 */
 		public function TextSprite(text:String=null, format:TextFormat=null, mode:int=BITMAP) {
 			_tf = new TextField();
+			_tf.selectable = false; // not selectable by default
 			_tf.autoSize = TextFieldAutoSize.LEFT;
 			_tf.defaultTextFormat = _fmt = format ? format : new TextFormat();
 			if (text != null) _tf.text = text;
-			//_fmt = format ? format : new TextFormat();
-			//_tf.setTextFormat(_fmt);
 			_bmap = new Bitmap();
 			setMode(mode);
 			dirty();
@@ -319,11 +318,13 @@ package flare.display
 			
 			// horizontal anchor
 			switch (_hAnchor) {
+				case LEFT:   d.x = 0; break;
 				case CENTER: d.x = -d.width / 2; break;
 				case RIGHT:  d.x = -d.width; break;
 			}
 			// vertical anchor
 			switch (_vAnchor) {
+				case TOP:    d.y = 0; break;
 				case MIDDLE: d.y = -d.height / 2; break;
 				case BOTTOM: d.y = -d.height; break;
 			}

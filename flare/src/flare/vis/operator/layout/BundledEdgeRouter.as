@@ -2,6 +2,7 @@ package flare.vis.operator.layout
 {
 	import flare.animate.Transitioner;
 	import flare.util.Arrays;
+	import flare.vis.data.DataSprite;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
 	import flare.vis.operator.Operator;
@@ -27,9 +28,6 @@ package flare.vis.operator.layout
 		 *  unbundled straight lines. At 1, the edges bundle together tightly.
 		 *  The default is 0.85. */
 		public var bundling:Number = 0.85;
-		/** Flag indicating if this operator should all set the alpha values
-		 *  for routed edges. The default is true. */
-		public var setAlpha:Boolean = true;
 		/** Removes the shared ancestor along a node path. */
 		public var removeSharedAncestor:Boolean = false;
 		
@@ -38,10 +36,9 @@ package flare.vis.operator.layout
 		 * @param bundling the tightness of edge bundles
 		 */
 		public function BundledEdgeRouter(bundling:Number=0.85,
-			setAlpha:Boolean=true, removeSharedAncestor:Boolean=false)
+			removeSharedAncestor:Boolean=false)
 		{
 			this.bundling = bundling;
-			this.setAlpha = setAlpha;
 			this.removeSharedAncestor = removeSharedAncestor;
 		}
 		
@@ -56,7 +53,6 @@ package flare.vis.operator.layout
 			
 			// compute edge bundles
 			for each (var e:EdgeSprite in visualization.data.edges) {
-				o = t.$(e);
 				u = e.source; p1.push(pu=u); d1 = u.depth;
 				v = e.target; p2.push(pv=v); d2 = v.depth;
 				
@@ -69,47 +65,59 @@ package flare.vis.operator.layout
 				}
 				
 				// collect b-spline control points
-				var p:Array = o.points;
+				var p:Array = t.$(e).points;
 				if (p==null) { p = []; } else { Arrays.clear(p); }
 				
 				d1 = p1.length;
 				d2 = p2.length;
 				if ((d1+d2)==4 && d1>1 && d2>1) { // shared parent
-					p.push(p1[1].x);
-					p.push(p1[1].y);
+					addPoint(p, p1[1], t);
 				} else {
 					var off:int = removeSharedAncestor ? 1 : 0;
-					for (var i:int=1; i<p1.length-off; ++i) {
-						p.push(p1[i].x);
-						p.push(p1[i].y);
-					}
-					for (i=p2.length-1; --i>=1;) {
-						p.push(p2[i].x);
-						p.push(p2[i].y);
-					}
+					for (var i:int=1; i<p1.length-off; ++i)
+						addPoint(p, p1[i], t);
+					for (i=p2.length-1; --i>=1;)
+						addPoint(p, p2[i], t);
 				}
 				
 				// set the bundling strength by adjusting control points
 				var b:Number = bundling, ib:Number = 1-b, N:int = p.length;
 				if (b < 1) {
-					o = t.$(u); ux = o.x; uy = o.y;
-					o = t.$(v); dx = (o.x-ux)/(N+2); dy = (o.y-uy)/(N+2);
+					o = t.$(u); 
+					ux = o.x;//o.shape==Shapes.BLOCK ? o.u + o.w/2 : o.x;
+					uy = o.y;//o.shape==Shapes.BLOCK ? o.v + o.h/2 : o.y;
+					o = t.$(v);
+					dx = o.x;//o.shape==Shapes.BLOCK ? o.u + o.w/2 : o.x;
+					dy = o.y;//o.shape==Shapes.BLOCK ? o.v + o.h/2 : o.y;
+					dx = (dx-ux)/(N+2);
+					dy = (dx-uy)/(N+2);
 
 					for (i=0; i<N; i+=2) {
 						p[i]   = b*p[i]   + ib*(ux + (i+2)*dx);
 						p[i+1] = b*p[i+1] + ib*(uy + (i+2)*dy);
 					}
-					o = t.$(e);
 				}
 				
+				o = t.$(e);
 				o.points = p;
-				if (setAlpha) o.alpha = 2 / N;
 				e.shape = Shapes.BSPLINE;
 				
 				// clean-up
 				Arrays.clear(p1);
 				Arrays.clear(p2);
 			}
+		}
+		
+		private static function addPoint(p:Array, d:DataSprite, t:Transitioner):void
+		{
+			var o:Object = t.$(d);
+			/*if (o.shape == Shapes.BLOCK) {
+				p.push(o.u+o.w/2);
+				p.push(o.v+o.h/2);
+			} else {*/
+				p.push(o.x);
+				p.push(o.y);
+			//}
 		}
 		
 	} // end of class BundledEdgeRouter

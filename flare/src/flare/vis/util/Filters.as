@@ -1,5 +1,7 @@
 package flare.vis.util
 {
+	import flare.query.Expression;
+	import flare.util.Property;
 	import flare.vis.axis.AxisGridLine;
 	import flare.vis.axis.AxisLabel;
 	import flare.vis.data.DataSprite;
@@ -21,6 +23,30 @@ package flare.vis.util
 		public function Filters()
 		{
 			throw new Error("This is an abstract class.");
+		}
+		
+		// -- Convenience Functions -------------------------------------------
+		
+		/**
+		 * Convenience method that returns a filter function determined by the
+		 * input object. If the input is null or of type function, it is simply
+		 * returned. If the input is of type <code>Expression</code>, its
+		 * predicate function is returned. In any other case, an error is
+		 * thrown.
+		 * @param f the input object providing a filter
+		 * @return the filter function
+		 */
+		public static function instance(f:*):Function
+		{
+			if (f==null || f is Function) {
+				return f;
+			} else if (f is Expression) {
+				return Expression(f).predicate;
+			} else if (f is String) {
+				return Property.$(f).getValue;
+			} else {
+				throw new ArgumentError("Unrecognized filter type");
+			}
 		}
 		
 		// -- Static Filters --------------------------------------------------

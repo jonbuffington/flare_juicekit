@@ -444,7 +444,7 @@ package flare.vis.data
 		 * @return true if the visitation was interrupted with an early exit
 		 */
 		public function visit(v:Function, group:String=null,
-			reverse:Boolean=false, filter:Function=null):Boolean
+			reverse:Boolean=false, filter:*=null):Boolean
 		{
 			if (group == null) {
 				if (_edges.size > 0 && _edges.visit(v, reverse, filter))
@@ -516,6 +516,16 @@ package flare.vis.data
 				_tree = _span.tree;
 			}
 			return _tree;	
+		}
+		public function set tree(t:Tree):void
+		{
+			if (t==null) { _tree = null; return; }
+			
+			var ok:Boolean;
+			ok = t.root.visitTreeDepthFirst(function(n:NodeSprite):Boolean {
+				return _nodes.contains(n);
+			});
+			if (ok) _tree = t;
 		}
 
 	} // end of class Data

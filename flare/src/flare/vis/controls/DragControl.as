@@ -22,9 +22,6 @@ package flare.vis.controls
 		 *  rate, however, this may pre-empt other processing. */
 		public var trackAtFrameRate:Boolean = false;
 		
-		/** Filter function for limiting the items available for dragging. */
-		public var filter:Function;
-		
 		/** The active item currently being dragged. */
 		public function get activeItem():Sprite { return _cur; }
 		
@@ -33,7 +30,7 @@ package flare.vis.controls
 		 * @param filter a Boolean-valued filter function determining which
 		 *  items should be draggable.
 		 */		
-		public function DragControl(filter:Function=null) {
+		public function DragControl(filter:*=null) {
 			this.filter = filter;
 		}
 		
@@ -57,7 +54,7 @@ package flare.vis.controls
 			var s:Sprite = event.target as Sprite;
 			if (s==null) return; // exit if not a sprite
 			
-			if (filter==null || filter(s)) {
+			if (_filter==null || _filter(s)) {
 				_cur = s;
 				_mx = _object.mouseX;
 				_my = _object.mouseY;

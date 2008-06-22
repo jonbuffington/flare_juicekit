@@ -28,10 +28,6 @@ package flare.vis.controls
 		 *  value to zero effectively disables the click control. */
 		public var numClicks:uint;
 		
-		/** Boolean-valued filter function determining which items are
-		 *  clickable. */
-		public var filter:Function = null;
-		
 		/** The maximum allowed delay (in milliseconds) between clicks. */
 		public function get clickDelay():Number { return _timer.delay; }
 		public function set clickDelay(d:Number):void { _timer.delay = d; }
@@ -45,7 +41,7 @@ package flare.vis.controls
 		 * @param numClicks the number of clicks
 		 * @param onClick an optional SelectionEvent listener for click events
 		 */
-		public function ClickControl(filter:Function=null, numClicks:uint=1,
+		public function ClickControl(filter:*=null, numClicks:uint=1,
 			onClick:Function=null)
 		{
 			this.filter = filter;
@@ -79,7 +75,7 @@ package flare.vis.controls
 			_timer.stop();
 			
 			var n:DisplayObject = evt.target as DisplayObject;
-			if (n==null || (filter!=null && !filter(n))) {
+			if (n==null || (_filter!=null && !_filter(n))) {
 				_cur = null;
 				reset();
 				return;

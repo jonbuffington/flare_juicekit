@@ -1,6 +1,11 @@
 package flare.vis.data
 {
+	import flare.animate.Transitioner;
+	import flare.query.Expression;
 	import flare.util.Arrays;
+	import flare.util.Property;
+	import flare.util.Sort;
+	import flare.vis.util.Filters;
 	
 	/**
 	 * Visually represents a data element, such as a data tuple or graph node.
@@ -332,40 +337,70 @@ package flare.vis.data
 		// -- Visitor Methods --------------------------------------------------
 		
 		/**
+		 * Sorts the order of connected edges according to their properties.
+		 * Each type of edge (in, out, or child) is sorted separately.
+		 * @param opt flag indicating which set(s) of edges should be sorted
+		 * @param sort the sort arguments.
+		 * 	If a String is provided, the data will be sorted in ascending order
+		 *   according to the data field named by the string.
+		 *  If an Array is provided, the data will be sorted according to the
+		 *   fields in the array. In addition, field names can optionally
+		 *   be followed by a boolean value. If true, the data is sorted in
+		 *   ascending order (the default). If false, the data is sorted in
+		 *   descending order.
+		 */
+		public function sortEdgesBy(opt:uint=ALL_LINKS, ...sort):void
+		{
+			if (sort.length == 0) return;
+			if (sort[0] is Array) sort = sort[0];
+			
+			var f:Function = Sort.sorter(sort);
+			if (opt & IN_LINKS    && _inEdges    != null) _inEdges.sort(f);
+			if (opt & OUT_LINKS   && _outEdges   != null) _outEdges.sort(f);
+			if (opt & CHILD_LINKS && _childEdges != null) _childEdges.sort(f);
+		}
+		
+		/**
 		 * Visits this node's edges, invoking a function on each visited edge.
 		 * @param f the function to invoke on the edges. If the function
 		 *  returns true, the visitation is ended with an early exit.
 		 * @param opt flag indicating which sets of edges should be visited
 		 * @return true if the visitation was interrupted with an early exit
 		 */
-		public function visitEdges(f:Function, opt:uint=ALL_LINKS):Boolean
+		public function visitEdges(f:Function, opt:uint=ALL_LINKS,
+			filter:*=null):Boolean
 		{
+			var ff:Function = Filters.instance(filter);
 			var rev:Boolean = (opt & REVERSE) > 0;
 			if (opt & IN_LINKS && _inEdges != null) { 
-				if (visitEdgeHelper(f, _inEdges, rev)) return true;
+				if (visitEdgeHelper(f, _inEdges, rev, ff)) return true;
 			}
 			if (opt & OUT_LINKS && _outEdges != null) {
-				if (visitEdgeHelper(f, _outEdges, rev)) return true;
+				if (visitEdgeHelper(f, _outEdges, rev, ff)) return true;
 			}
 			if (opt & CHILD_LINKS && _childEdges != null) {
-				if (visitEdgeHelper(f, _childEdges, rev)) return true;
+				if (visitEdgeHelper(f, _childEdges, rev, ff)) return true;
 			}
 			if (opt & PARENT_LINK && _parentEdge != null) {
-				if (f(_parentEdge)) return true;
+				if ((ff==null || ff(_parentEdge)) && f(_parentEdge))
+					return true;
 			}
 			return false;
 		}
 		
-		private function visitEdgeHelper(f:Function, a:Array, r:Boolean):Boolean
+		private function visitEdgeHelper(f:Function, a:Array, r:Boolean,
+			ff:Function):Boolean
 		{
 			var i:uint, v:*;
 			if (r) {
 				for (i=a.length; --i>=0;) {
-					if (f(a[i]) as Boolean) return true;
+					if ((ff==null || ff(a[i])) && f(a[i]) as Boolean)
+						return true;
 				}
 			} else {
 				for (i=0; i<a.length; ++i) {
-					if (f(a[i]) as Boolean) return true;
+					if ((ff==null || ff(a[i])) && f(a[i]) as Boolean)
+						return true;
 				}
 			}
 			return false;
@@ -379,33 +414,39 @@ package flare.vis.data
 		 * @param opt flag indicating which sets of edges should be traversed
 		 * @return true if the visitation was interrupted with an early exit
 		 */
-		public function visitNodes(f:Function, opt:uint=ALL_LINKS):Boolean
+		public function visitNodes(f:Function, opt:uint=ALL_LINKS,
+			filter:*=null):Boolean
 		{
+			var ff:Function = Filters.instance(filter);
 			var rev:Boolean = (opt & REVERSE) > 0;
 			if (opt & IN_LINKS && _inEdges != null) {
-				if (visitNodeHelper(f, _inEdges, rev)) return true;
+				if (visitNodeHelper(f, _inEdges, rev, ff)) return true;
 			}
 			if (opt & OUT_LINKS && _outEdges != null) {
-				if (visitNodeHelper(f, _outEdges, rev)) return true;
+				if (visitNodeHelper(f, _outEdges, rev, ff)) return true;
 			}
 			if (opt & CHILD_LINKS && _childEdges != null) {
-				if (visitNodeHelper(f, _childEdges, rev)) return true;
+				if (visitNodeHelper(f, _childEdges, rev, ff)) return true;
 			}
 			if (opt & PARENT_LINK && _parentEdge != null) {
-				if (f(_parentEdge.other(this))) return true;
+				if ((ff==null||ff(_parentEdge)) && f(_parentEdge.other(this)))
+					return true;
 			}
 			return false;
 		}
 		
-		private function visitNodeHelper(f:Function, a:Array, r:Boolean):Boolean
+		private function visitNodeHelper(f:Function, a:Array, r:Boolean,
+			ff:Function):Boolean
 		{
 			var i:uint;
 			if (r) {
 				for (i=a.length; --i>=0;)
-					if (f(a[i].other(this)) as Boolean) return true;
+					if ((ff==null||ff(a[i])) && f(a[i].other(this)) as Boolean)
+						return true;
 			} else {
 				for (i=0; i<a.length; ++i)
-					if (f(a[i].other(this)) as Boolean) return true;
+					if ((ff==null||ff(a[i])) && f(a[i].other(this)) as Boolean)
+						return true;
 			}
 			return false;
 		}
@@ -448,6 +489,64 @@ package flare.vis.data
 					q.push(x.getChildNode(i));
 			}
 			return false;
+		}
+		
+		/**
+		 * Sets property values on edge sprites connected to this node.
+		 * @param vals an object containing the properties and values to set.
+		 * @param opt flag indicating which sets of edges should be traversed
+		 * @param trans a transitioner or time span for updating object values.
+		 *  If the input is a transitioner, it will be used to store the
+		 *  updated  values. If the input is a number, a new Transitioner with
+		 *  duration set to the input value will be used. The input is null by
+		 *  default, in which case object values are updated immediately.
+		 * @param filter an optional Boolean-valued filter function for
+		 * 	limiting which items are visited
+		 * @return the transitioner used to update the values
+		 */
+		public function setEdgeProperties(vals:Object, opt:uint=ALL_LINKS,
+			trans:*=null, filter:*=null):Transitioner
+		{
+			var t:Transitioner = Transitioner.instance(trans);
+			for (var name:String in vals) {
+				var val:* = vals[name];
+				var p:Property = val as Property;
+				var e:Expression = val as Expression;
+				visitEdges(function(s:EdgeSprite):void {
+					val = p ? p.getValue(t.$(s)) : e ? e.eval(t.$(s)) : val;
+					t.setValue(s, name, val);
+				}, opt, filter);
+			}
+			return t;
+		}
+		
+		/**
+		 * Sets property values on node sprites connected to this node.
+		 * @param vals an object containing the properties and values to set.
+		 * @param opt flag indicating which sets of nodes should be traversed
+		 * @param trans a transitioner or time span for updating object values.
+		 *  If the input is a transitioner, it will be used to store the
+		 *  updated  values. If the input is a number, a new Transitioner with
+		 *  duration set to the input value will be used. The input is null by
+		 *  default, in which case object values are updated immediately.
+		 * @param filter an optional Boolean-valued filter function for
+		 * 	limiting which items are visited
+		 * @return the transitioner used to update the values
+		 */
+		public function setNodeProperties(vals:Object, opt:uint=ALL_LINKS,
+			trans:*=null, filter:*=null):Transitioner
+		{
+			var t:Transitioner = Transitioner.instance(trans);
+			for (var name:String in vals) {
+				var val:* = vals[name];
+				var p:Property = val as Property;
+				var e:Expression = val as Expression;
+				visitNodes(function(n:NodeSprite):void {
+					val = p ? p.getValue(t.$(n)) : e ? e.eval(t.$(n)) : val;
+					t.setValue(n, name, val);
+				}, opt, filter);
+			}
+			return t;
 		}
 		
 	} // end of class NodeSprite

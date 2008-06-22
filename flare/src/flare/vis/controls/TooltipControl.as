@@ -74,10 +74,6 @@ package flare.vis.controls
 		/** Indicates if the tooltip should follow the mouse pointer. */
 		public var followMouse:Boolean = true;
 		
-		/** Boolean-valued filter function determining which items are
-		 *  activated by the mouse hover. */
-		public var filter:Function = null;
-		
 		// --------------------------------------------------------------------
 		
 		/**
@@ -85,7 +81,7 @@ package flare.vis.controls
 		 * @param filter a Boolean-valued filter function indicating which
 		 *  items should receive tooltip handling
 		 */
-		public function TooltipControl(filter:Function=null,
+		public function TooltipControl(filter:*=null,
 			tooltip:DisplayObject=null, show:Function=null,
 			update:Function=null, hide:Function=null, delay:Number=500)
 		{
@@ -108,15 +104,18 @@ package flare.vis.controls
 		 */
 		public static function createDefaultTooltip():TextSprite
 		{
+			var fmt:TextFormat = new TextFormat("Arial", 14);
+			fmt.leftMargin = 2;
+			fmt.rightMargin = 2;
+			
 			var tip:TextSprite;
-			tip = new TextSprite("", new TextFormat("Arial", 14, 0));
+			tip = new TextSprite("", fmt);
 			tip.textField.border = true;
 			tip.textField.borderColor = 0;
 			tip.textField.background = true;
 			tip.textField.backgroundColor = 0xeeeecc;
 			tip.textField.multiline = true;
 			tip.filters = [new DropShadowFilter(4,45,0,0.5)];
-			tip.text = "";
 			return tip;
 		}
 		
@@ -187,7 +186,7 @@ package flare.vis.controls
 		private function onMouseOver(evt:MouseEvent):void
 		{
 			var n:DisplayObject = evt.target as DisplayObject;
-			if (n==null || (filter!=null && !filter(n))) return;
+			if (n==null || (_filter!=null && !_filter(n))) return;
 
 			_cur = n;
 			if (_show) {

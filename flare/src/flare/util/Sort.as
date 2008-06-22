@@ -18,6 +18,11 @@ package flare.util
 	 */
 	public class Sort
 	{
+		/** Flag indicating an ascending sort order. */
+		public static const ASC:Boolean = true;
+		/** Flag indicating a descending sort order. */
+		public static const DSC:Boolean = false;
+		
 		private var _comp:Function;
 		private var _crit:Array;
 		

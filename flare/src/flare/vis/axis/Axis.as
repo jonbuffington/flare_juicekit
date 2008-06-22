@@ -46,12 +46,12 @@ package flare.vis.axis
 		// axis scale
 		private var _prevScale:Scale;
 		// axis settings
-		private var _xa:Number, _ya:Number;    // start of the axis
-		private var _xb:Number, _yb:Number;    // end of the axis
-		private var _xaP:Number, _yaP:Number;  // previous start of the axis
-		private var _xbP:Number, _ybP:Number;  // previous end of the axis
-		private var _xd:int, _yd:int;          // axis directions (1 or -1)
-		private var _xlo:Number, _ylo:Number;  // label offsets
+		private var _xa:Number=0, _ya:Number=0;   // start of the axis
+		private var _xb:Number=0, _yb:Number=0;   // end of the axis
+		private var _xaP:Number=0, _yaP:Number=0; // previous start of the axis
+		private var _xbP:Number=0, _ybP:Number=0; // previous end of the axis
+		private var _xd:int, _yd:int;             // axis directions (1 or -1)
+		private var _xlo:Number, _ylo:Number;     // label offsets
 		// gridline settings
 		private var _lineColor:uint = 0xd8d8d8;
 		private var _lineWidth:Number = 0;
@@ -103,10 +103,10 @@ package flare.vis.axis
 		public var showLines:Boolean = true;
 		
 		/** X length of axis gridlines. */
-		public var lineLengthX:Number;
+		public var lineLengthX:Number = 0;
 		
 		/** Y length of axis gridlines. */
-		public var lineLengthY:Number;	
+		public var lineLengthY:Number = 0;	
 			
 		/** X offset for axis gridlines at the lower end of the axis. */
 		public var lineCapX1:Number = 0;
@@ -123,12 +123,12 @@ package flare.vis.axis
 		/** X-dimension offset value for axis labels. If negative or zero, this
 		 *  value indicates how much to offset to the left of the data bounds.
 		 *  If positive, the offset is made to the right of the data bounds. */
-		public var labelOffsetX:Number;	
+		public var labelOffsetX:Number = 0;	
 			
 		/** Y-dimension offset value for axis labels. If negative or zero, this
 		 *  value indicates how much to offset above the data bounds.
 		 *  If positive, the offset is made beneath the data bounds.*/
-		public var labelOffsetY:Number;
+		public var labelOffsetY:Number = 0;
 		
 		/** The line color of axis grid lines. */
 		public function get lineColor():uint { return _lineColor; }

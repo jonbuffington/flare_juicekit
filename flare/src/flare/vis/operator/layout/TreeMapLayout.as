@@ -1,6 +1,7 @@
 package flare.vis.operator.layout
 {
 	import flare.animate.Transitioner;
+	import flare.util.Property;
 	import flare.vis.data.NodeSprite;
 	
 	import flash.geom.Rectangle;
@@ -10,8 +11,10 @@ package flare.vis.operator.layout
 	 * aspect ratios of visualized tree nodes. TreeMaps are a form of
 	 * space-filling layout that represents nodes as boxes on the display, with
 	 * children nodes represented as boxes placed within their parent's box.
-	 * This layout determines the area of nodes in the tree map from the
-	 * <code>DataSprite.size</code> property.
+	 * This layout determines the area of nodes in the tree map by looking up
+	 * the <code>sizeField</code> property on leaf nodes. By default, this
+	 * property is "size", such that the layout will look for size
+	 * values in the <code>DataSprite.size</code> property.
 	 * 
 	 * <p>
 	 * This particular algorithm is taken from Bruls, D.M., C. Huizing, and 
@@ -37,6 +40,23 @@ package flare.vis.operator.layout
 		
 		private var _t:Transitioner;
 		
+		private var _size:Property = Property.$("size");
+		
+		/** The property from which to access size values for leaf nodes. */
+		public function get sizeField():String { return _size.name; }
+		public function set sizeField(s:String):void { _size = Property.$(s); }
+		
+		// --------------------------------------------------------------------
+		
+		/**
+		 * Creates a new TreeMapLayout 
+		 * @param sizeField the data property from which to access the size
+		 *  value for leaf nodes. The default is the "size" property.
+		 */
+		public function TreeMapLayout(sizeField:String="size") {
+			this.sizeField = sizeField;
+		}
+		
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
@@ -52,8 +72,8 @@ package flare.vis.operator.layout
 	        
 	        // layout root node
 	        var o:Object = _t.$(root);
-	        o.x = 0;
-	        o.y = 0;
+	        o.x = 0;//_r.x + _r.width/2;
+	        o.y = 0;//_r.y + _r.height/2;
 	        o.u = _r.x;
 	        o.v = _r.y;
 	        o.w = _r.width;
@@ -81,7 +101,7 @@ package flare.vis.operator.layout
 	        // set raw sizes, compute leaf count
 	        root.visitTreeDepthFirst(function(n:NodeSprite):void {
 	        	if (n.childDegree == 0) {
-	        		var sz:Number = _t.$(n).size;
+	        		var sz:Number = _size.getValue(_t.$(n));
 	        		n.props[AREA] = sz;
 	        		var p:NodeSprite = n.parentNode;
 	        		for (; p != null; p=p.parentNode)
@@ -242,11 +262,15 @@ package flare.vis.operator.layout
 	        		o.v = yy;
 	        		o.w = nw;
 	        		o.h = hh;
+	        		//o.x = xx + d + nw/2;
+	        		//o.y = yy + hh/2;
 	        	} else {
 	        		o.u = xx;
 	        		o.v = yy + d;
 	        		o.w = hh;
 	        		o.h = nw;
+	        		//o.x = xx + hh/2;
+	        		//o.y = yy + d + nw/2;
 	        	}
 	        	o.x = 0;
 	        	o.y = 0;

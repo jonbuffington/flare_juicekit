@@ -27,9 +27,14 @@ package flare.vis.operator.label
 		
 		/**
 		 * Creates a new StackedAreaLabeler. 
-		 * @param source the source property that provides the label text
+		 * @param source the property from which to retrieve the label text.
+		 *  If this value is a string or property instance, the label text will
+		 *  be pulled directly from the named property. If this value is a
+		 *  Function or Expression instance, the value will be used to set the
+		 *  <code>textFunction<code> property and the label text will be
+		 *  determined by evaluating that function.
 		 */
-		public function StackedAreaLabeler(source:String) {
+		public function StackedAreaLabeler(source:*) {
 			super(source, Data.NODES, null, LAYER);
 		}
 

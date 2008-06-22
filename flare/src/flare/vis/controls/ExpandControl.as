@@ -15,10 +15,6 @@ package flare.vis.controls
 	public class ExpandControl extends Control
 	{
 		private var _cur:NodeSprite;
-
-		/** Boolean-valued filter function for determining which items
-		 *  this control will attempt to expand or collapse. */
-		public var filter:Function;
 		
 		/** Update function invoked after expanding or collapsing an item.
 		 *  By default, invokes the <code>update</code> method on the
@@ -39,7 +35,7 @@ package flare.vis.controls
 		 * @param update function invokde after expanding or collapsing an
 		 *  item.
 		 */		
-		public function ExpandControl(filter:Function=null, update:Function=null)
+		public function ExpandControl(filter:*=null, update:Function=null)
 		{
 			this.filter = filter;
 			if (update != null) this.update = update;
@@ -69,7 +65,7 @@ package flare.vis.controls
 			var s:NodeSprite = event.target as NodeSprite;
 			if (s==null) return; // exit if not a NodeSprite
 			
-			if (filter==null || filter(s)) {
+			if (_filter==null || _filter(s)) {
 				_cur = s;
 				_cur.stage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
 				_cur.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);

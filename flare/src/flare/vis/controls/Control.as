@@ -1,5 +1,7 @@
 package flare.vis.controls
 {
+	import flare.vis.util.Filters;
+	
 	import flash.display.InteractiveObject;
 	import flash.events.EventDispatcher;
 
@@ -10,6 +12,13 @@ package flare.vis.controls
 	{
 		/** @private */
 		protected var _object:InteractiveObject;
+		/** @private */
+		protected var _filter:Function;
+		
+		/** Boolean function indicating the items considered by the control.
+		 *  @see flare.vis.util.Filters */
+		public function get filter():Function { return _filter; }
+		public function set filter(f:*):void { _filter = Filters.instance(f); }
 		
 		/**
 		 * Creates a new Control

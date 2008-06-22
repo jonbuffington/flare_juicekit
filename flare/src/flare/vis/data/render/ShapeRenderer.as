@@ -33,14 +33,19 @@ package flare.vis.data.render
 			if (lineAlpha > 0) g.lineStyle(d.lineWidth, d.lineColor, lineAlpha);
 			
 			switch (d.shape) {
+				case null:
+					break;
 				case Shapes.BLOCK:
 					g.drawRect(d.u-d.x, d.v-d.y, d.w, d.h);
 					break;
 				case Shapes.POLYGON:
-					if (d.points!=null) Shapes.drawPolygon(g, d.points);
+					if (d.points!=null)
+						Shapes.drawPolygon(g, d.points);
 					break;
 				case Shapes.POLYBLOB:
-					if (d.points!=null) Shapes.drawPolygon(g, d.points);
+					if (d.points!=null)
+						Shapes.drawCardinal(g, d.points,
+											d.points.length/2, 0.15, true);
 					break;
 				case Shapes.VERTICAL_BAR:
 					g.drawRect(-size/2, -d.h, size, d.h); 

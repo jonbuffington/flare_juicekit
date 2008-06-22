@@ -458,7 +458,7 @@ package com.adobe.serialization.json {
 		 *	character
 		 */
 		private function isSpace( ch:String ):Boolean {
-			return ( ch == ' ' || ch == '\t' );
+			return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
 		}
 		
 		/**
