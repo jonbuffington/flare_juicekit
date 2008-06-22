@@ -113,7 +113,7 @@ package flare.demos
 			if (shape) {
 				seq = new Sequence(
 					vis.data.nodes.setProperties({scaleX:0, scaleY:0}, 0.5),
-					vis.data.nodes.setProperties({shape:0, lineColor:0xffdddddd}, 0.5),
+					vis.data.nodes.setProperties({shape:Shapes.CIRCLE, lineColor:0xffdddddd}, 0.5),
 					vis.data.nodes.setProperties({scaleX:1, scaleY:1}, 0),
 					vis.data.edges.setProperties({lineColor:0xffcccccc}, 0.5)
 				);
