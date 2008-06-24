@@ -100,6 +100,7 @@ package flare.tests
 	            {format:":0.0",input:1+7.1E-15, result:"1.0"},
 	            {format:":0.0",input:0.9999999999, result:"1.0"},
 	            {format:":0.#######",input:0.9999999999, result:"1"},
+	            {format:":0",input:1000000000000.0, result:"1000000000000"},
 	            // standard formatters
 	            {format:":c", input:12345, result:"$12,345.00"},
 	            {format:":C04", input:12345, result:"$12,345.0000"},
