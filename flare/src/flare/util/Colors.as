@@ -53,6 +53,18 @@ package flare.util
 		}
 		
 		/**
+		 * Returns a grayscale color value with the given brightness
+		 * @param v the brightness component (0-255)
+		 * @param a the alpha component (0-255, 255 by default)
+		 * @return the color value
+		 */
+		public static function gray(v:uint, a:uint=255):uint
+		{
+			return ((a & 0xFF) << 24) | ((v & 0xFF) << 16) |
+				   ((v & 0xFF) <<  8) |  (v & 0xFF);
+		}
+		
+		/**
 		 * Returns a color value with the given red, green, blue, and alpha
 		 * components
 		 * @param r the red component (0-255)

@@ -36,6 +36,7 @@ package flare.animate.interpolate
 		{
 			_end = end as Array;
 			if (!end) throw new Error("Target array is null!");
+			if (_start && _start.length != _end.length) _start = null;
 			_start = Arrays.copy(start as Array, _start);
 			
 			if (_start.length != _end.length)

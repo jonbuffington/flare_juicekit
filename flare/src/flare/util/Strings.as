@@ -501,7 +501,7 @@ package flare.util
 			var i:int, j:int, c:Number, n:int=1, digit:int=0;
 			var pp:int=-1, dp:int=-1, ep:int=-1, ep2:int=-1, sp:int=-1;
 			var nd:int=0, nf:int=0, ne:int=0, max:int=p.length-1;
-			var xd:int, xf:Number, xe:int=0, zd:int=0, zf:int=0;
+			var xd:Number, xf:Number, xe:int=0, zd:int=0, zf:int=0;
 			var sd:String, sf:String, se:String;
 			var hash:Boolean = false;
 			
@@ -553,7 +553,16 @@ package flare.util
 			// process grouping separators and thousands scaling
 			var group:Boolean = false, adj:Boolean = true;
 			if (sp >= 0) {
-				i = dp >= 0 ? dp : p.length;
+				if (dp >= 0) {
+					i = dp;
+				} else {
+					i = p.length;
+					while (i>sp) {
+						c = p.charCodeAt(i-1);
+						if (c==_ZERO || c==_HASH || c==_SEPR) break;
+						--i;
+					}
+				}
 				for (; --i >= sp;) {
 					if (p.charCodeAt(i) == _SEPR) {
 						if (adj) { x /= 1000; } else { group = true; break; }
@@ -581,7 +590,7 @@ package flare.util
 			c = Math.pow(10, nf);
 			x = Math.round(c*x) / c;
 			// separate number into component parts
-			xd = int(nf > 0 ? Math.floor(x) : Math.round(x));
+			xd = nf > 0 ? Math.floor(x) : Math.round(x);
 			xf = x - xd;
 			// create strings for integral and fractional parts
 			sd = pad(xd, nd);
