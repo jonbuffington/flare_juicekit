@@ -3,6 +3,7 @@ package flare.vis.data
 	import flare.animate.Transitioner;
 	import flare.query.Expression;
 	import flare.util.Arrays;
+	import flare.util.IEvaluable;
 	import flare.util.Property;
 	import flare.util.Sort;
 	import flare.vis.util.Filters;
@@ -510,10 +511,9 @@ package flare.vis.data
 			var t:Transitioner = Transitioner.instance(trans);
 			for (var name:String in vals) {
 				var val:* = vals[name];
-				var p:Property = val as Property;
-				var e:Expression = val as Expression;
+				var e:IEvaluable = val as IEvaluable;
 				visitEdges(function(s:EdgeSprite):void {
-					val = p ? p.getValue(t.$(s)) : e ? e.eval(t.$(s)) : val;
+					val = e ? e.eval(t.$(s)) : val;
 					t.setValue(s, name, val);
 				}, opt, filter);
 			}
@@ -539,10 +539,9 @@ package flare.vis.data
 			var t:Transitioner = Transitioner.instance(trans);
 			for (var name:String in vals) {
 				var val:* = vals[name];
-				var p:Property = val as Property;
-				var e:Expression = val as Expression;
+				var e:IEvaluable = val as IEvaluable;
 				visitNodes(function(n:NodeSprite):void {
-					val = p ? p.getValue(t.$(n)) : e ? e.eval(t.$(n)) : val;
+					val = e ? e.eval(t.$(n)) : val;
 					t.setValue(n, name, val);
 				}, opt, filter);
 			}
