@@ -35,7 +35,7 @@ package flare.query
 		/**
 		 * @inheritDoc
 		 */
-		public override function eval(o:Object=null):Object
+		public override function eval(o:Object=null):*
 		{
 			// first, initialize the argument array as needed
 			if (_args == null || _args.length != _children.length) {

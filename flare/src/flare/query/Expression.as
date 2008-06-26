@@ -1,18 +1,21 @@
 package flare.query
-{	
+{
+	import flare.util.IEvaluable;
+	import flare.util.IPredicate;
+		
 	/**
 	 * Base class for query expression operators. Expressions are organized
 	 * into a tree of operators that perform data processing or predicate
 	 * testing on input <code>Object</code> instances.
 	 */
-	public class Expression {
-		
+	public class Expression implements IEvaluable, IPredicate
+	{	
 		/**
 		 * Evaluates this expression with the given input object.
 		 * @param o the input object to this expression
 		 * @return the result of evaluating the expression
 		 */
-		public function eval(o:Object=null):Object
+		public function eval(o:Object=null):*
 		{
 			return o;
 		}

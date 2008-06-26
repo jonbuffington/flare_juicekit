@@ -46,7 +46,7 @@ package flare.query
 		/**
 		 * @inheritDoc
 		 */
-		public override function eval(o:Object=null):Object
+		public override function eval(o:Object=null):*
 		{
 			var n:Number = _count - (_type & SAMPLE ? 1 : 0);
 			var v:Number = _sum / n;

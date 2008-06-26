@@ -49,7 +49,7 @@ package flare.query
 		/**
 		 * @inheritDoc
 		 */
-		public override function eval(o:Object=null):Object
+		public override function eval(o:Object=null):*
 		{
 			var s:String = String(_left.eval(o));
 			var p:String = String(_right.eval(o));

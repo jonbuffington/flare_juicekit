@@ -83,7 +83,7 @@ package flare.vis.operator.layout
 			this.padding = padding;
 			_columns = Arrays.copy(cols);
 			_peaks = new Array(cols.length);
-			_poly = new Array(cols.length);
+			_poly = new Array(4*cols.length);
 		}
 		
 		/** @inheritDoc */

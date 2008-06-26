@@ -56,7 +56,7 @@ package flare.vis.axis
 		private var _lineColor:uint = 0xd8d8d8;
 		private var _lineWidth:Number = 0;
 		// label settings
-		private var _numLabels:int = -1;//10;
+		private var _numLabels:int = -1;
 		private var _anchorH:int = TextSprite.LEFT;
 		private var _anchorV:int = TextSprite.TOP;
 		private var _labelAngle:Number = 0;
@@ -165,6 +165,22 @@ package flare.vis.axis
 		public function set labelFormat(fmt:String):void {
 			_labelFormat = "{0:"+fmt+"}"; updateLabels();
 		}
+		
+		/** The number of labels and gridlines to generate by default. If this
+		 *  number is zero or less (default -1), the number of labels will be
+		 *  automatically determined from the current scale and size. */
+		public function get numLabels():int {
+			// if set positive, return number
+			if (_numLabels > 0) return _numLabels;
+			// if ordinal return all labels
+			if (ScaleType.isOrdinal(axisScale.scaleType)) return -1;
+			// otherwise determine based on axis size (random hack...)
+			var lx:Number = _xb-_xa; if (lx<0) lx = -lx;
+			var ly:Number = _yb-_ya; if (ly<0) ly = -ly;
+			lx = (lx > ly ? lx : ly);
+			return lx > 200 ? 10 : lx < 20 ? 1 : int(lx/20);
+		}
+		public function set numLabels(n:int):void { _numLabels = n; }
 		
 		/** The horizontal anchor point for axis labels.
 		 *  @see flare.display.TextSprite. */
@@ -311,8 +327,6 @@ package flare.vis.axis
 			
 			var keepLabels:Array = new Array(nl);
 			var keepLines:Array = new Array(ng);
-			// TODO: generalize label number determination
-			var numLabels:int = ScaleType.isOrdinal(axisScale.scaleType) ? -1 : 10;
 			var values:Array = axisScale.values(numLabels);
 			
 			if (showLabels) { // process labels

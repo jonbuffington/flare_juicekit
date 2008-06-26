@@ -4,7 +4,7 @@ package flare.scale
 	import flare.util.Strings;
 	
 	/**
-	 * Base class for representing quantiattive numerical data scales.
+	 * Base class for representing quantitative numerical data scales.
 	 */
 	public class QuantitativeScale extends Scale
 	{

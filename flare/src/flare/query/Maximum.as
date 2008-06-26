@@ -19,7 +19,7 @@ package flare.query
 		/**
 		 * @inheritDoc
 		 */
-		public override function eval(o:Object=null):Object
+		public override function eval(o:Object=null):*
 		{
 			return _value;
 		}

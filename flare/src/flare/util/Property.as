@@ -7,7 +7,7 @@ package flare.util
 	 * maintains a static cache of all Property instances created using the
 	 * static <code>$</code> method.
 	 */
-	public class Property
+	public class Property implements IEvaluable, IPredicate
 	{
 		private static var DELIMITER:* = /[\.|\[(.*)\]]/;
 		
@@ -91,7 +91,9 @@ package flare.util
 		 */
 		public function getValue(x:Object):*
 		{
-			if (_chain == null) {
+			if (x == null) {
+				return null;
+			} else if (_chain == null) {
 				return x[_field];
 			} else {
 				for (var i:uint=0; i<_chain.length; ++i) {
@@ -99,6 +101,38 @@ package flare.util
 				}
 				return x;
 			}
+		}
+		
+		/**
+		 * Gets the value of this property for the input object; this
+		 * is the same as <code>getValue</code>, but provided in order to
+		 * implement the <code>IEvaluable</code> interface.
+		 * @param x the object to retrieve the property value for
+		 * @return the property value
+		 */
+		public function eval(x:Object=null):*
+		{
+			if (x == null) {
+				return null;
+			} else if (_chain == null) {
+				return x[_field];
+			} else {
+				for (var i:uint=0; i<_chain.length; ++i) {
+					x = x[_chain[i]];
+				}
+				return x;
+			}
+		}
+		
+		/**
+		 * Gets the value of this property and casts the result to a
+		 * Boolean value.
+		 * @param x the object to retrieve the property value for
+		 * @return the property value as a Boolean
+		 */
+		public function predicate(x:Object):Boolean
+		{
+			return Boolean(eval(x));
 		}
 		
 		/**

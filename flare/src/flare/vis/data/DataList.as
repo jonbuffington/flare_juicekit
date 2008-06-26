@@ -3,6 +3,7 @@ package flare.vis.data
 	import flare.animate.Transitioner;
 	import flare.query.Expression;
 	import flare.util.Arrays;
+	import flare.util.IEvaluable;
 	import flare.util.Property;
 	import flare.util.Sort;
 	import flare.util.Stats;
@@ -268,10 +269,8 @@ package flare.vis.data
 			
 			for (var name:String in _defs) {
 				var value:* = _defs[name];
-				if (value is Property) {
-					value = Property(value).getValue(o);
-				} else if (value is Expression) {
-					value = Expression(value).eval(o);
+				if (value is IEvaluable) {
+					value = IEvaluable(value).eval(o);
 				}
 				Property.$(name).setValue(o, value);
 			}
@@ -298,13 +297,9 @@ package flare.vis.data
 			var o:Object;
 			var trans:Transitioner = Transitioner.instance(t);
 			var f:Function = Filters.instance(filter);
-			var p:Property = value as Property;
-			var e:Expression = value as Expression;
+			var e:IEvaluable = value as IEvaluable;
 			
-			if (p) {
-				for each (o in _list) if (f==null || f(o))
-					trans.setValue(o, name, p.getValue(trans.$(o)));
-			} else if (e) {
+			if (e) {
 				for each (o in _list) if (f==null || f(o))
 					trans.setValue(o, name, e.eval(trans.$(o)));
 			} else {
@@ -335,13 +330,9 @@ package flare.vis.data
 			
 			for (var name:String in vals) {
 				var value:* = vals[name];
-				var p:Property = value as Property;
-				var e:Expression = value as Expression;
+				var e:IEvaluable = value as IEvaluable;
 				
-				if (p) {
-					for each (o in _list) if (f==null || f(o))
-						trans.setValue(o, name, p.getValue(trans.$(o)));
-				} else if (e) {
+				if (e) {
 					for each (o in _list) if (f==null || f(o))
 						trans.setValue(o, name, e.eval(trans.$(o)));
 				} else {
