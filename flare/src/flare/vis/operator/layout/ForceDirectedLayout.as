@@ -49,8 +49,6 @@ package flare.vis.operator.layout
 		private var _tension:Number = 0.3;
 		private var _damping:Number = 0.1;
 		
-		private var _t:Transitioner;
-		
 		/** The default mass value for node/particles. */
 		public function get defaultParticleMass():Number { return _mass; }
 		public function set defaultParticleMass(v:Number):void { _mass = v; }
@@ -99,10 +97,8 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t!=null ? t : Transitioner.DEFAULT);
-			
 			++_gen; // update generation counter
 			init(); // populate simulation
 			
@@ -112,9 +108,7 @@ package flare.vis.operator.layout
 				_sim.tick(_step);
 			}
 			visualization.data.nodes.visit(update); // update positions
-			
 			updateEdgePoints(_t);
-			_t = null;
 		}
 		
 		// -- value transfer --------------------------------------------------
@@ -169,15 +163,22 @@ package flare.vis.operator.layout
 			}
 			
 			// set up simulation parameters
-			for each (n in data.nodes) {
-				p = n.props.particle;
-				p.mass = mass(n);
+			// this needs to be kept separate from the above initialization
+			// to ensure all simulation items are created first
+			if (mass != null) {
+				for each (n in data.nodes) {
+					p = n.props.particle;
+					p.mass = mass(n);
+				}
 			}
 			for each (e in data.edges) {
 				s = e.props.spring;
-				s.restLength = restLength(e);
-				s.tension = tension(e);
-				s.damping = damping(e);
+				if (restLength != null)
+					s.restLength = restLength(e);
+				if (tension != null)
+					s.tension = tension(e);
+				if (damping != null)
+					s.damping = damping(e);
 			}
 			
 			// clean-up unused items

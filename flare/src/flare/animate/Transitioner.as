@@ -3,6 +3,7 @@ package flare.animate
 	import flare.util.Property;
 	
 	import flash.display.DisplayObject;
+	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	/**
@@ -179,6 +180,16 @@ package flare.animate
 		}
 		
 		/**
+		 * Indicates if the Transitioner contains a Tween for the given object.
+		 * @param o the object to test for
+		 * @return true if there is a Tween for the object, false otherwise
+		 */
+		public function hasTweenFor(o:Object):Boolean
+		{
+			return _immediate ? false : (_lookup[0] != undefined);
+		}
+		
+		/**
 		 * Returns the Tween for the given object, creating a new tween if no
 		 * tween is yet associated with the object. This method returns null if
 		 * the transitioner is in immediate mode.
@@ -239,7 +250,7 @@ package flare.animate
 				Property.$(name).setValue(o, value);
 			} else if (optimize && getValue(o, name) == value) {
 				// do nothing, optimize the call away...
-			} else if (optimize && o is DisplayObject && !o.visible) {
+			} else if (optimize && o is DisplayObject && !getValue(o, "visible")) {
 				Property.$(name).setValue(o, value);
 			} else {
 				// add to a tween
@@ -327,15 +338,15 @@ package flare.animate
 		 * Indicates if a display object is scheduled to be removed from the
 		 * display list when this transition completes. This method always
 		 * returns false if this transitioner is in immediate mode.
-		 * @param dobj a display object
+		 * @param d a display object
 		 * @return true if the display object will be removed from the display
 		 *  list at the end of this transition, false otherwise. This method
 		 *  always returns false if the transitioner is in immediate mode.
 		 */
-		public function willRemove(dobj:DisplayObject):Boolean
+		public function willRemove(d:DisplayObject):Boolean
 		{
 			if (_immediate) return false;
-			var tw:Tween = _lookup[dobj];
+			var tw:Tween = _lookup[d];
 			return (tw != null && tw.remove);
 		}
 		
@@ -362,6 +373,48 @@ package flare.animate
 				t.dispose();
 				if (t is Tween) reclaimTween(t as Tween);
 			}
+		}
+		
+		/**
+		 * Computes the approximate size of the given object after this
+		 * transitioner has been run. This calculation is performed by
+		 * applying the final <code>scaleX</code>, <code>scaleY</code>, and
+		 * <code>size</code> values of the object. 
+		 * @param d the display object to compute the size for
+		 * @param r a rectangle for storing the results
+		 * @return a rectangle whose <code>width</code> and <code>height</code>
+		 *  properties contain the end size values. 
+		 */
+		public function endSize(d:DisplayObject, r:Rectangle=null):Rectangle
+		{
+			if (r==null) r = new Rectangle();
+			var t:Tween, v:Object, o:Object = Object(d);
+			var scaleX:Number, scaleY:Number, size:Number;
+			
+			if (_immediate || (t=_lookup[d])==null) {
+				r.width = d.width;
+				r.height = d.height;
+			} else {
+				v = t.values;
+				if (v.hasOwnProperty("scaleX")) {
+					scaleX = d.scaleX;
+					d.scaleX = v.scaleX;
+				}
+				if (v.hasOwnProperty("scaleY")) {
+					scaleY = d.scaleY;
+					d.scaleY = v.scaleY;	
+				}
+				if (v.hasOwnProperty("size")) {
+					size = o.size;
+					o.size = v.size;
+				}
+				r.width = d.width;
+				r.height = d.height;
+				if (v.hasOwnProperty("scaleX")) d.scaleX = scaleX;
+				if (v.hasOwnProperty("scaleY")) d.scaleY = scaleY;
+				if (v.hasOwnProperty("size"))   o.size = size;
+			}
+			return r;
 		}
 		
 		// --------------------------------------------------------------------

@@ -1,17 +1,23 @@
 package flare.vis.data
 {
 	import flare.animate.Transitioner;
-	import flare.query.Expression;
 	import flare.util.Arrays;
+	import flare.util.Filter;
 	import flare.util.IEvaluable;
 	import flare.util.Property;
 	import flare.util.Sort;
 	import flare.util.Stats;
-	import flare.vis.util.Filters;
+	import flare.vis.events.DataEvent;
 	
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.utils.flash_proxy;
 	import flash.utils.Dictionary;
 	import flash.utils.Proxy;
+
+	[Event(name="add",    type="flare.vis.events.DataEvent")]
+	[Event(name="remove", type="flare.vis.events.DataEvent")]
 
 	/**
 	 * A list of nodes or edges maintained by a Data instance. Items contained
@@ -19,9 +25,20 @@ package flare.vis.data
 	 * iterated over using the <code>for each</code> construct, or can be
 	 * processed by passing a visitor function to the <code>visit</code>
 	 * method.
+	 * 
+	 * <p>Data lists also support listeners for add and remove events. These
+	 * events are fired <em>before</em> the add or remove is executed. These
+	 * data events can be canceled by calling <code>preventDefault()</code>
+	 * on the <code>DataEvent</code> object, thereby preventing the add or
+	 * remove from being performed. Using this mechanism, clients can add
+	 * custom constraints on the contents of a data list by adding new
+	 * listeners that monitor add and remove events and cancel them when
+	 * desired.</p>
 	 */
-	public class DataList extends Proxy
+	public class DataList extends Proxy implements IEventDispatcher
 	{
+		private var _dispatch:EventDispatcher = new EventDispatcher();
+		
 		/** Hashed set of items in the data list. */
 		private var _map:Dictionary = new Dictionary();
 		/** Array of items in the data set. */
@@ -33,12 +50,16 @@ package flare.vis.data
 		/** The underlying array storing the list. */
 		internal function get list():Array { return _list; }
 		
+		/** The name of this data list. */
+		public function get name():String { return _name; }
+		private var _name:String;
+		
 		/** Internal count of visitors traversing the current list. */
 		private var _visiting:int = 0;
 		private var _sort:Sort;
 		
 		/** The number of items contained in this list. */
-		public function get size():int { return _list.length; }
+		public function get length():int { return _list.length; }
 		
 		/** A standing sort criteria for items in the list. */
 		public function get sort():Sort { return _sort; }
@@ -47,87 +68,102 @@ package flare.vis.data
 			if (_sort != null) _sort.sort(_list);
 		}
 		
+		// --------------------------------------------------------------------
+		
+		/**
+		 * Creates a new DataList instance. 
+		 * @param editable indicates if this list should be publicly editable.
+		 */
+		public function DataList(name:String) {
+			_name = name;
+		}
 		
 		// -- Basic Operations: Contains, Add, Remove, Clear ------------------
 		
 		/**
 		 * Indicates if the given object is contained in this list.
-		 * @param o the object to check for containment
+		 * @param d the object to check for containment
 		 * @return true if the list contains the object, false otherwise.
 		 */
-		public function contains(o:Object):Boolean
+		public function contains(d:DataSprite):Boolean
 		{
-			return (_map[o] != undefined);
+			return (_map[d] != undefined);
 		}
 		
 		/**
-		 * Internal method for adding an object to the list. This method should
-		 * be used by the Data class only.
-		 * @param o the object to add
-		 * @return the added object
-		 * @private
+		 * Add a DataSprite to the list.
+		 * @param d the DataSprite to add
+		 * @return the added DataSprite, or null if the add failed
 		 */
-		internal function _add(o:Object):Object
+		public function add(d:DataSprite):DataSprite
 		{
-			_map[o] = _list.length;
+			if (!fireEvent(DataEvent.ADD, d))
+				return null;
+			
+			_map[d] = _list.length;
 			_stats = {};
 			if (_sort != null) {
-				var idx:int = Arrays.binarySearch(_list, o, null,
+				var idx:int = Arrays.binarySearch(_list, d, null,
 				                                  _sort.comparator);
-				_list.splice(-(idx+1), 0, o);
+				_list.splice(-(idx+1), 0, d);
 			} else {
-				_list.push(o);
+				_list.push(d);
 			}
-			return o;
+			return d;
 		}
 		
 		/**
-		 * Internal method for removing an object from the list. This method
-		 * should be used by the Data class only.
-		 * @param o the object to remove
+		 * Remove a data sprite from the list.
+		 * @param ds the DataSprite to remove
 		 * @return true if the object was found and removed, false otherwise
-		 * @private
 		 */
-		internal function _remove(o:Object):Boolean
+		public function remove(d:DataSprite):Boolean
 		{
-			if (_map[o] == undefined) return false;
+			if (_map[d] == undefined) return false;
+			if (!fireEvent(DataEvent.REMOVE, d))
+				return false;
 			if (_visiting > 0) {
 				// if called from a visitor, use a copy-on-write strategy
 				_list = Arrays.copy(_list);
 				_visiting = 0; // reset the visitor count
 			}
-			Arrays.remove(_list, o);
-			delete _map[o];
+			Arrays.remove(_list, d);
+			delete _map[d];
 			_stats = {};	
 			return true;
 		}
 		
 		/**
-		 * Internal method for removing an object from the list. This method
-		 * should be used by the Data class only.
-		 * @param idx the index of the object to remove
-		 * @return the removed object
-		 * @private
+		 * Remove a DataSprite from the list.
+		 * @param idx the index of the DataSprite to remove
+		 * @return the removed DataSprite
 		 */
-		internal function _removeAt(idx:int):Object
+		public function removeAt(idx:int):DataSprite
 		{
-			var o:Object = Arrays.removeAt(_list, idx);
-			if (o != null) {
-				delete _map[o];
+			var d:DataSprite = _list[idx];
+			if (d == null || !fireEvent(DataEvent.REMOVE, d))
+				return null;
+			
+			Arrays.removeAt(_list, idx);
+			if (d != null) {
+				delete _map[d];
 				_stats = {};
 			}
-			return o;
+			return d;
 		}
 		
 		/**
-		 * Internal method for removing all objects from this list.
-		 * @private
+		 * Remove all DataSprites from this list.
 		 */
-		internal function _clear():void
+		public function clear():Boolean
 		{
+			if (_list.length == 0) return true;
+			if (!fireEvent(DataEvent.REMOVE, _list))
+				return false;
 			_map = new Dictionary();
 			_list = [];
 			_stats = {};
+			return true;
 		}
 		
 		/**
@@ -142,7 +178,8 @@ package flare.vis.data
 				a[i] = _list[i].data;
 			}
 			return a;
-		}
+		}				
+		
 
 		// -- Sort ------------------------------------------------------------
 		
@@ -164,7 +201,7 @@ package flare.vis.data
 			if (args.length == 0) return;
 			if (args[0] is Array) args = args[0];
 			
-			var f:Function = Sort.sorter(args);
+			var f:Function = Sort.$(args);
 			_list.sort(f);
 		}
 
@@ -187,7 +224,7 @@ package flare.vis.data
 			_visiting++; // mark a visit in process
 			var a:Array = _list; // use our own reference to the list
 			var i:uint, b:Boolean = false;
-			var f:Function = Filters.instance(filter);
+			var f:Function = Filter.$(filter);
 			
 			if (reverse && f==null) {
 				for (i=a.length; --i>=0;)
@@ -271,6 +308,8 @@ package flare.vis.data
 				var value:* = _defs[name];
 				if (value is IEvaluable) {
 					value = IEvaluable(value).eval(o);
+				} else if (value is Function) {
+					value = (value as Function)(o);
 				}
 				Property.$(name).setValue(o, value);
 			}
@@ -296,12 +335,13 @@ package flare.vis.data
 		{
 			var o:Object;
 			var trans:Transitioner = Transitioner.instance(t);
-			var f:Function = Filters.instance(filter);
-			var e:IEvaluable = value as IEvaluable;
+			var f:Function = Filter.$(filter);
+			var v:Function = value is Function ? value as Function
+				 : value is IEvaluable ? IEvaluable(value).eval : null;
 			
-			if (e) {
+			if (v != null) {
 				for each (o in _list) if (f==null || f(o))
-					trans.setValue(o, name, e.eval(trans.$(o)));
+					trans.setValue(o, name, v(trans.$(o)));
 			} else {
 				for each (o in _list) if (f==null || f(o))
 					trans.setValue(o, name, value);
@@ -326,15 +366,16 @@ package flare.vis.data
 		{
 			var o:Object;
 			var trans:Transitioner = Transitioner.instance(t);
-			var f:Function = Filters.instance(filter);
+			var f:Function = Filter.$(filter);
 			
 			for (var name:String in vals) {
 				var value:* = vals[name];
-				var e:IEvaluable = value as IEvaluable;
+				var v:Function = value is Function ? value as Function
+					 : value is IEvaluable ? IEvaluable(value).eval : null;
 				
-				if (e) {
+				if (v != null) {
 					for each (o in _list) if (f==null || f(o))
-						trans.setValue(o, name, e.eval(trans.$(o)));
+						trans.setValue(o, name, v(trans.$(o)));
 				} else {
 					for each (o in _list) if (f==null || f(o))
 						trans.setValue(o, name, value);
@@ -342,6 +383,25 @@ package flare.vis.data
 			}
 			return trans;
 		}
+		
+		/**
+		 * A function generator that can be used to set properties
+		 * at a later time. This method returns a function that can
+		 * accept a <code>Transitioner</code> as its sole argument and then
+		 * executes the <code>setProperties</code> method. 
+		 * @param vals an object containing the properties and values to set.
+		 * @param filter an optional Boolean-valued filter function for
+		 * 	limiting which items are visited
+		 * @return a function that accepts a <code>Transitioner</code> argument
+		 *  and runs <code>setProperties</code>.
+		 */
+		public function setLater(vals:Object, filter:*=null):Function
+		{
+			return function(t:Transitioner=null):Transitioner {
+				return setProperties(vals, t, filter);
+			}
+		}
+		
 		
 		// -- Statistics ------------------------------------------------------
 				
@@ -373,6 +433,53 @@ package flare.vis.data
 		public function clearStats(field:String):void
 		{
 			delete _stats[field];
+		}
+		
+		
+		// -- Event Dispatcher Methods ----------------------------------------
+		
+		/** @private */
+		protected function fireEvent(type:String, items:*):Boolean
+		{
+			if (_dispatch.hasEventListener(type)) {
+				return _dispatch.dispatchEvent(
+					new DataEvent(type, items, this));
+			}
+			return true;
+		}
+		
+		/** @inheritDoc */
+		public function addEventListener(type:String, listener:Function,
+			useCapture:Boolean=false, priority:int=0, 
+			useWeakReference:Boolean=false) : void
+		{
+			_dispatch.addEventListener(type, listener, useCapture, priority,
+				useWeakReference);
+		}
+		
+		/** @inheritDoc */
+		public function dispatchEvent(event:Event):Boolean
+		{
+			return _dispatch.dispatchEvent(event);
+		}
+		
+		/** @inheritDoc */
+		public function hasEventListener(type:String):Boolean
+		{
+			return _dispatch.hasEventListener(type);
+		}
+		
+		/** @inheritDoc */
+		public function removeEventListener(type:String, listener:Function,
+			useCapture:Boolean=false):void
+		{
+			_dispatch.removeEventListener(type, listener, useCapture);
+		}
+		
+		/** @inheritDoc */
+		public function willTrigger(type:String):Boolean
+		{
+			return _dispatch.willTrigger(type);
 		}
 		
 		// -- Proxy Methods ---------------------------------------------------

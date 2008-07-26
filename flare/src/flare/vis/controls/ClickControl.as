@@ -9,7 +9,8 @@ package flare.vis.controls
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
-	[Event(name="select", type="flare.vis.events.SelectionEvent")]
+	[Event(name="select",   type="flare.vis.events.SelectionEvent")]
+	[Event(name="deselect", type="flare.vis.events.SelectionEvent")]
 	
 	/**
 	 * Interactive control for responding to mouse clicks events. Select event
@@ -23,12 +24,16 @@ package flare.vis.controls
 		private var _timer:Timer;
 		private var _cur:DisplayObject;
 		private var _clicks:uint = 0;
+		private var _clear:Boolean = false;
+		private var _evt:MouseEvent = null;
 		
 		/** The number of clicks needed to trigger a click event. Setting this
 		 *  value to zero effectively disables the click control. */
 		public var numClicks:uint;
 		
-		/** The maximum allowed delay (in milliseconds) between clicks. */
+		/** The maximum allowed delay (in milliseconds) between clicks. 
+		 *  The delay determines the maximum time interval between a
+		 *  mouse up event and a subsequent mouse down event. */
 		public function get clickDelay():Number { return _timer.delay; }
 		public function set clickDelay(d:Number):void { _timer.delay = d; }
 		
@@ -42,22 +47,26 @@ package flare.vis.controls
 		 * @param onClick an optional SelectionEvent listener for click events
 		 */
 		public function ClickControl(filter:*=null, numClicks:uint=1,
-			onClick:Function=null)
+			onClick:Function=null, onClear:Function=null)
 		{
 			this.filter = filter;
 			this.numClicks = numClicks;
-			_timer = new Timer(300);
-			_timer.addEventListener(TimerEvent.TIMER, reset);
+			_timer = new Timer(150);
+			_timer.addEventListener(TimerEvent.TIMER, onTimer);
 			if (onClick != null)
 				addEventListener(SelectionEvent.SELECT, onClick);
+			if (onClear != null)
+				addEventListener(SelectionEvent.DESELECT, onClear);
 		}
 		
 		/** @inheritDoc */
 		public override function attach(obj:InteractiveObject):void
 		{
+			if (obj==null) { detach(); return; }
 			super.attach(obj);
 			if (obj != null) {
 				obj.addEventListener(MouseEvent.CLICK, onClick);
+				obj.addEventListener(MouseEvent.MOUSE_DOWN, onDown);
 			}
 		}
 		
@@ -66,40 +75,48 @@ package flare.vis.controls
 		{
 			if (_object != null) {
 				_object.removeEventListener(MouseEvent.CLICK, onClick);
+				_object.removeEventListener(MouseEvent.MOUSE_DOWN, onDown);
 			}
 			return super.detach();
 		}
 		
-		private function onClick(evt:MouseEvent):void
+		// -----------------------------------------------------
+		
+		private function onDown(evt:MouseEvent):void
 		{
 			_timer.stop();
-			
+		}
+		
+		private function onClick(evt:MouseEvent):void
+		{
 			var n:DisplayObject = evt.target as DisplayObject;
 			if (n==null || (_filter!=null && !_filter(n))) {
-				_cur = null;
-				reset();
-				return;
+				_clicks++;
+				_clear = true;
 			} else if (_cur != n) {
+				_clear = false;
 				_clicks = 1;
 				_cur = n;
 			} else {
 				_clicks++;
 			}
-			
+			_evt = evt;
 			_timer.start();
 		}
 		
-		private function reset(evt:Event=null):void
+		private function onTimer(evt:Event=null):void
 		{
 			if (_clicks == numClicks && _cur) {
-				if (hasEventListener(SelectionEvent.SELECT)) {
-					dispatchEvent(
-						new SelectionEvent(SelectionEvent.SELECT, _cur));
-				}
+				var type:String = _clear ? SelectionEvent.DESELECT 
+				                         : SelectionEvent.SELECT;
+				if (hasEventListener(type))
+					dispatchEvent(new SelectionEvent(type, _cur, _evt));
+				if (_clear) _cur = null;
 			}
 			_timer.stop();
-			_cur = null;
 			_clicks = 0;
+			_evt = null;
+			_clear = false;
 		}
 		
 	} // end of class ClickControl

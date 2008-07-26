@@ -4,20 +4,56 @@ package flare.util
 	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
 	/**
-	 * Utility class for creating thumbnail images of displayed content.
+	 * Utility class providing methods for working with display objects.
 	 */
-	public class Thumbnails
+	public class Displays
 	{
 		/**
 		 * Constructor, throws an error if called, as this is an abstract class.
 		 */
-		public function Thumbnails()
+		public function Displays()
 		{
 			throw new Error("This is an abstract class.");
+		}
+		
+		/**
+		 * Adds a listener to the stage via a given display object. If the
+		 * display object has already been added to the stage, the listener
+		 * will be added to the stage immediately. Otherwise, the listener will
+		 * be added whenever the display object is added to the stage. This
+		 * method allows you to add listeners for stage events without having
+		 * to explicitly manage the case where the defining elements have not
+		 * yet been added to the stage.
+		 * @param d the display object through which to access the stage
+		 * @param eventType the event type
+		 * @param listener the event listener
+		 * @param useCapture the event useCapture flag
+		 * @param priority the event listener priority
+		 * @param useWeakReference the event useWeakReference flag
+		 * @see flash.events.Event
+		 */
+		public static function addStageListener(d:DisplayObject,
+			eventType:String, listener:Function, useCapture:Boolean=false,
+			priority:Number=0, useWeakReference:Boolean=false):void
+		{
+			if (d.stage) {
+				d.stage.addEventListener(eventType, listener, useCapture,
+					priority, useWeakReference);
+			} else {
+				var add:Function = function(e:Event=null):void
+				{
+					d.stage.addEventListener(eventType, listener,
+						useCapture, priority, useWeakReference);
+					d.removeEventListener(Event.ADDED_TO_STAGE, add);
+					d.stage.invalidate();
+				}
+				d.addEventListener(Event.ADDED_TO_STAGE, add);
+			}
 		}
 		
 		/**
@@ -43,7 +79,7 @@ package flare.util
 		 *  width and height will automatically be created.
 		 * @return the thumbnail image as a BitmapData instance
 		 */
-		public static function create(src:DisplayObject, width:Number=-1,
+		public static function thumbnail(src:DisplayObject, width:Number=-1,
 			height:Number=-1, bd:BitmapData=null):BitmapData
 		{
 			DirtySprite.renderDirty(); // make sure everything is rendered
@@ -73,5 +109,5 @@ package flare.util
 			return bd;
 		}
 
-	} // end of class Thumbnails
+	} // end of class Displays
 }

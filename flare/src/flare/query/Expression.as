@@ -135,6 +135,8 @@ package flare.query
 		{
 			if (o is Expression) {
 				return o as Expression;
+			} else if (o is Class) {
+				return new IsA(Class(o));
 			} else if (o is String) {
 				var s:String = o as String;
 				var c1:Number = s.charCodeAt(0);

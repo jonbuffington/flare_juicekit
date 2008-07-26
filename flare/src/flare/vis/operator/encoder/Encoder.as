@@ -1,13 +1,13 @@
 package flare.vis.operator.encoder
 {
 	import flare.animate.Transitioner;
+	import flare.util.Filter;
 	import flare.util.Property;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.data.ScaleBinding;
 	import flare.vis.operator.Operator;
 	import flare.vis.palette.Palette;
-	import flare.vis.util.Filters;
 
 	/**
 	 * Base class for Operators that perform encoding of visual variables such
@@ -42,9 +42,9 @@ package flare.vis.operator.encoder
 		/** Boolean function indicating which items to process. Only items
 		 *  for which this function return true will be considered by the
 		 *  labeler. If the function is null, all items will be considered.
-		 *  @see flare.vis.util.Filters */
+		 *  @see flare.util.Filter */
 		public function get filter():Function { return _filter; }
-		public function set filter(f:*):void { _filter = Filters.instance(f); }
+		public function set filter(f:*):void { _filter = Filter.$(f); }
 
 		/** The name of the data group for which to compute the encoding. */
 		public function get group():String { return _binding.group; }

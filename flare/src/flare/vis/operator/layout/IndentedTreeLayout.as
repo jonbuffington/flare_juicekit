@@ -16,7 +16,6 @@ package flare.vis.operator.layout
     	private var _depths:Array = new Array(20); // TODO make sure array regrows as needed
     	private var _maxDepth:int = 0;
     	private var _ax:Number, _ay:Number; // for holding anchor co-ordinates
-		private var _t:Transitioner; // temp variable for transitioner access
 		
 		/** The spacing to use between depth levels (the amount of indent). */
 		public function get depthSpacing():Number { return _dspace; }
@@ -41,10 +40,8 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = t!=null ? t : Transitioner.DEFAULT; // set transitioner
-			
         	Arrays.fill(_depths, 0);
         	_maxDepth = 0;
         
@@ -54,9 +51,7 @@ package flare.vis.operator.layout
         	var root:NodeSprite = layoutRoot as NodeSprite;
         	if (root == null) return; // TODO: throw exception?
         	
-        	layoutNode(root,0,0,true);      
-
-        	_t = null; // clear transitioner reference
+        	layoutNode(root,0,0,true);
     	}
     	
     	
@@ -65,6 +60,7 @@ package flare.vis.operator.layout
     		var x:Number = _ax + indent * _dspace;
     		var y:Number = _ay + height;
     		var o:Object = _t.$(node);
+    		node.h = _t.endSize(node, _rect).height;
     		
     		// update node
     		o.x = x;
@@ -84,7 +80,7 @@ package flare.vis.operator.layout
     			o.points = [_t.getValue(p,"x"), y];
     		}
     		
-    		if (visible) { height += node.height + _bspace; }
+    		if (visible) { height += node.h + _bspace; }
     		if (!node.expanded) { visible = false; }
     		
     		if (node.childDegree > 0) // is not a leaf node

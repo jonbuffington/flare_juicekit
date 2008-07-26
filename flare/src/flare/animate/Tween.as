@@ -43,7 +43,7 @@ package flare.animate
 		private var _target:Object;
 		private var _from:Object;
 		private var _remove:Boolean = false;
-		private var _visible:Boolean = true;
+		private var _visible:Object = null;
 		private var _values:Object;
 		
 		/** The target object whose properties are tweened. */
@@ -98,7 +98,7 @@ package flare.animate
 			for (var name:String in _values) {
 				delete _values[name];
 			}
-			_visible = true;
+			_visible = null;
 			_remove = false;
 			_target = null;
 		}
@@ -140,9 +140,8 @@ package flare.animate
 		{
 			// set visibility
 			var item:DisplayObject = _target as DisplayObject;
-			if (item != null && _visible) {
-				item.visible = _visible;
-			}
+			if (item != null && Boolean(_visible))
+				item.visible = true;
 		}
 		
 		/**
@@ -167,7 +166,8 @@ package flare.animate
 			if (item != null) {
 				if (_remove && item.parent != null)
 					item.parent.removeChild(item);
-				item.visible = _visible;
+				if (_visible != null)
+					item.visible = Boolean(_visible);
 			}
 		}
 		

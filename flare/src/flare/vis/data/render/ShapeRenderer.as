@@ -1,13 +1,14 @@
 package flare.vis.data.render
 {
 	import flare.vis.data.DataSprite;
-	import flash.display.Graphics;
 	import flare.vis.util.Shapes;
+	
+	import flash.display.Graphics;
 
 	/**
 	 * Renderer that draws shapes. The ShapeRender uses a ShapePalette instance
-	 * as needed to look up shape drawing routines based on a DataSprite's
-	 * shape property.
+	 * as needed to look up shape drawing routines based on the DataSprite
+	 * <code>shape</code> property.
 	 * @see flare.vis.palette.ShapePalette
 	 */
 	public class ShapeRenderer implements IRenderer
@@ -18,7 +19,15 @@ package flare.vis.data.render
 		
 		/** The default size value for drawn shapes. This value is multiplied
 		 *  by a DataSprite's size property to determine the final size. */
-		public var defaultSize:Number = 6;
+		public var defaultSize:Number;
+		
+		/**
+		 * Creates a new ShapeRenderer 
+		 * @param defaultSize the default size (radius) for shapes
+		 */
+		public function ShapeRenderer(defaultSize:Number=6) {
+			this.defaultSize = defaultSize;
+		}
 		
 		/** @inheritDoc */
 		public function render(d:DataSprite):void
@@ -54,7 +63,8 @@ package flare.vis.data.render
 					g.drawRect(-d.w, -size/2, d.w, size);
 					break;
 				case Shapes.WEDGE:
-					Shapes.drawWedge(g, -d.x, -d.y, d.h, d.v, d.u, d.u+d.w);
+					Shapes.drawWedge(g, d.origin.x-d.x, d.origin.y-d.y,
+									 d.h, d.v, d.u, d.u+d.w);
 					break;
 				default:
 					Shapes.getShape(d.shape)(g, size);

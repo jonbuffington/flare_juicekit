@@ -11,24 +11,43 @@ package flare.vis.data
 	
 	import flash.events.EventDispatcher;
 	
-	[Event(name="data added",   type="flare.vis.events.DataEvent")]
-	[Event(name="data removed", type="flare.vis.events.DataEvent")]
+	[Event(name="add",    type="flare.vis.events.DataEvent")]
+	[Event(name="remove", type="flare.vis.events.DataEvent")]
 	
 	/**
 	 * Data structure for managing a collection of visual data objects. The
 	 * Data class manages both unstructured data and data organized in a
 	 * general graph (or network structure), maintaining collections of both
-	 * nodes and edges. Default property values can be defined that are set
-	 * on all new nodes or edges added to the data collection. Furthermore,
-	 * the Data class supports sorting of node and edges, generation and
-	 * caching of data value statistics, creation of data scales for
-	 * data properties, and spanning tree calculation.
+	 * nodes and edges. Collections of data sprites are maintained by
+	 * <code>DataList</code> instances. The individual data lists provide
+	 * methods for accessing, manipulating, sorting, and generating statistics
+	 * about the visual data objects.
+	 * 
+	 * <p>In addition to the required <code>nodes</code> and <code>edges</code>
+	 * lists, clients can add new custom lists (for example, to manage a
+	 * selected subset of the data) by using the <code>addGroup</code> method
+	 * and then accessing the list with the <code>group</code> method.
+	 * Individual data groups can be directly processed by many of the
+	 * visualization operators in the <code>flare.vis.operator</code> package.
+	 * </p>
 	 * 
 	 * <p>While Data objects maintain a collection of visual DataSprites,
 	 * they are not themselves visual object containers. Instead a Data
 	 * instance is used as input to a <code>Visualization</code> that
 	 * is responsible for processing the DataSprite instances and adding
 	 * them to the Flash display list.</p>
+	 * 
+	 * <p>The data class also manages the automatic generation of spanning
+	 * trees over a graph when needed for tree-based operations (such as tree
+	 * layout algorithms). This implemented by a
+	 * <code>flare.analytics.graph.SpanningTree</code> operator which can be
+	 * parameterized using the <code>treePolicy</code>,
+	 * <code>treeEdgeWeight</code>, and <code>root</code> properties of this
+	 * class. Alternatively, clients can create their own spanning trees as
+	 * a <code>Tree</code instance and set this as the spanning tree.</p>
+	 * 
+	 * @see flare.vis.data.DataList
+	 * @see flare.analytics.graph.SpanningTree
 	 */
 	public class Data extends EventDispatcher
 	{
@@ -38,21 +57,19 @@ package flare.vis.data
 		public static const EDGES:String = "edges";
 		
 		/** Internal list of NodeSprites. */
-		protected var _nodes:DataList = new DataList();
+		protected var _nodes:DataList = new DataList(NODES);
 		/** Internal list of EdgeSprites. */
-		protected var _edges:DataList = new DataList();
-		/** Internal set of DataGroups. */
-		protected var _groups:DataGroups;
+		protected var _edges:DataList = new DataList(EDGES);
+		/** Internal set of data groups. */
+		protected var _groups:Object;
 		
 		/** The total number of items (nodes and edges) in the data. */
-		public function get size():int { return _nodes.size + _edges.size; }
+		public function get length():int { return _nodes.length + _edges.length; }
 		
 		/** The collection of NodeSprites. */
 		public function get nodes():DataList { return _nodes; }
 		/** The collection of EdgeSprites. */
 		public function get edges():DataList { return _edges; }
-		/** The collection of all DataGroup instances. */
-		public function get groups():DataGroups { return _groups; }
 		
 		/** The default directedness of new edges. */
 		public var directedEdges:Boolean;
@@ -66,7 +83,13 @@ package flare.vis.data
 		 */
 		public function Data(directedEdges:Boolean=false) {
 			this.directedEdges = directedEdges;
-			this._groups = new DataGroups(this);
+			_groups = { nodes: _nodes, edges: _edges };
+			
+			// add listeners to enforce type and connectivity constraints
+			_nodes.addEventListener(DataEvent.ADD, onAddNode);
+			_nodes.addEventListener(DataEvent.REMOVE, onRemoveNode);
+			_edges.addEventListener(DataEvent.ADD, onAddEdge);
+			_edges.addEventListener(DataEvent.REMOVE, onRemoveEdge);
 		}
 		
 		/**
@@ -111,13 +134,13 @@ package flare.vis.data
 			if (!ds.edges) return d;
 				
 			var nodes:DataList = d.nodes, map:Object = {};
-			var id:String = "id"; // TODO: generalize these fields
+			var id:String = "id"; // TODO: generalize these fields?
 			var src:String = "source";
 			var trg:String = "target";
 			var dir:String = "directed";
 			
 			// build node map
-			for (i=0; i<nodes.size; ++i) {
+			for (i=0; i<nodes.length; ++i) {
 				map[nodes[i].data[id]] = nodes[i];
 			}
 			
@@ -143,6 +166,55 @@ package flare.vis.data
 			
 			return d;
 		}		
+		
+		// -- Group Management ---------------------------------
+		
+		/**
+		 * Adds a new data group. If a group of the same name already exists,
+		 * it will be replaced, except for the groups "nodes" and "edges",
+		 * which can not be replaced. 
+		 * @param name the name of the group to add
+		 * @param group the data list to add, if null a new,
+		 *  empty <code>DataList</code> instance will be created.
+		 * @return the added data group
+		 */
+		public function addGroup(name:String, group:DataList=null):DataList
+		{
+			if (name=="nodes" || name=="edges") {
+				throw new ArgumentError("Illegal group name. "
+					+ "\"nodes\" and \"edges\" are reserved names.");
+			}
+			if (group==null) group = new DataList(name);
+			_groups[name] = group;
+			return group;
+		}
+		
+		/**
+		 * Removes a data group. An error will be thrown if the caller
+		 * attempts to remove the groups "nodes" or "edges". 
+		 * @param name the name of the group to remove
+		 * @return the removed data group
+		 */
+		public function removeGroup(name:String):DataList
+		{
+			if (name=="nodes" || name=="edges") {
+				throw new ArgumentError("Illegal group name. "
+					+ "\"nodes\" and \"edges\" are reserved names.");
+			}
+			var group:DataList = _groups[name];
+			if (group) delete _groups[name];
+			return group;
+		}
+		
+		/**
+		 * Retrieves the data group with the given name. 
+		 * @param name the name of the group
+		 * @return the data group
+		 */
+		public function group(name:String):DataList
+		{
+			return _groups[name] as DataList;
+		}
 		
 		// -- Containment --------------------------------------
 		
@@ -170,8 +242,7 @@ package flare.vis.data
 		public function addNode(d:Object=null):NodeSprite
 		{
 			var ns:NodeSprite = NodeSprite(d is NodeSprite ? d : newNode(d));
-			_nodes._add(ns);
-			fireEvent(DataEvent.DATA_ADDED, Data.NODES, ns);
+			_nodes.add(ns);
 			return ns;
 		}
 		
@@ -185,13 +256,7 @@ package flare.vis.data
 		 */
 		public function addEdge(e:EdgeSprite):EdgeSprite
 		{
-			if (_nodes.contains(e.source) && _nodes.contains(e.target)) {
-				_edges._add(e);
-				fireEvent(DataEvent.DATA_ADDED, Data.EDGES, e);
-				return e;
-			} else {
-				return null;
-			}
+			return EdgeSprite(_edges.add(e));
 		}
 		
 		/**
@@ -228,7 +293,7 @@ package flare.vis.data
 			}
 			
 			// sort to group by, then ordering
-			a.sort(Sort.sorter(g));
+			a.sort(Sort.$(g));
 			
 			// get property instances for value operations
 			var p:Array = new Array();
@@ -315,49 +380,11 @@ package flare.vis.data
 		 */
 		public function clear():void
 		{
-			// first, remove all the edges
-			clearEdges();
-			
-			// now remove all the nodes
-			var na:Array = _nodes.list;
-			_nodes._clear();
-			for (var i:int=0; i<na.length; ++i) {
-				fireEvent(DataEvent.DATA_REMOVED, Data.NODES, na[i]);
+			_edges.clear();
+			_nodes.clear();
+			for (var name:String in _groups) {
+				_groups[name].clear();
 			}
-		}
-		
-		/**
-		 * Removes all edges from this data set; updates all incident nodes.
-		 */
-		public function clearEdges():void
-		{
-			var ea:Array = _edges.list, i:uint;
-			_edges._clear();
-			
-			for (i=0; i<ea.length; ++i) {
-				fireEvent(DataEvent.DATA_REMOVED, Data.EDGES, ea[i]);
-				ea[i].clear();
-			}
-			var nodes:Array = _nodes.list
-			for (i=0; i<_nodes.size; ++i) {
-				_nodes.list[i].removeAllEdges();
-			}
-		}
-		
-		/**
-		 * Internal method for removing an item from the data set. Removes the
-		 * item in an iteration-safe fashion and fires a removal event.
-		 * @param o the object to remove
-		 * @param list the list to remove the object from
-		 * @return true if removed successfully, false if the item is not found
-		 */
-		protected function removeInternal(o:DataSprite, list:DataList):Boolean
-		{
-			if (!list.contains(o)) return false;
-			// remove edge, fire event, and return
-			list._remove(o);
-			fireEvent(DataEvent.DATA_REMOVED, Data.EDGES, o);
-			return true;
 		}
 		
 		/**
@@ -381,15 +408,7 @@ package flare.vis.data
 		 */
 		public function removeNode(n:NodeSprite):Boolean
 		{
-			if (!_nodes.contains(n)) return false;
-			
-			var base:Data = this;
-			n.visitEdges(function(e:EdgeSprite):void {
-				removeEdge(e);
-			}, NodeSprite.GRAPH_LINKS | NodeSprite.REVERSE);
-			
-			// finally, remove this node from the data set
-			return removeInternal(n, _nodes);
+			return _nodes.remove(n);
 		}
 		
 		/**
@@ -400,31 +419,68 @@ package flare.vis.data
 		 */
 		public function removeEdge(e:EdgeSprite):Boolean
 		{
-			if (!_edges.contains(e)) return false;
-			e.source.removeOutEdge(e);
-			e.target.removeInEdge(e);
-			return removeInternal(e, _edges);
+			return _edges.remove(e);
 		}
 				
 		// -- Events -------------------------------------------
 		
-		/**
-		 * Internal method for firing a data event.
-		 * @param type the event type
-		 * @param d the DataSprite for which the event is being fired
-		 * @param clearCache flag indicating if the statistics cache
-		 *  should be cleared in response to the update
-		 */
-		protected function fireEvent(type:String,
-			group:String, d:DataSprite):void
+		/** @private */
+		protected function onAddNode(evt:DataEvent):void
+		{
+			for each (var d:DataSprite in evt.items) {
+				var n:NodeSprite = d as NodeSprite;
+				if (!n) {
+					evt.preventDefault();
+					return;
+				}
+			}
+			fireEvent(evt);
+		}
+		
+		/** @private */
+		protected function onRemoveNode(evt:DataEvent):void
+		{
+			for each (var n:NodeSprite in evt.items)
+				n.visitEdges(removeEdge,
+					NodeSprite.GRAPH_LINKS | NodeSprite.REVERSE);
+			fireEvent(evt);
+		}
+		
+		/** @private */
+		protected function onAddEdge(evt:DataEvent):void
+		{
+			for each (var d:DataSprite in evt.items) {
+				var e:EdgeSprite = d as EdgeSprite;
+				if (!(e && _nodes.contains(e.source)
+					&& _nodes.contains(e.target)))
+				{
+					evt.preventDefault();
+					return;
+				}
+			}
+			fireEvent(evt);
+		}
+		
+		/** @private */
+		protected function onRemoveEdge(evt:DataEvent):void
+		{
+			for each (var e:EdgeSprite in evt.items) {
+				e.source.removeOutEdge(e);
+				e.target.removeInEdge(e);
+			}
+			fireEvent(evt);
+		}
+		
+		/** @private */
+		protected function fireEvent(evt:DataEvent):void
 		{			
 			// reset the spanning tree on adds and removals
-			if (type != DataEvent.DATA_UPDATED)
+			if (evt.type != DataEvent.UPDATE)
 				_tree = null;
 			
 			// fire event, if anyone is listening
-			if (hasEventListener(type)) {
-				dispatchEvent(new DataEvent(type, this, group, d));
+			if (hasEventListener(evt.type)) {
+				dispatchEvent(evt);
 			}
 		}
 		
@@ -447,13 +503,13 @@ package flare.vis.data
 			reverse:Boolean=false, filter:*=null):Boolean
 		{
 			if (group == null) {
-				if (_edges.size > 0 && _edges.visit(v, reverse, filter))
+				if (_edges.length > 0 && _edges.visit(v, reverse, filter))
 					return true;
-				if (_nodes.size > 0 && _nodes.visit(v, reverse, filter))
+				if (_nodes.length > 0 && _nodes.visit(v, reverse, filter))
 					return true;
 			} else {
 				var list:DataList = _groups[group];
-				if (list.size > 0 && list.visit(v, reverse, filter))
+				if (list.length > 0 && list.visit(v, reverse, filter))
 					return true;
 			}
 			return false;

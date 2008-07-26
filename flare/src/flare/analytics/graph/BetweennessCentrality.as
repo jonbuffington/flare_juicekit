@@ -46,7 +46,7 @@ package flare.analytics.graph
 		 */
 		public function calculate(data:Data):void
 		{
-			var nodes:DataList = data.nodes; var N:int = nodes.size, i:int;
+			var nodes:DataList = data.nodes; var N:int = nodes.length, i:int;
 			var n:NodeSprite, v:NodeSprite, w:NodeSprite;
 			var si:Score, sv:Score, sw:Score;
 			

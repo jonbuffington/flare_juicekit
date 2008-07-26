@@ -34,8 +34,8 @@ package flare.vis.operator.label
 		 *  <code>textFunction<code> property and the label text will be
 		 *  determined by evaluating that function.
 		 */
-		public function StackedAreaLabeler(source:*) {
-			super(source, Data.NODES, null, LAYER);
+		public function StackedAreaLabeler(source:*, group:String=Data.NODES) {
+			super(source, group, null, null, LAYER);
 		}
 
 		/** @inheritDoc */

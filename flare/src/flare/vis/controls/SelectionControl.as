@@ -27,14 +27,25 @@ package flare.vis.controls
 		private var _hit:InteractiveObject;
 		private var _stage:Stage;
 		
+		private var _add0:DisplayObject = null;
+		private var _rem0:DisplayObject = null;
+		private var _add:Array = null;
+		private var _rem:Array = null;
+		
 		/** The active hit area over which selection
 		 *  interactions can be performed. */
 		public function get hitArea():InteractiveObject { return _hit; }
 		public function set hitArea(hitArea:InteractiveObject):void {
 			if (_hit != null) onRemove();
 			_hit = hitArea;
-			if (_object.stage != null) onAdd();
+			if (_object && _object.stage != null) onAdd();
 		}
+		
+		/** Indicates if a selection events should be fired immediately upon a
+		 *  chane of selection status (true) or after the mouse is released
+		 * (false). The default is true. Set this to false if immediate
+		 * selections are causing any performance issues. */
+		public var fireImmediately:Boolean = true;
 		
 		/** Line color of the selection region border. */
 		public var lineColor:uint = 0x8888FF;
@@ -61,8 +72,8 @@ package flare.vis.controls
 		 * @param deselect an optional SelectionEvent listener for deselections
 		 */
 		public function SelectionControl(filter:*=null,
-			hitArea:InteractiveObject=null, select:Function=null,
-			deselect:Function=null)
+			select:Function=null, deselect:Function=null,
+			hitArea:InteractiveObject=null)
 		{
 			_hit = hitArea;
 			this.filter = filter;
@@ -71,6 +82,8 @@ package flare.vis.controls
 			if (deselect != null)
 				addEventListener(SelectionEvent.DESELECT, deselect);
 		}
+		
+		// -----------------------------------------------------
 		
 		/** @inheritDoc */
 		public override function attach(obj:InteractiveObject):void
@@ -111,6 +124,8 @@ package flare.vis.controls
 			if (_hit)
 				_hit.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 		}
+		
+		// -----------------------------------------------------
 				
 		private function mouseDown(evt:MouseEvent):void
 		{
@@ -124,12 +139,12 @@ package flare.vis.controls
 			_r.height = 1;
 			_drag = true;
 			
-			DisplayObjectContainer(_object).addChild(_shape0);
 			DisplayObjectContainer(_object).addChild(_shape1);
-			var tmp:Shape = _shape1; _shape1 = _shape0; _shape0 = tmp;
-			renderShape();
-			selectionTest();
-			DisplayObjectContainer(_object).removeChild(_shape0);
+			renderShape(_shape1.graphics);
+			if (fireImmediately) {
+				selectionTest(evt);
+				renderShape(_shape1.graphics);
+			}
 		}
 		
 		private function mouseMove(evt:MouseEvent):void
@@ -138,36 +153,53 @@ package flare.vis.controls
 			_r.width = _object.mouseX - _r.x;
 			_r.height = _object.mouseY - _r.y;
 			
-			DisplayObjectContainer(_object).addChild(_shape0);
-			var tmp:Shape = _shape1; _shape1 = _shape0; _shape0 = tmp;
-			renderShape();
-			selectionTest();
-			DisplayObjectContainer(_object).removeChild(_shape0);
+			renderShape(_shape1.graphics);
+			if (fireImmediately) {
+				selectionTest(evt);
+				renderShape(_shape1.graphics);
+			}
 		}
 		
 		private function mouseUp(evt:MouseEvent):void
 		{
+			if (!fireImmediately)
+				selectionTest(evt);
 			_drag = false;
 			DisplayObjectContainer(_object).removeChild(_shape1);
 			_stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
 			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 		}
 		
-		private function renderShape():void {
-			var g:Graphics = _shape1.graphics;
+		private function renderShape(g:Graphics):void {
 			g.clear();
-			
 			g.beginFill(fillColor, fillAlpha);
 			g.lineStyle(lineWidth, lineColor, lineAlpha, true, "none");
 			g.drawRect(_r.x, _r.y, _r.width, _r.height);
 			g.endFill();
 		}
 		
-		private function selectionTest():void {
+		private function selectionTest(evt:MouseEvent):void {
+			DisplayObjectContainer(_object).addChild(_shape0);
+			
 			var con:DisplayObjectContainer = DisplayObjectContainer(_object);
 			for (var i:uint=0; i<con.numChildren; ++i) {
-				walkTree(con.getChildAt(i), selTest);
+				walkTree(con.getChildAt(i), test);
 			}
+			
+			// process selection events
+			if (_rem0 && hasEventListener(SelectionEvent.DESELECT)) {
+				dispatchEvent(new SelectionEvent(SelectionEvent.DESELECT,
+					_rem ? _rem : _rem0, evt));
+			}
+			if (_add0 && hasEventListener(SelectionEvent.SELECT)) {
+				dispatchEvent(new SelectionEvent(SelectionEvent.SELECT,
+					_add ? _add : _add0, evt));
+			}
+			_rem = _add = null;
+			_rem0 = _add0 = null;
+			
+			var tmp:Shape = _shape0; _shape0 = _shape1; _shape1 = tmp;
+			DisplayObjectContainer(_object).removeChild(_shape0);
 		}
 		
 		private static function walkTree(obj:DisplayObject, func:Function):void
@@ -181,17 +213,38 @@ package flare.vis.controls
 			}
 		}
 		
-		private function selTest(d:DisplayObject):void
+		private function test(d:DisplayObject):void
 		{
 			if (_filter!=null && !_filter(d)) return;
 			var a:Boolean = d.hitTestObject(_shape0);
 			var b:Boolean = d.hitTestObject(_shape1);
-			
 			if (!a && b && hasEventListener(SelectionEvent.SELECT)) {
-				dispatchEvent(new SelectionEvent(SelectionEvent.SELECT, d));
+				select(d);
 			} else if (a && !b && hasEventListener(SelectionEvent.DESELECT)) {
-				dispatchEvent(new SelectionEvent(SelectionEvent.DESELECT, d));
+				deselect(d);
 			}
+		}
+		
+		private function select(d:DisplayObject):void {
+			if (_add == null)
+				if (_add0 == null) {
+					_add0 = d;
+				} else {
+					_add = [_add0, d];
+				}
+			else
+				_add.push(d);
+		}
+		
+		private function deselect(d:DisplayObject):void {
+			if (_rem == null)
+				if (_rem0 == null) {
+					_rem0 = d;
+				} else {
+					_rem = [_rem0, d];
+				}
+			else
+				_rem.push(d);
 		}
 		
 	} // end of class SelectionControl

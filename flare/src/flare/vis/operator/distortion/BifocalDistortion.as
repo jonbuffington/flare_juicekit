@@ -51,8 +51,8 @@ package flare.vis.operator.distortion
 	        _mx = xMagnify;
 	        _ry = yRange;
 	        _my = yMagnify;
-	        _distortX = !(_rx == 0 || _mx == 1.0);
-	        _distortY = !(_ry == 0 || _my == 1.0);
+	        distortX = !(_rx == 0 || _mx == 1.0);
+	        distortY = !(_ry == 0 || _my == 1.0);
 		}
 		
 		/** @inheritDoc */
@@ -73,7 +73,7 @@ package flare.vis.operator.distortion
 			var xmag:Boolean = false, ymag:Boolean = false;
 			var m:Number, c:Number, a:Number, min:Number, max:Number;
         
-	        if (_distortX) {
+	        if (distortX) {
 	            c = (bb.left+bb.right)/2;
 	            a = layoutAnchor.x;
 	            min = _b.left;
@@ -83,7 +83,7 @@ package flare.vis.operator.distortion
 	            xmag = (Math.abs(c-a) <= _rx*m )
 	        }
 	        
-	        if (_distortY) {
+	        if (distortY) {
 	            c = (bb.top+bb.bottom)/2;
 	            a = layoutAnchor.y;
 	            min = _b.top;
@@ -93,9 +93,9 @@ package flare.vis.operator.distortion
 	            ymag = (Math.abs(c-a) <= _ry*m);
 	        }
 	        
-	        if (xmag && !_distortY) {
+	        if (xmag && !distortY) {
 	            return _mx;
-	        } else if (ymag && !_distortX) {
+	        } else if (ymag && !distortX) {
 	            return _my;
 	        } else if (xmag && ymag) {
 	            return Math.min(_mx, _my);

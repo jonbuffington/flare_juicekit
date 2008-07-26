@@ -1,10 +1,10 @@
 package flare.vis.operator.layout
 {
-	import flare.vis.operator.Operator;
-	import flare.vis.data.NodeSprite;
-	import flash.geom.Point;
-	import flare.animate.Transitioner;
 	import flare.util.Arrays;
+	import flare.vis.data.NodeSprite;
+	
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Layout that places nodes using a tidy layout of a node-link tree
@@ -35,7 +35,6 @@ package flare.vis.operator.layout
     	private var _depths:Array = new Array(20); // stores depth co-ords
     	private var _maxDepth:int = 0;
     	private var _ax:Number, _ay:Number; // for holding anchor co-ordinates
-		private var _t:Transitioner; // temp variable for transitioner access
 		
 		/** The orientation of the layout. */
 		public function get orientation():String { return _orient; }
@@ -74,38 +73,58 @@ package flare.vis.operator.layout
 		}
 	
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = t!=null ? t : Transitioner.DEFAULT; // set transitioner
-			
         	Arrays.fill(_depths, 0);
         	_maxDepth = 0;
-        
-        	var a:Point = layoutAnchor;
-        	_ax = a.x; _ay = a.y;
-        
+        	
         	var root:NodeSprite = layoutRoot as NodeSprite;
         	if (root == null) { _t = null; return; }
         	var rp:Params = params(root);
-        
-        	// do first pass - compute breadth information, collect depth info
-        	firstWalk(root, 0, 1);
-        
-        	// sum up the depth info
-        	determineDepths();
-        
-        	// do second pass - assign layout positions
-        	secondWalk(root, null, -rp.prelim, 0, true);
-        	
-        	updateEdgePoints(_t);
-        	_t = null; // clear transitioner reference
+
+        	firstWalk(root, 0, 1);                       // breadth/depth stats
+        	var a:Point = layoutAnchor;
+        	_ax = a.x; _ay = a.y;                        // determine anchor
+        	determineDepths();                           // sum depth info
+        	secondWalk(root, null, -rp.prelim, 0, true); // assign positions
+        	updateEdgePoints(_t);                        // update edges
     	}
+
+		protected override function autoAnchor():void
+		{
+			// otherwise generate anchor based on the bounds
+			var b:Rectangle = layoutBounds;
+			var r:NodeSprite = layoutRoot as NodeSprite;
+			switch (_orient) {
+			case Orientation.LEFT_TO_RIGHT:
+				_ax = b.x + _dspace + r.w;
+				_ay = b.y + b.height / 2;
+				break;
+			case Orientation.RIGHT_TO_LEFT:
+				_ax = b.width - (_dspace + r.w);
+				_ay = b.y + b.height / 2;
+				break;
+			case Orientation.TOP_TO_BOTTOM:
+				_ax = b.x + b.width / 2;
+				_ay = b.y + _dspace + r.h;
+				break;
+			case Orientation.BOTTOM_TO_TOP:
+				_ax = b.x + b.width / 2;
+				_ay = b.height - (_dspace + r.h);
+				break;
+			default:
+				throw new Error("Unrecognized orientation value");
+			}
+			_anchor.x = _ax;
+			_anchor.y = _ay;
+		}
 
     	private function firstWalk(n:NodeSprite, num:int, depth:uint):void
     	{
+    		setSizes(n);
+    		updateDepths(depth, n);
     		var np:Params = params(n);
     		np.number = num;
-    		updateDepths(depth, n);
     		
     		var expanded:Boolean = n.expanded;
     		if (n.childDegree == 0 || !expanded) // is leaf
@@ -309,17 +328,24 @@ package flare.vis.operator.layout
 
 		}
 		
+		private function setSizes(n:NodeSprite):void
+		{
+			_t.endSize(n, _rect);
+			n.w = _rect.width;
+			n.h = _rect.height;
+		}
+		
 		private function spacing(l:NodeSprite, r:NodeSprite, siblings:Boolean):Number
 		{
 			var w:Boolean = Orientation.isVertical(_orient);
 			return (siblings ? _bspace : _tspace) + 0.5 *
-					(w ? l.width + r.width : l.height + r.height)
+					(w ? l.w + r.w : l.h + r.h)
     	}
     
     	private function updateDepths(depth:uint, item:NodeSprite):void
     	{
     		var v:Boolean = Orientation.isVertical(_orient);
-    		var d:Number = v ? item.height : item.width;
+    		var d:Number = v ? item.h : item.w;
 
 			// resize if needed
 			if (depth >= _depths.length) {

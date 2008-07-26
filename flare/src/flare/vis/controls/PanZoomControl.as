@@ -52,7 +52,7 @@ package flare.vis.controls
 		public function set hitArea(hitArea:InteractiveObject):void {
 			if (_hit != null) onRemove();
 			_hit = hitArea;
-			if (_object.stage != null) onAdd();
+			if (_object && _object.stage != null) onAdd();
 		}
 		
 		/**
@@ -84,14 +84,15 @@ package flare.vis.controls
 			onRemove();
 			_object.removeEventListener(Event.ADDED_TO_STAGE, onAdd);
 			_object.removeEventListener(Event.REMOVED_FROM_STAGE, onRemove);
-			_hit = null;
 			return super.detach();
 		}
 		
 		private function onAdd(evt:Event=null):void
 		{
 			_stage = _object.stage;
-			if (_hit == null) _hit = _stage;
+			if (_hit == null) {
+				_hit = _stage;
+			}
 			_hit.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			_hit.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
 		}

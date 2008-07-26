@@ -36,7 +36,6 @@ package flare.vis.operator.layout
 		private var _normalize:Boolean = false;
 		private var _padding:Number = 0.05;
 		private var _threshold:Number = 1.0;
-		private var _t:Transitioner;
 		
 		private var _scale:QuantitativeScale = new LinearScale(0,0,10,true);
 		
@@ -80,6 +79,8 @@ package flare.vis.operator.layout
 		 * @param cols an ordered array of properties for the column values
 		 */		
 		public function StackedAreaLayout(cols:Array, padding:Number=0.05) {
+			layoutType = CARTESIAN;
+			
 			this.padding = padding;
 			_columns = Arrays.copy(cols);
 			_peaks = new Array(cols.length);
@@ -123,10 +124,8 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t!=null ? t : Transitioner.DEFAULT);
-
 	        // get the orientation specifics sorted out
 	        var bounds:Rectangle = layoutBounds;
 	        var hgt:Number, wth:Number;
@@ -160,7 +159,7 @@ package flare.vis.operator.layout
 	        // perform second walk to compute polygon layout
 	        visualization.data.nodes.visit(function(d:NodeSprite):void
 	        {
-	        	var obj:Object = t.$(d);
+	        	var obj:Object = _t.$(d);
 	        	var height:Number = 0, i:uint;
 	        	var visible:Boolean = d.visible && d.alpha>0;
 	        	var filtered:Boolean = !obj.visible;
@@ -205,14 +204,12 @@ package flare.vis.operator.layout
 	            
 	            // update data sprite layout
 	            obj.x = 0; obj.y = 0;
-	            if (t.immediate || !d.visible) {
+	            if (_t.immediate || !d.visible) {
 	            	d.points = Arrays.copy(_poly, d.points);
 	            } else {
 	            	obj.points = Arrays.copy(_poly, d.props.poly);
 	            }
 	        }, true);
-			
-			_t = null;
 		}
 		
 		private function peaks():Number

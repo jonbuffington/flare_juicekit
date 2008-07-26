@@ -168,7 +168,6 @@ package flare.animate
 			if (hasEventListener(TransitionEvent.START)) {
 				dispatchEvent(new TransitionEvent(TransitionEvent.START, this));
 			}
-			//if (onStart!=null) onStart();
 		}
 		
 		internal function doStep(frac:Number):void
@@ -180,7 +179,6 @@ package flare.animate
 			if (hasEventListener(TransitionEvent.STEP)) {
 				dispatchEvent(new TransitionEvent(TransitionEvent.STEP, this));
 			}
-			//if (onStep != null) onStep();
 		}
 		
 		internal function doEnd():void
@@ -192,7 +190,6 @@ package flare.animate
 			if (hasEventListener(TransitionEvent.END)) {
 				dispatchEvent(new TransitionEvent(TransitionEvent.END, this));
 			}
-			//if (onEnd!=null) onEnd();
 		}
 		
 		/**

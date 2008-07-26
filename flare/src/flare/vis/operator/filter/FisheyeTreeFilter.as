@@ -55,7 +55,7 @@ package flare.vis.operator.filter
 		{
 			_t = (t==null ? Transitioner.DEFAULT : t);
 			var tree:Tree = visualization.tree;
-			_divisor = tree.nodes.size;
+			_divisor = tree.nodes.length;
         	_root = tree.root;
         
 	        // mark the items

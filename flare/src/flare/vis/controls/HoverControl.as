@@ -7,8 +7,8 @@ package flare.vis.controls
 	import flash.display.InteractiveObject;
 	import flash.events.MouseEvent;
 
-	[Event(name="select",   type="flare.vis.events.SelectionEvent")]
-	[Event(name="deselect", type="flare.vis.events.SelectionEvent")]
+	[Event(name="add",    type="flare.vis.events.SelectionEvent")]
+	[Event(name="remove", type="flare.vis.events.SelectionEvent")]
 
 	/**
 	 * Interactive control for responding to mouse hover events. Select and
@@ -100,7 +100,8 @@ package flare.vis.controls
 				p.setChildIndex(n, p.numChildren-1);
 			}
 			if (hasEventListener(SelectionEvent.SELECT)) {
-				dispatchEvent(new SelectionEvent(SelectionEvent.SELECT, _cur));
+				dispatchEvent(
+					new SelectionEvent(SelectionEvent.SELECT, _cur, evt));
 			}
 		}
 		
@@ -108,7 +109,8 @@ package flare.vis.controls
 		{
 			if (_cur == null) return;
 			if (hasEventListener(SelectionEvent.DESELECT)) {
-				dispatchEvent(new SelectionEvent(SelectionEvent.DESELECT, _cur));
+				dispatchEvent(
+					new SelectionEvent(SelectionEvent.DESELECT, _cur, evt));
 			}
 			if (_movePolicy == MOVE_AND_RETURN) {
 				_cur.parent.setChildIndex(_cur, _idx);

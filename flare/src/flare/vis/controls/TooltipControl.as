@@ -113,7 +113,7 @@ package flare.vis.controls
 			tip.textField.border = true;
 			tip.textField.borderColor = 0;
 			tip.textField.background = true;
-			tip.textField.backgroundColor = 0xeeeecc;
+			tip.textField.backgroundColor = 0xf5f5cc;
 			tip.textField.multiline = true;
 			tip.filters = [new DropShadowFilter(4,45,0,0.5)];
 			return tip;

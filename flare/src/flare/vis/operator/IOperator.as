@@ -22,10 +22,16 @@ package flare.vis.operator
 		function set enabled(b:Boolean):void;
 		
 		/**
+		 * Sets parameter values for this operator.
+		 * @params an object containing parameter names and values.
+		 */
+		function set parameters(params:Object):void;
+		
+		/**
 		 * Performs an operation over the contents of a visualization.
 		 * @param t a Transitioner instance for collecting value updates.
 		 */
-		function operate(t:Transitioner=null) : void;
+		function operate(t:Transitioner=null):void;
 		
 		/**
 		 * Setup method invoked whenever this operator's visualization

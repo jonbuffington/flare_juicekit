@@ -3,11 +3,11 @@ package flare.vis.operator.label
 	import flare.animate.Transitioner;
 	import flare.display.TextSprite;
 	import flare.query.Expression;
+	import flare.util.Filter;
 	import flare.util.Property;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.Operator;
-	import flare.vis.util.Filters;
 	import flare.vis.util.Shapes;
 	
 	import flash.display.Sprite;
@@ -29,13 +29,18 @@ package flare.vis.operator.label
 		/** Constant indicating that labels be added as children. */
 		public static const CHILD:String = "child";
 		
-		private var _policy:String;
-		private var _labels:Sprite;
-		private var _group:String;
-		private var _filter:Function;
-		
-		private var _source:Property;
-		private var _access:Property = Property.$("props.label");
+		/** @private */
+		protected var _policy:String;
+		/** @private */
+		protected var _labels:Sprite;
+		/** @private */
+		protected var _group:String;
+		/** @private */
+		protected var _filter:Function;
+		/** @private */
+		protected var _source:Property;
+		/** @private */
+		protected var _access:Property = Property.$("props.label");
 		
 		/** @private */
 		protected var _t:Transitioner;
@@ -58,9 +63,9 @@ package flare.vis.operator.label
 		/** Boolean function indicating which items to process. Only items
 		 *  for which this function return true will be considered by the
 		 *  labeler. If the function is null, all items will be considered.
-		 *  @see flare.vis.util.Filters */
+		 *  @see flare.util.Filter */
 		public function get filter():Function { return _filter; }
-		public function set filter(f:*):void { _filter = Filters.instance(f); }
+		public function set filter(f:*):void { _filter = Filter.$(f); }
 		
 		/** A sprite containing the labels, if a layer policy is used. */
 		public function get labels():Sprite { return _labels; }
@@ -101,14 +106,14 @@ package flare.vis.operator.label
 		 *  determined by evaluating that function.
 		 * @param group the data group to process
 		 * @param format optional text formatting information for labels
+		 * @param filter a Boolean-valued filter function determining which
+		 *  items will be given labels
 		 * @param policy the label creation policy. One of LAYER (for adding a
 		 *  separate label layer) or CHILD (for adding labels as children of
 		 *  data objects)
-		 * @param filter a Boolean-valued filter function determining which
-		 *  items will be given labels
 		 */
 		public function Labeler(source:*, group:String=Data.NODES,
-			format:TextFormat=null, policy:String=CHILD, filter:*=null)
+			format:TextFormat=null, filter:*=null, policy:String=CHILD)
 		{
 			if (source is String) {
 				_source = Property.$(source);
@@ -120,24 +125,23 @@ package flare.vis.operator.label
 				textFunction = source.eval;
 			}
 			_group = group;
-			textFormat = format ? format : new TextFormat("Helvetica,Arial",11);
+			textFormat = format ? format : new TextFormat("Arial",12);
 			this.filter = filter;
 			
 			_policy = policy;
-			if (policy==LAYER) {
-				_labels = new Sprite();
-				_labels.name = "_labels";
-				_labels.mouseChildren = false;
-				_labels.mouseEnabled = false;
-			}
 		}
 		
 		/** @inheritDoc */
 		public override function setup():void
 		{
 			if (_policy == LAYER) {
-				if (!visualization.getChildByName("_labels")) 
-					visualization.addChild(_labels);
+				_labels = visualization.labels;
+				if (_labels == null) {
+					_labels = new Sprite();
+					_labels.mouseChildren = false;
+					_labels.mouseEnabled = false;
+					visualization.labels = _labels;
+				}
 			}
 		}
 		
@@ -145,7 +149,7 @@ package flare.vis.operator.label
 		public override function operate(t:Transitioner=null):void
 		{
 			_t = (t ? t : Transitioner.DEFAULT);
-			visualization.data.groups[group].visit(process, false, filter);
+			visualization.data.group(group).visit(process, false, filter);
 			_t = null;
 		}
 		
@@ -170,8 +174,8 @@ package flare.vis.operator.label
 				a = o.alpha;
 				v = o.visible;
 				o = _t.$(label);
-				o.x = x + xOffset + visualization.marks.x;
-				o.y = y + yOffset + visualization.marks.y;
+				o.x = x + xOffset;
+				o.y = y + yOffset;
 				o.alpha = a;
 				o.visible = v;
 			} else {

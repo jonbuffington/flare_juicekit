@@ -18,62 +18,35 @@ package flare.vis.operator.distortion
 	 */
 	public class Distortion extends Layout
 	{
-		/** Flag indicating is sizes should be distorted. */
-		protected var _distortSize:Boolean;
-		/** Flag indicating if x-coordinates should be distorted. */
-		protected var _distortX:Boolean;
-		/** Flag indicating if y-coordinates should be distorted. */
-		protected var _distortY:Boolean;
-		/** Flag indicating if axes should be distorted. */
-		protected var _distortAxes:Boolean;
-
 		/** A bounding rectangle for storing the layout bounds. */
 		protected var _b:Rectangle;
 		
-		private var _resetSize:Boolean = false;
-		private var _useSizeField:Boolean = false;
-		private var _anchorInBounds:Boolean = true;
-		private var _t:Transitioner;
-		
 		/** Flag indicating if x-coordinates should be distorted. */
-		public function get distortX():Boolean { return _distortX; }
-		public function set distortX(b:Boolean):void { _distortX = b; }
-		
+		public var distortX:Boolean;		
 		/** Flag indicating if y-coordinates should be distorted. */
-		public function get distortY():Boolean { return _distortY; }
-		public function set distortY(b:Boolean):void { _distortY = b; }
-		
+		public var distortY:Boolean;
 		/** Flag indicating if sizes should be distorted. */
-		public function get distortSize():Boolean { return _distortSize; }
-		public function set distortSize(b:Boolean):void { _distortSize = b; }
-		
+		public var distortSize:Boolean;		
 		/** Flag indicating if axes should be distorted. */
-		public function get distortAxes():Boolean { return _distortAxes; }
-		public function set distortAxes(b:Boolean):void { _distortAxes = b; }
-		
+		public var distortAxes:Boolean;		
 		/** Flag indicating if the <code>DataSprite.size</code> field should be
 		 *  distorted. If false (the default), the scaleX and scaleY properties
 		 *  are used instead. */
-		public function get useSizeField():Boolean { return _useSizeField; }
-		public function set useSizeField(b:Boolean):void { _useSizeField = b; }
-		
+		public var useSizeField:Boolean = false;		
 		/** Flag indicating if the size or scale values should be reset to 1
 		 *  upon each invocation of the distortion. This avoids the need to
 		 *  manually reset the size values on each update. The default value
 		 *  is false. */
-		public function get resetSize():Boolean { return _resetSize; }
-		public function set resetSize(b:Boolean):void { _resetSize = b; }
-		
+		public var resetSize:Boolean = false;		
 		/** Flag indicating if distortion anchor points outside the layout
 		 *  bounds should be considered by the distortion. If true, external
 		 *  anchors will be mapped to nearest point on the border of the layout
 		 *  bounds. */
-		public function get anchorInBounds():Boolean { return _anchorInBounds; }
-		public function set anchorInBounds(b:Boolean):void { _anchorInBounds = b; }
+		public var anchorInBounds:Boolean = true;
 		
 		/** @inheritDoc */
 		public override function set layoutAnchor(p:Point):void {
-			if (p != null && _anchorInBounds) {
+			if (p != null && anchorInBounds) {
         		var b:Rectangle = layoutBounds, x:Number, y:Number;
         		x = (p.x < b.left ? b.left : (p.x > b.right ? b.right : p.x));
         		y = (p.y < b.top ? b.top : (p.y > b.bottom ? b.bottom : p.y));
@@ -107,7 +80,7 @@ package flare.vis.operator.distortion
 			visualization.data.visit(distort, Data.NODES);
 			_t = null;
 			
-			if (_distortAxes && visualization.xyAxes)
+			if (distortAxes && visualization.xyAxes)
 				visualization.addEventListener(
 					VisualizationEvent.UPDATE, axesDistort);
 		}
@@ -119,17 +92,17 @@ package flare.vis.operator.distortion
 		protected function distort(d:DataSprite):void
 		{
 			var o:Object = _t.$(d), ss:Number;
-			if (_resetSize) {
-				if (_useSizeField) { o.size = 1; }
+			if (resetSize) {
+				if (useSizeField) { o.size = 1; }
 				else { o.scaleX = 1; o.scaleY = 1; }
 			}
 			var bb:Rectangle = d.getBounds(d.parent);
 			
-			if (_distortX) o.x = xDistort(o.x);
-			if (_distortY) o.y = yDistort(o.y);
-			if (_distortSize) {
+			if (distortX) o.x = xDistort(o.x);
+			if (distortY) o.y = yDistort(o.y);
+			if (distortSize) {
 				ss = sizeDistort(bb, o.x, o.y);
-				if (_useSizeField) {
+				if (useSizeField) {
 					o.size *= ss;
 				} else {
 					o.scaleX *= ss;
@@ -206,10 +179,10 @@ package flare.vis.operator.distortion
 			var labels:Sprite = axis.labels;
 			for (i=0; i<labels.numChildren; ++i) {
 				o = _t.$(labels.getChildAt(i));
-				if (xb && _distortX) {
+				if (xb && distortX) {
 					o.x = xDistort(o.x);
 				}
-				if (yb && _distortY) {
+				if (yb && distortY) {
 					o.y = yDistort(o.y);
 				}
 			}
@@ -218,11 +191,11 @@ package flare.vis.operator.distortion
 			var glines:Sprite = axis.gridLines;
 			for (i=0; i<glines.numChildren; ++i) {
 				o = _t.$(glines.getChildAt(i));
-				if (xb && _distortX) {
+				if (xb && distortX) {
 					o.x1 = xDistort(o.x1);
 					o.x2 = xDistort(o.x2);
 				}
-				if (yb && _distortY) {
+				if (yb && distortY) {
 					o.y1 = yDistort(o.y1);
 					o.y2 = yDistort(o.y2);
 				}

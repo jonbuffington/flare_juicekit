@@ -1,10 +1,10 @@
 package flare.vis.operator.filter
 {
 	import flare.animate.Transitioner;
+	import flare.util.Filter;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.Operator;
-	import flare.vis.util.Filters;
 
 	/**
 	 * Filter operator that sets item visibility based on a filtering
@@ -40,9 +40,9 @@ package flare.vis.operator.filter
 		 *  items for which this function return true will be considered by the
 		 *  VisibilityFilter. If the function is null, all items will be
 		 *  considered.
-		 *  @see flare.vis.util.Filters */
+		 *  @see flare.util.Filter */
 		public function get filter():Function { return _filter; }
-		public function set filter(f:*):void { _filter = Filters.instance(f); }
+		public function set filter(f:*):void { _filter = Filter.$(f); }
 		
 		/** Immediate mode sets the visibility settings immediately, bypassing
 		 *  any transitioner provided. */

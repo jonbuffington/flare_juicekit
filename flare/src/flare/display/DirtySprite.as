@@ -4,6 +4,7 @@ package flare.display
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	/**
@@ -192,6 +193,77 @@ package flare.display
 		{
 			var s:String = super.toString();
 			return name==null ? s : s + " \""+name+"\"";
+		}
+		
+		
+		// -- Polar Coordinates -----------------------------------------------
+		
+		/** A constant for the point (0,0). */
+		public static const ZERO:Point = new Point(0,0);
+		
+		/** The radius value of this sprite's position in polar co-ordinates.
+		 *  Polar coordinate values are assume a circle center given by the
+		 *  <code>origin</code> property. */
+		protected var _radius:Number;
+		
+		/** The angle value of this sprite's position in polar co-ordinates.
+		 *  Polar coordinate values are assume a circle center given by the
+		 *  <code>origin</code> property. */
+		protected var _angle:Number;
+		
+		/** The origin point for polar coordinates. */
+		protected var _origin:Point = ZERO;
+		
+		/** @inheritDoc */
+		public override function set x(v:Number):void {
+			super.x = v; _radius = NaN; _angle = NaN;
+		}
+		/** @inheritDoc */
+		public override function set y(v:Number):void {
+			super.y = v; _radius = NaN; _angle = NaN;
+		}
+		
+		/** The radius value of this sprite's position in polar co-ordinates.
+		 *  Polar coordinate values are assume a circle center given by the
+		 *  <code>origin</code> property. */
+		public function get radius():Number {
+			if (isNaN(_radius)) {
+				var cx:Number = x - _origin.x;
+				var cy:Number = y - _origin.y;
+				_radius = Math.sqrt(cx*cx + cy*cy);
+			}
+			return _radius;
+		}
+		public function set radius(r:Number):void {
+			var a:Number = angle;
+			super.x =  r * Math.cos(a) + _origin.x;
+			super.y = -r * Math.sin(a) + _origin.y;
+			_radius = r;
+		}
+		
+		/** The angle value of this sprite's position in polar co-ordinates.
+		 *  Polar coordinate values are assume a circle center given by the
+		 *  <code>origin</code> property. */
+		public function get angle():Number {
+			if (isNaN(_angle)) {
+				_angle = Math.atan2(-(y-_origin.y),(x-_origin.x));
+			}
+			return _angle;
+		}
+		public function set angle(a:Number):void {
+			var r:Number = radius;
+			super.x =  r * Math.cos(a) + _origin.x;
+			super.y = -r * Math.sin(a) + _origin.y;
+			_angle = a;
+		}
+		
+		/** The origin point for polar coordinates. */
+		public function get origin():Point { return _origin; }
+		public function set origin(p:Point):void {
+			if (p.x != _origin.x || p.y != _origin.y) {
+				_radius = NaN; _angle = NaN;
+			}
+			_origin = p;
 		}
 		
 	} // end of class DirtySprite

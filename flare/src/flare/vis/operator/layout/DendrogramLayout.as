@@ -25,7 +25,6 @@ package flare.vis.operator.layout
 		
 		private var _orient:String = Orientation.TOP_TO_BOTTOM; // the orientation of the tree
 		private var _dp:Property;
-		private var _t:Transitioner; // temp variable for transitioner access
 		
 		private var _leafCount:int;
 		private var _leafIndex:int = 0;
@@ -60,11 +59,10 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t == null ? Transitioner.DEFAULT : t);
 			init();
-			layout(visualization.tree.root);
+			doLayout(visualization.tree.root);
 		}
 		
 		/**
@@ -114,7 +112,7 @@ package flare.vis.operator.layout
 			return n.u;
 		}
 		
-		private function layout(n:NodeSprite):Number
+		private function doLayout(n:NodeSprite):Number
 		{
 			var d:Number = _dp!=null ? _dp.getValue(n) : n.u;
 			d = _d1 + _dd * (d / _maxDist);
@@ -123,7 +121,7 @@ package flare.vis.operator.layout
 				var b:Number = 0, bc:Number;
 				for (var i:int=0; i<n.childDegree; ++i) {
 					var c:NodeSprite = n.getChildNode(i);
-					b += (bc=layout(c));
+					b += (bc=doLayout(c));
 					layoutEdge(c.parentEdge, bc, d);
 				}
 				b /= n.childDegree;
@@ -148,12 +146,13 @@ package flare.vis.operator.layout
 		private function layoutEdge(e:EdgeSprite, b:Number, d:Number):void
 		{
 			var vert:Boolean = Orientation.isVertical(_orient);
-			var o:Object = _t.$(e);
 			if (e.points == null) {
 				var s:NodeSprite = e.source;
 				var t:NodeSprite = e.target;
 				e.points = [(s.x+t.x)/2, (s.y+t.y)/2];
 			}
+			_dummy.x = b; b = _dummy.x;
+			_dummy.x = d; d = _dummy.x;
 			_t.$(e).points = vert ? [b, d] : [d, b];
 		}
 		

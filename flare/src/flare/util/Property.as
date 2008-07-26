@@ -45,14 +45,9 @@ package flare.util
 		
 		private var _field:String;
 		private var _chain:Array;
-		private var _reset:Boolean;
 		
 		/** The property name string. */
 		public function get name():String { return _field; }
-		/** Flag indicating if all property values along a property chain
-		 *  should be reset when <code>setValue</code> is called (true by
-		 *  default). */
-		public function get reset():Boolean { return _reset; }
 		
 		// --------------------------------------------------------------------
 		
@@ -60,16 +55,13 @@ package flare.util
 		 * Creates a new Property, in most cases the static <code>$</code>
 		 * method should be used instead of this constructor.
 		 * @param name the property name string
-		 * @param reset flag indicating if all properties along a chain should
-		 *  be updated when a new value is set (true by default)
 		 */
-		public function Property(name:String, reset:Boolean=true) {
+		public function Property(name:String) {
 			if (name == null) {
 				throw new ArgumentError("Not a valid property name: "+name);
 			}
 			
 			_field = name;
-			_reset = reset;
 			_chain = null;
 			
 			if (_field != null) {
@@ -146,8 +138,7 @@ package flare.util
 		{
 			if (_chain == null) {
 				x[_field] = val;
-			}
-			else if (_reset) {
+			} else {
 				__stack.push(x);
 				for (var i:uint=0; i<_chain.length-1; ++i) {
 					__stack.push(x = x[_chain[i]]);	
@@ -159,14 +150,10 @@ package flare.util
 				for (i=_chain.length-1; --i >= 0; ) {
 					x = p;
 					p = __stack.pop();
-					p[_chain[i]] = x;
+					try {
+						p[_chain[i]] = x;
+					} catch (err:Error) {}
 				}
-			}
-			else {
-				for (i=0; i<_chain.length-1; ++i) {
-					x = x[_chain[i]];
-				}
-				x[_chain[i]] = val;
 			}
 		}
 		

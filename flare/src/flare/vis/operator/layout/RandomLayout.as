@@ -1,22 +1,35 @@
 package flare.vis.operator.layout
 {
-	import flare.animate.Transitioner;
-	import flash.geom.Rectangle;
+	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
+	
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Layout that places nodes randomly within the layout bounds.
 	 */
 	public class RandomLayout extends Layout
 	{
+		/** The data group to layout. */
+		public var group:String;
+		
+		/**
+		 * Creates a new RandomLayout instance. 
+		 * @param group the data group to layout
+		 */
+		public function RandomLayout(group:String=Data.NODES) {
+			this.group = group;
+		}
+		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			if (t==null) t = Transitioner.DEFAULT;
 			var r:Rectangle = layoutBounds;
-			visualization.data.nodes.visit(function(d:DataSprite):void {
-				t.$(d).x = r.x + r.width * Math.random();
-				t.$(d).y = r.y + r.height * Math.random();
+			visualization.data.group(group).visit(function(d:DataSprite):void
+			{
+				var o:Object = _t.$(d);
+				o.x = r.x + r.width * Math.random();
+				o.y = r.y + r.height * Math.random();
 			});
 		}
 		

@@ -23,7 +23,13 @@ package flare.data.converters
 		/** @inheritDoc */
 		public function read(input:IDataInput, schema:DataSchema=null):DataSet
 		{
-			return parse(XML(input.readUTFBytes(input.bytesAvailable)), schema);
+			var str:String = input.readUTFBytes(input.bytesAvailable);
+			var idx:int = str.indexOf(GRAPHML);
+			if (idx > 0) {
+				str = str.substr(0, idx+GRAPHML.length) + 
+					str.substring(str.indexOf(">", idx));
+			}
+			return parse(XML(str), schema);
 		}
 		
 		/**

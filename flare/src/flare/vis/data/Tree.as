@@ -1,5 +1,7 @@
 package flare.vis.data
-{	
+{
+	import flare.vis.events.DataEvent;
+		
 	/**
 	 * Data structure for managing a collection of visual data objects in a
 	 * tree (hierarchy) structure. This class extends the functionality of
@@ -24,7 +26,7 @@ package flare.vis.data
 		
 		/** This property simply points back to this object. */
 		public override function get tree():Tree { return this; }
-		//public override function set tree(t:Tree):void { /* do nothing */ }
+		public override function set tree(t:Tree):void { /* do nothing */ }
 		
 		// -- Methods ---------------------------------------------------------
 		
@@ -146,16 +148,28 @@ package flare.vis.data
 			
 			// walk disconnected segment to fire updates
 			c.visitTreeDepthFirst(function(n:NodeSprite):void {
-				removeInternal(n.parentEdge, _edges);
-				removeInternal(n, _nodes);
+				_edges.remove(n.parentEdge);
+				_nodes.remove(n);
 			});
-			removeInternal(e, _edges);
+			_edges.remove(e);
 			
 			// update parent index values
 			for (; i<p.childDegree; ++i) {
 				p.getChildNode(i).parentIndex = i;
 			}
 			return true;	
+		}
+		
+		/** @private */
+		protected override function onRemoveNode(evt:DataEvent):void
+		{
+			fireEvent(evt);
+		}
+		
+		/** @private */
+		protected override function onRemoveEdge(evt:DataEvent):void
+		{
+			fireEvent(evt);
 		}
 
 		// --------------------------------------------------------------------

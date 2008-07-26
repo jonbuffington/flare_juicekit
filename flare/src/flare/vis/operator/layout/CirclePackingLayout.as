@@ -1,6 +1,5 @@
 package flare.vis.operator.layout
 {
-	import flare.animate.Transitioner;
 	import flare.util.Sort;
 	import flare.vis.data.Data;
 	import flare.vis.data.NodeSprite;
@@ -34,7 +33,6 @@ package flare.vis.operator.layout
 	 */
 	public class CirclePackingLayout extends Layout
 	{
-		private var _t:Transitioner;
 		private var _sort:Sort = null;
 		private var _order:int;
 		private var _b:Rectangle = new Rectangle();
@@ -79,19 +77,18 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t==null ? Transitioner.DEFAULT : t);
 			_order = 0;
 			
 			var data:Data = visualization.data;
-			data.nodes.setProperty("renderer", ShapeRenderer.instance, t);
-			data.nodes.setProperty("shape", Shapes.CIRCLE, t);
+			data.nodes.setProperty("shape", Shapes.CIRCLE, _t);
+			data.nodes.setProperty("renderer", ShapeRenderer.instance, _t);
 			
 			// determine layout anchor from bounds
 			var bounds:Rectangle = layoutBounds;
-			layoutAnchor.x = (bounds.left + bounds.right) / 2;
-			layoutAnchor.y = (bounds.top + bounds.bottom) / 2;
+			_anchor.x = (bounds.left + bounds.right) / 2;
+			_anchor.y = (bounds.top + bounds.bottom) / 2;
 
 			// compute the circle packing(s)
 			var radius:Number;			
@@ -111,7 +108,7 @@ package flare.vis.operator.layout
 				if (_sort) _sort.sort(list);
 				for (var i:int=0; i<list.length; ++i)
 					list[i] = getChainNode(list[i]);
-				radius = packCircle(list, data.nodes.size);
+				radius = packCircle(list, data.nodes.length);
 			}
 			
 			var dr:Number = Math.max(2*radius/bounds.width, 2*radius/bounds.height);
@@ -119,18 +116,17 @@ package flare.vis.operator.layout
 			
 			if (treeLayout) {
 				// recurse through the tree
-				layoutHelper(root, layoutAnchor.x, layoutAnchor.y, scale);
+				layoutHelper(root, _anchor.x, _anchor.y, scale);
 			} else {
 				// layout all circles directly
 				for each (var n:NodeSprite in visualization.data.nodes) {	
 					cn = n.props.chainNode;
-					update(n, layoutAnchor.x + scale*cn.x,
-					          layoutAnchor.y + scale*cn.y, scale, 1);
+					update(n, _anchor.x + scale*cn.x,
+					          _anchor.y + scale*cn.y, scale, 1);
 					delete n.props.chainNode;
 				}
 			}
-			
-			_t = null;
+			updateEdgePoints(_t);
 		}
 		
 		/** Performs layout for tree structures. */

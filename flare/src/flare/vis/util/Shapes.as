@@ -287,9 +287,8 @@ package flare.vis.util
 			var a:Number = Math.abs(a1-a0);
 			var slices:int = Math.max(4, int(a * outer / 6));
 			var cx:Number = x, cy:Number = y, x0:Number, y0:Number;
-			var circle:Boolean = (a >= 2*Math.PI);
+			var circle:Boolean = (a >= 2*Math.PI - 0.001);
 
-			
 			if (slices <= 0) return;
 		
 			// pick starting point

@@ -1,9 +1,9 @@
 package flare.vis.operator.layout
 {
-	import flare.animate.Transitioner;
 	import flare.util.Arrays;
 	import flare.vis.data.NodeSprite;
 	
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	/**
@@ -36,14 +36,12 @@ package flare.vis.operator.layout
 	    private var _maxDepth:int = 0;
 	    private var _radiusInc:Number = DEFAULT_RADIUS;
 	    private var _theta1:Number = Math.PI/2;
-	    private var _theta2:Number = Math.PI/2 + 2*Math.PI;
+	    private var _theta2:Number = Math.PI/2 - 2*Math.PI;
 	    private var _sortAngles:Boolean = true;
 	    private var _setTheta:Boolean = false;
 	    private var _autoScale:Boolean = true;
 	    private var _useNodeSize:Boolean = true;
 	    private var _prevRoot:NodeSprite = null;
-
-		private var _t:Transitioner;
 
 		/** The radius increment between depth levels. */
 		public function get radiusIncrement():Number { return _radiusInc; }
@@ -62,18 +60,18 @@ package flare.vis.operator.layout
 		public function get autoScale():Boolean { return _autoScale; }
 		public function set autoScale(b:Boolean):void { _autoScale = b; }
 		
-		/** The initial angle for the radial layout. */
+		/** The initial angle for the radial layout (in radians). */
 		public function get startAngle():Number { return _theta1; }
 		public function set startAngle(a:Number):void {
-			_theta2 += a - _theta1;
+			_theta2 += (a - _theta1);
 			_theta1 = a;
 			_setTheta = true;
 		}
 		
-		/** The total angular width the layout should use (2*pi by default).*/
-		public function get angularWidth():Number { return _theta2 - _theta1; }
-		public function set angularWidth(w:Number):void {
-			_theta2 = _theta1 + w;
+		/** The angular width of the layout (in radians, default is 2 pi). */
+		public function get angleWidth():Number { return _theta1 - _theta2; }
+		public function set angleWidth(w:Number):void {
+			_theta2 = _theta1 - w;
 			_setTheta = true;
 		}
 
@@ -99,16 +97,15 @@ package flare.vis.operator.layout
 		public function RadialTreeLayout(radius:Number=DEFAULT_RADIUS,
 			sortAngles:Boolean=true, autoScale:Boolean=true)
 		{
+			layoutType = POLAR;
 			_radiusInc = radius;
 			_sortAngles = sortAngles;
 			_autoScale = autoScale;
 		}
 
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t!=null ? t : Transitioner.DEFAULT);
-			
 			var n:NodeSprite = layoutRoot as NodeSprite;
 			if (n == null) { _t = null; return; }
 			var np:Params = params(n);
@@ -120,10 +117,11 @@ package flare.vis.operator.layout
 			
 			if (_autoScale) setScale(layoutBounds);
 			if (!_setTheta) calcAngularBounds(n);
+			_anchor = layoutAnchor;
 			
 			// perform the layout
 	        if (_maxDepth > 0) {
-	        	layout(n, _radiusInc, _theta1, _theta2);
+	        	doLayout(n, _radiusInc, _theta1, _theta2);
 	        } else if (n.childDegree > 0) {
 	        	n.visitTreeDepthFirst(function(n:NodeSprite):void {
             		_t.$(n).radius = 0;
@@ -137,9 +135,16 @@ package flare.vis.operator.layout
 	        
 	        // update properties of the root node
 	        np.angle = _theta2 - _theta1;
-	        update(n, 0, 0, np.angle, true);			
-			updateEdgePoints();
-			_t = null;
+	        n.origin = _anchor;
+	        update(n, 0, _theta1+np.angle/2, np.angle, true);
+	        if (!_t.immediate) {
+	        	delete _t._(n).values.radius;
+	        	delete _t._(n).values.angle;
+	        }
+	        _t.$(n).x = _anchor.x;
+	        _t.$(n).y = _anchor.y;
+			
+			updateEdgePoints(_t);
 		}
 		
 		private function setScale(bounds:Rectangle):void
@@ -232,22 +237,6 @@ package flare.vis.operator.layout
 	            angle += 2*Math.PI;
 	        return angle;
 	    }
-	    
-	    private static function minDist(a1:Number, a2:Number):Number
-	    {
-	    	var d1:Number = a2 - a1;
-	    	var d2:Number = Math.abs(d1 - 2*Math.PI);
-	    	var d3:Number = Math.abs(d1 + 2*Math.PI);
-			var dd:Number = Math.min(d1, d2, d3);
-	    	
-	    	if (dd == d1) {
-	    		return a2;
-	    	} else if (dd == d2) {
-	    		return a2 - 2*Math.PI;
-	    	} else {
-	    		return a2 + 2*Math.PI;
-	    	}
-	    }
 
 		private function sortedChildren(n:NodeSprite):Array
 		{
@@ -288,9 +277,10 @@ package flare.vis.operator.layout
 	     * @param theta1 the start (in radians) of this subtree's angular region
 	     * @param theta2 the end (in radians) of this subtree's angular region
 	     */
-	    private function layout(n:NodeSprite, r:Number, theta1:Number, theta2:Number):void
+	    private function doLayout(n:NodeSprite, r:Number,
+	    	theta1:Number, theta2:Number):void
 	    {
-	    	var dtheta:Number = (theta2-theta1);
+	    	var dtheta:Number = theta2 - theta1;
 	    	var dtheta2:Number = dtheta / 2.0;
 	    	var width:Number = params(n).width;
 	    	var cfrac:Number, nfrac:Number = 0;
@@ -300,8 +290,8 @@ package flare.vis.operator.layout
 	            cfrac = cp.width / width;
 	            if (c.expanded && c.childDegree > 0)
 	            {
-	                layout(c, r+_radiusInc, theta1 + nfrac*dtheta, 
-	                                        theta1 + (nfrac+cfrac)*dtheta);
+	                doLayout(c, r+_radiusInc, theta1 + nfrac*dtheta, 
+	                                          theta1 + (nfrac+cfrac)*dtheta);
 	            }
 	            else if (c.childDegree > 0)
 	            {
@@ -309,11 +299,13 @@ package flare.vis.operator.layout
 	            	var ca:Number = theta1 + nfrac*dtheta + cfrac*dtheta2;
 	            	
 	            	c.visitTreeDepthFirst(function(n:NodeSprite):void {
-	            		update(n, cr, minDist(n.angle, ca), 0, false);
+	            		n.origin = _anchor;
+	            		update(n, cr, minAngle(n.angle, ca), 0, false);
 	            	});
 	            }
 	            
-	            var a:Number = minDist(c.angle, theta1 + nfrac*dtheta + cfrac*dtheta2);
+	            c.origin = _anchor;
+	            var a:Number = minAngle(c.angle, theta1 + nfrac*dtheta + cfrac*dtheta2);
 	            cp.angle = cfrac * dtheta;
 	            update(c, r, a, cp.angle, true);
 	            nfrac += cfrac;

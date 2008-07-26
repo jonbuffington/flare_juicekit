@@ -1,12 +1,10 @@
 package flare.vis.data
 {
 	import flare.animate.Transitioner;
-	import flare.query.Expression;
 	import flare.util.Arrays;
+	import flare.util.Filter;
 	import flare.util.IEvaluable;
-	import flare.util.Property;
 	import flare.util.Sort;
-	import flare.vis.util.Filters;
 	
 	/**
 	 * Visually represents a data element, such as a data tuple or graph node.
@@ -355,10 +353,10 @@ package flare.vis.data
 			if (sort.length == 0) return;
 			if (sort[0] is Array) sort = sort[0];
 			
-			var f:Function = Sort.sorter(sort);
-			if (opt & IN_LINKS    && _inEdges    != null) _inEdges.sort(f);
-			if (opt & OUT_LINKS   && _outEdges   != null) _outEdges.sort(f);
-			if (opt & CHILD_LINKS && _childEdges != null) _childEdges.sort(f);
+			var s:Function = Sort.$(sort);
+			if (opt & IN_LINKS    && _inEdges    != null) _inEdges.sort(s);
+			if (opt & OUT_LINKS   && _outEdges   != null) _outEdges.sort(s);
+			if (opt & CHILD_LINKS && _childEdges != null) _childEdges.sort(s);
 		}
 		
 		/**
@@ -371,7 +369,7 @@ package flare.vis.data
 		public function visitEdges(f:Function, opt:uint=ALL_LINKS,
 			filter:*=null):Boolean
 		{
-			var ff:Function = Filters.instance(filter);
+			var ff:Function = Filter.$(filter);
 			var rev:Boolean = (opt & REVERSE) > 0;
 			if (opt & IN_LINKS && _inEdges != null) { 
 				if (visitEdgeHelper(f, _inEdges, rev, ff)) return true;
@@ -418,7 +416,7 @@ package flare.vis.data
 		public function visitNodes(f:Function, opt:uint=ALL_LINKS,
 			filter:*=null):Boolean
 		{
-			var ff:Function = Filters.instance(filter);
+			var ff:Function = Filter.$(filter);
 			var rev:Boolean = (opt & REVERSE) > 0;
 			if (opt & IN_LINKS && _inEdges != null) {
 				if (visitNodeHelper(f, _inEdges, rev, ff)) return true;
@@ -511,10 +509,11 @@ package flare.vis.data
 			var t:Transitioner = Transitioner.instance(trans);
 			for (var name:String in vals) {
 				var val:* = vals[name];
-				var e:IEvaluable = val as IEvaluable;
+				var v:Function = val is Function ? val as Function
+					 : val is IEvaluable ? IEvaluable(val).eval : null;
+				
 				visitEdges(function(s:EdgeSprite):void {
-					val = e ? e.eval(t.$(s)) : val;
-					t.setValue(s, name, val);
+					t.setValue(s, name, (v!=null ? v(t.$(s)) : val));
 				}, opt, filter);
 			}
 			return t;
@@ -539,10 +538,11 @@ package flare.vis.data
 			var t:Transitioner = Transitioner.instance(trans);
 			for (var name:String in vals) {
 				var val:* = vals[name];
-				var e:IEvaluable = val as IEvaluable;
+				var v:Function = val is Function ? val as Function
+					 : val is IEvaluable ? IEvaluable(val).eval : null;
+
 				visitNodes(function(n:NodeSprite):void {
-					val = e ? e.eval(t.$(n)) : val;
-					t.setValue(n, name, val);
+					t.setValue(n, name, (v!=null ? v(t.$(n)) : val));
 				}, opt, filter);
 			}
 			return t;

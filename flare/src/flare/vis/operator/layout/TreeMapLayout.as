@@ -38,8 +38,6 @@ package flare.vis.operator.layout
 		private var _row:Array  = new Array();
 		private var _r:Rectangle = new Rectangle();
 		
-		private var _t:Transitioner;
-		
 		private var _size:Property = Property.$("size");
 		
 		/** The property from which to access size values for leaf nodes. */
@@ -58,10 +56,8 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t != null ? t : Transitioner.DEFAULT);
-			
 	        // setup
 	        var root:NodeSprite = layoutRoot as NodeSprite;
 	        var b:Rectangle = layoutBounds;
@@ -81,9 +77,7 @@ package flare.vis.operator.layout
 	
 	        // layout the tree
 	        updateArea(root, _r);
-	        layout(root, _r);
-	        
-	        _t = null;
+	        doLayout(root, _r);
 		}
 		
 	    /**
@@ -122,7 +116,7 @@ package flare.vis.operator.layout
 	    /**
 	     * Compute the tree map layout.
 	     */
-	    private function layout(p:NodeSprite, r:Rectangle):void
+	    private function doLayout(p:NodeSprite, r:Rectangle):void
 	    {
 	        // create sorted list of children's properties
 	        for (var i:uint = 0; i < p.childDegree; ++i) {
@@ -144,7 +138,7 @@ package flare.vis.operator.layout
 	        	var c:NodeSprite = p.getChildNode(i);
 	        	if (c.childDegree > 0) {
 	        		updateArea(c, r);
-	        		layout(c, r);
+	        		doLayout(c, r);
 	        	}
 	        }
 	    }

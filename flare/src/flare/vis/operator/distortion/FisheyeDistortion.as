@@ -53,11 +53,11 @@ package flare.vis.operator.distortion
 		/** @inheritDoc */
 		protected override function sizeDistort(bb:Rectangle, x:Number, y:Number):Number
 		{
-			if (!_distortX && !_distortY) return 1;
+			if (!distortX && !distortY) return 1;
 			var fx:Number=1, fy:Number=1;
 			var a:Number, min:Number, max:Number, v:Number;
 			
-	        if (_distortX) {
+	        if (distortX) {
 	            a = layoutAnchor.x;
 	            min = bb.left;
 	            max = bb.right;
@@ -67,7 +67,7 @@ package flare.vis.operator.distortion
 	            fx = Math.abs(x-fx) / (max - min);
 	        }
 	
-	        if (_distortY) {
+	        if (distortY) {
 	        	a = layoutAnchor.y;
 	        	min = bb.top;
 	        	max = bb.bottom;
@@ -77,7 +77,7 @@ package flare.vis.operator.distortion
 	            fy = Math.abs(y-fy) / (max - min);
 	        }
 	        
-	        var sf:Number = (!_distortY ? fx : (!_distortX ? fy : Math.min(fx,fy)));
+	        var sf:Number = (!distortY ? fx : (!distortX ? fy : Math.min(fx,fy)));
 	        return (!isFinite(sf) || isNaN(sf)) ? 1 : _ds * sf;
 		}
 		

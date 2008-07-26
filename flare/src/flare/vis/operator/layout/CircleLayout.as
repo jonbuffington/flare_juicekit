@@ -1,10 +1,13 @@
 package flare.vis.operator.layout
 {
-	import flare.animate.Transitioner;
+	import flare.util.Property;
 	import flare.vis.data.Data;
-	import flash.geom.Rectangle;
-	import flare.vis.data.EdgeSprite;
+	import flare.vis.data.DataList;
 	import flare.vis.data.NodeSprite;
+	import flare.vis.data.ScaleBinding;
+	
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Layout that places items in a circle. The order in which items are
@@ -15,112 +18,231 @@ package flare.vis.operator.layout
 	 * along the final sort order.
 	 */
 	public class CircleLayout extends Layout
-	{
-		private var _barysort:Boolean = false;
-		private var _weight:String = null; // TODO: update this to use a Property instance
-		private var _edges:uint = NodeSprite.ALL_LINKS;
-		private var _padding:Number = 0.05;
-		private var _t:Transitioner;
+	{	
+		/** The padding around the circumference of the circle, in pixels. */
+		public var padding:Number = 50;
+		/** The starting angle for the layout, in radians. */
+		public var startAngle:Number = Math.PI / 2;
+		/** The angular width of the layout, in radians (default is 2 pi). */
+		public var angleWidth:Number = 2 * Math.PI;
+		/** Flag indicating if tree structure should inform the layout. */
+		public var treeLayout:Boolean = false;
 		
-		/** Flag indicating if barycentric sorting using the graph structure
-		 *  should be performed. */
-		public function get sortByEdges():Boolean { return _barysort; }
-		public function set sortByEdges(b:Boolean):void { _barysort = b; }
+		protected var _inner:Number = 0, _innerFrac:Number = NaN;
+		protected var _outer:Number;
+		protected var _group:String;
+		protected var _rField:Property;
+		protected var _aField:Property;
+		protected var _rBinding:ScaleBinding;
+		protected var _aBinding:ScaleBinding;
 		
+		/** The starting (inner) radius at which to place items. 
+		 *  Setting this value also overrides the
+		 *  <code>startRadiusFraction</code> property. */
+		public function get startRadius():Number { return _inner; }
+		public function set startRadius(r:Number):void {
+			_inner = r; _innerFrac = NaN;
+		}
+		
+		/** The starting (inner) radius as a fraction of the outer radius. 
+		 *  Setting this value also overrides the 
+		 *  <code>startRadius</code> property. When this property is set to
+		 *  <code>NaN</code>, the current value of <code>startRadius</code>
+		 *  will be used directly. */
+		public function get startRadiusFraction():Number { return _innerFrac; }
+		public function set startRadiusFraction(f:Number):void {
+			_innerFrac = f;
+		}
+		
+		/** The radius source property. */
+		public function get radiusField():String { return _rBinding.property; }
+		public function set radiusField(f:String):void { _rBinding.property = f; }
+		
+		/** The angle source property. */
+		public function get angleField():String { return _aBinding.property; }
+		public function set angleField(f:String):void { _aBinding.property = f; }
+		
+		/** The scale binding for the radius. */
+		public function get radiusScale():ScaleBinding { return _rBinding; }
+		public function set radiusScale(b:ScaleBinding):void {
+			if (_rBinding) {
+				if (!b.property) b.property = _rBinding.property;
+				if (!b.group) b.group = _rBinding.group;
+				if (!b.data) b.data = _rBinding.data;
+			}
+			_rBinding = b;
+		}
+		
+		/** The scale binding for the angle. */
+		public function get angleScale():ScaleBinding { return _aBinding; }
+		public function set angleScale(b:ScaleBinding):void {
+			if (_aBinding) {
+				if (!b.property) b.property = _aBinding.property;
+				if (!b.group) b.group = _aBinding.group;
+				if (!b.data) b.data = _aBinding.data;
+			}
+			_aBinding = b;
+		}
+		
+		// --------------------------------------------------------------------
+				
 		/**
 		 * Creates a new CircleLayout.
-		 * @param sortbyEdges Flag indicating if barycentric sorting using
-		 *  the graph structure should be performed
 		 */
-		public function CircleLayout(sortByEdges:Boolean=false) {
-			this.sortByEdges = sortByEdges;
+		public function CircleLayout(
+			radiusField:String=null, angleField:String=null,
+			treeLayout:Boolean=false, group:String=Data.NODES)
+		{
+			layoutType = POLAR;
+			_group = group;
+			this.treeLayout = treeLayout;
+			
+			_rBinding = new ScaleBinding();
+			_rBinding.group = _group;
+			_rBinding.property = radiusField;
+			
+			_aBinding = new ScaleBinding();
+			_aBinding.group = _group;
+			_aBinding.property = angleField;
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		public override function setup():void
 		{
-			_t = (t!=null ? t : Transitioner.DEFAULT);
-			
-			var d:Data = visualization.data;
-			var nn:uint = d.nodes.size, i:int = 0;
-	        var items:Array = new Array(nn);
-	        for (i=0; i<nn; ++i) items[i] = d.nodes[i];
-	        
-	        // sort by barycenter
-	        if (_barysort && d.edges.size > 0) {
-		         barysort(items);
-			}
-			
-			// perform the layout
-			var r:Rectangle = layoutBounds;
-			var cx:Number = (r.x + r.width) / 2;
-			var cy:Number = (r.y + r.height) / 2;
-			var rx:Number = (0.5 - _padding) * r.width;
-			var ry:Number = (0.5 - _padding) * r.height;
-
-			for (i=0; i<items.length; i++) {
-				var n:NodeSprite = items[i];
-				var angle:Number = i*2*Math.PI / nn;
-				_t.$(n).x = Math.cos(angle)*rx + cx;
-				_t.$(n).y = Math.sin(angle)*ry + cy;
-        	}
-			
-			updateEdgePoints(_t);
-			_t = null;
+			if (visualization==null) return;
+			_rBinding.data = visualization.data;
+			_aBinding.data = visualization.data;
 		}
 		
-		/**
-		 * Sort the items around the circle according to the
-		 * barycenters of the individual nodes.
-		 */
-		private function barysort(items:Array):void
-		{
-			var niters:uint = 700, i:uint=0, k:uint;
-			var inertia:Number = 0;
-			var weight:Number;
-			var unchanged:Boolean;
+		/** @inheritDoc */
+		protected override function layout():void
+		{			
+			var list:DataList = visualization.data.group(_group);
+			var i:int = 0, N:int = list.length, dr:Number;
+			var visitor:Function = null;
 			
-			// u --> index position
-			// v --> barycenter
-			for (i=0; i<items.length; ++i) {
-				items[i].u = items[i].v = i;
+			// determine radius
+			var b:Rectangle = layoutBounds;
+			_outer = Math.min(b.width, b.height)/2 - padding;
+			_inner = isNaN(_innerFrac) ? _inner : _outer * _innerFrac;
+			
+			// set the anchor point
+			var anchor:Point = layoutAnchor;
+			list.visit(function(n:NodeSprite):void { n.origin = anchor; });
+			
+			// compute angles
+			if (_aBinding.property) {
+				// if angle property, get scale binding and do layout
+				_aBinding.updateBinding();
+				_aField = Property.$(_aBinding.property);
+				visitor = function(n:NodeSprite):void {
+					var f:Number = _aBinding.interpolate(_aField.getValue(n));
+					_t.$(n).angle = minAngle(n.angle, 
+					                         startAngle - f*angleWidth);
+				};
+			} else if (treeLayout) {
+				// if tree mode, use tree order
+				setTreeAngles();
+			} else {
+				// if nothing use total sort order
+				i = 0;
+				visitor = function(n:NodeSprite):void {
+					_t.$(n).angle = minAngle(n.angle,
+						                     startAngle - (i/N)*angleWidth);
+					i++;
+				};
+			}
+			if (visitor != null) list.visit(visitor);
+			
+			// compute radii
+			visitor = null;
+			if (_rBinding.property) {
+				// if radius property, get scale binding and do layout
+				_rBinding.updateBinding();
+				_rField = Property.$(_rBinding.property);
+				dr = _outer - _inner;
+				visitor = function(n:NodeSprite):void {
+					var f:Number = _rBinding.interpolate(_rField.getValue(n));
+					_t.$(n).radius = _inner + f * dr;
+				};
+			} else if (treeLayout) {
+				// if tree-mode, use tree depth
+				setTreeRadii();
+			} else {
+				// if nothing, use outer radius
+				visitor = function(n:NodeSprite):void {
+					_t.$(n).radius = _outer;
+				};
+			}
+			if (visitor != null) list.visit(visitor);
+			if (treeLayout) _t.$(visualization.data.tree.root).radius = 0;
+			
+			// finish up
+			updateEdgePoints(_t);
+		}
+		
+		private function setTreeAngles():void
+		{
+			// first pass, determine the angular spacing
+			var root:NodeSprite = visualization.tree.root, p:NodeSprite = null;
+			var leafCount:int = 0, parentCount:int = 0;
+			root.visitTreeDepthFirst(function(n:NodeSprite):void {
+				if (n.childDegree == 0) {
+					if (p != n.parentNode) {
+						p = n.parentNode;
+						++parentCount;
+					}
+					++leafCount;
+				}
+			});
+			var inc:Number = (-angleWidth) / (leafCount + parentCount);
+			var angle:Number = startAngle;
+			
+			// second pass, set the angles
+			root.visitTreeDepthFirst(function(n:NodeSprite):void {
+				var a:Number = 0, b:Number;
+				if (n.childDegree == 0) {
+					if (p != n.parentNode) {
+						p = n.parentNode;
+						angle += inc;
+					}
+					a = angle;
+					angle += inc;
+				} else if (n.parent != null) {
+					a = _t.$(n.firstChildNode).angle;
+					b = _t.$(n.lastChildNode).angle - a;
+					while (b >  Math.PI) b -= 2*Math.PI;
+					while (b < -Math.PI) b += 2*Math.PI;
+					a += b / 2;
+				}
+				_t.$(n).angle = minAngle(n.angle, a);
+			});
+		}
+		
+		private function setTreeRadii():void
+		{
+			var n:NodeSprite;
+			var depth:Number = 0, dr:Number = _outer - _inner;
+			
+			for each (n in visualization.tree.nodes) {
+				if (n.childDegree == 0) {
+					depth = Math.max(n.depth, depth);
+					_t.$(n).radius = _outer;
+				}
+			}
+			for each (n in visualization.tree.nodes) {
+				if (n.childDegree != 0) {
+					_t.$(n).radius = _inner + (n.depth/depth) * dr;
+				}
 			}
 			
-			for (i=0; i<niters; ++i) {
-				inertia = (i / (niters-1));
-				
-	        	// sort by barycenters, update each position index
-	        	items.sortOn("v", Array.NUMERIC);
-	            for (unchanged=(i>0), k=0; k<items.length; ++k) {
-	            	if (unchanged && items[k].u != k)
-	            		unchanged = false;
-	            	items[k].u = k;
-	            }
-	            if (unchanged) break; // if no difference, we're done
-	            
-	            // for each node, compute the new barycenter
-	            for (k=0; k<items.length; ++k) {
-	            	var n:NodeSprite = items[k];
-	                weight = inertia;
-	                n.v = weight * n.u;
-	                
-	                n.visitEdges(function(e:EdgeSprite):void
-	                {
-	                	// retrieve the edge weight
-	                	var w:Number = _weight==null ? 1.0 : e.props[_weight];
-	                	if (isNaN(w)) w = 1.0;
-	                	w = Math.exp(w); // transform the weight
-	                	
-	                	// add weighted distance to barycenter
-	                	n.v += w * e.other(n).u;
-	                	weight += w;
-	                });
-	                
-	                // normalize to get final barycenter value
-	                n.v /= weight;
-	            }
+			n = visualization.tree.root;
+			if (!_t.immediate) {
+	        	delete _t._(n).values.radius;
+	        	delete _t._(n).values.angle;
 	        }
-			items.sortOn("v", Array.NUMERIC);
+	        _t.$(n).x = n.origin.x;
+	        _t.$(n).y = n.origin.y;
 		}
 		
 	} // end of class CircleLayout

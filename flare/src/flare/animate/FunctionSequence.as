@@ -45,11 +45,16 @@ package flare.animate
 		 * function's sole argument.
 		 * @param f a function to call at the beginning of a sub-sequence
 		 * @param t the transition to run after the function call. This
-		 *  transition will be passed in as an input to the function.
+		 *  transition will be passed in as an input to the function. This
+		 *  value should be either a <code>Transition</code> instance or
+		 *  a number indicating the duration for a new
+		 *  <code>Transitioner</code>.
 		 */
-		public function addFunction(f:Function, t:Transition):void
+		public function push(f:Function, t:*):void
 		{
-			super.add(t);
+			var tr:Transition = t is Transition ? Transition(t)
+			                                    : Transitioner.instance(t);
+			super.add(tr);
 			_funcs.push(f);
 		}
 		

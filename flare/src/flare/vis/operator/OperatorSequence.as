@@ -53,7 +53,7 @@ package flare.vis.operator
 		 * @param duration the duration of the animated transition to be
 		 *  used for results of the given operator.
 		 */
-		public function addToSequence(op:IOperator, duration:Number):void
+		public function push(op:IOperator, duration:Number):void
 		{
 			super.add(op);
 			_times.push(duration);
@@ -80,7 +80,7 @@ package flare.vis.operator
 		 */
 		public override function add(op:IOperator):void
 		{
-			throw new Error("Operation not supported. Use addToSequence instead.");
+			throw new Error("Operation not supported. Use push instead.");
 		}
 		
 		/** @inheritDoc */
@@ -111,10 +111,8 @@ package flare.vis.operator
 			} else {
 				var fs:FunctionSequence = new FunctionSequence();
 				for (var i:int=0; i<_list.length; ++i) {
-					if (_list[i].enabled) {
-						fs.addFunction(getFunction(_list[i]),
-					                   new Transitioner(_times[i]));
-					}
+					if (_list[i].enabled)
+						fs.push(getFunction(_list[i]), _times[i]);
 				}
 				t.add(fs);
 			}

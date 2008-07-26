@@ -52,15 +52,7 @@ package flare.vis.data
 		protected var _lineColor:uint = 0xff000000;
 		/** The line width for this data sprite. */
 		protected var _lineWidth:Number = 0;
-				
-		/** The radius value of this sprite's position in polar co-ordinates.
-		 *  Polar co-ordinate values are determined from the 0,0 point of the
-		 *  parent container. */
-		protected var _radius:Number;
-		/** The angle value of this sprite's position in polar co-ordinates.
-		 *  Polar co-ordinate values are determined from the 0,0 point of the
-		 *  parent container. */
-		protected var _angle:Number;
+
 		/** Optional array of x,y values for specifying arbitrary shapes. */
 		protected var _points:Array;
 		/** Code indicating the shape value of this data sprite. */
@@ -114,43 +106,6 @@ package flare.vis.data
 		public function unfix(num:uint=1):void { _fixed = Math.max(0, _fixed-num); }
 		 
 		// -- Visual Properties --------------------------------
-
-		/** @inheritDoc */
-		public override function set x(v:Number):void {
-			super.x = v; _radius = NaN; _angle = NaN;
-		}
-		/** @inheritDoc */
-		public override function set y(v:Number):void {
-			super.y = v; _radius = NaN; _angle = NaN;
-		}
-		
-		/** The radius value of this sprite's position in polar co-ordinates.
-		 *  Polar co-ordinate values are determined from the 0,0 point of the
-		 *  parent container. */
-		public function get radius():Number {
-			if (isNaN(_radius)) _radius = Math.sqrt(x*x + y*y);
-			return _radius;
-		}
-		public function set radius(r:Number):void {
-			var a:Number = angle;
-			super.x = r * Math.cos(a);
-			super.y = -r * Math.sin(a);
-			_radius = r;
-		}
-		
-		/** The angle value of this sprite's position in polar co-ordinates.
-		 *  Polar co-ordinate values are determined from the 0,0 point of the
-		 *  parent container. */
-		public function get angle():Number {
-			if (isNaN(_angle)) _angle = Math.atan2(-y, x);
-			return _angle;
-		}
-		public function set angle(a:Number):void {
-			var r:Number = radius;
-			super.x = r * Math.cos(a);
-			super.y = -r * Math.sin(a);
-			_angle = a;
-		}
 
 		/** Auxiliary property often used as a shape parameter. */
 		public function get u():Number { return _u; }

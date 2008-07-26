@@ -18,7 +18,6 @@ package flare.vis.operator.layout
 	{
 		protected var _xStacks:Boolean = false;
 		protected var _yStacks:Boolean = false;
-		protected var _t:Transitioner;
 		
 		protected var _xField:Property;
 		protected var _yField:Property;
@@ -81,6 +80,8 @@ package flare.vis.operator.layout
 		public function AxisLayout(xAxisField:String=null, yAxisField:String=null,
 								   xStacked:Boolean=false, yStacked:Boolean=false)
 		{
+			layoutType = CARTESIAN;
+			
 			_xBinding = new ScaleBinding();
 			_xBinding.group = Data.NODES;
 			_xBinding.property = xAxisField;
@@ -105,9 +106,8 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t != null ? t : Transitioner.DEFAULT);
 			_xField = Property.$(_xBinding.property);
 			_yField = Property.$(_yBinding.property);
 			
@@ -154,8 +154,6 @@ package flare.vis.operator.layout
 					}
 				}
 			});
-			
-			_t = null;
 		}
 		
 		private function rescale():void {

@@ -157,17 +157,17 @@ package flare.vis.data
 		public function get data():Data { return _data; }
 		public function set data(data:Data):void {
 			if (_data != null) { // remove existing listeners
-				_data.removeEventListener(DataEvent.DATA_ADDED,   onDataEvent);
-				_data.removeEventListener(DataEvent.DATA_REMOVED, onDataEvent);
-				_data.removeEventListener(DataEvent.DATA_UPDATED, onDataEvent);
+				_data.removeEventListener(DataEvent.ADD,   onDataEvent);
+				_data.removeEventListener(DataEvent.REMOVE, onDataEvent);
+				_data.removeEventListener(DataEvent.UPDATE, onDataEvent);
 			}
 			_data = data;
 			if (_data != null) { // add new listeners
-				_data.addEventListener(DataEvent.DATA_ADDED,
+				_data.addEventListener(DataEvent.ADD,
 					onDataEvent, false, 0, true);
-				_data.addEventListener(DataEvent.DATA_REMOVED,
+				_data.addEventListener(DataEvent.REMOVE,
 					onDataEvent, false, 0, true);
-				_data.addEventListener(DataEvent.DATA_UPDATED,
+				_data.addEventListener(DataEvent.UPDATE,
 					onDataEvent, false, 0, true);
 			}
 		}
@@ -198,7 +198,7 @@ package flare.vis.data
 				throw new Error("Can't create scale with data to bind to.");
 			}
 			if (!_scale) {
-				_stats = _data.groups[_group].stats(_property);
+				_stats = _data.group(_group).stats(_property);
 				_scale = buildScale(_stats);
 			}
 			return _scale;
@@ -219,7 +219,7 @@ package flare.vis.data
 		 */
 		public function updateBinding():void
 		{
-			var stats:Stats = _data.groups[_group].stats(_property);
+			var stats:Stats = _data.group(_group).stats(_property);
 			if (stats !== _stats) { // object identity test
 				_stats = null;
 				_scale = null;
@@ -233,8 +233,8 @@ package flare.vis.data
 		 */
 		private function onDataEvent(evt:DataEvent):void
 		{
-			if (evt.group == _group) {
-				if (evt.type == DataEvent.DATA_UPDATED) {
+			if (evt.list.name == _group) {
+				if (evt.type == DataEvent.UPDATE) {
 					updateBinding();
 				} else {
 					_stats = null;

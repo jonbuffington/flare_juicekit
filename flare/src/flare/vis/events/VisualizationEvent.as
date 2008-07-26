@@ -13,14 +13,14 @@ package flare.vis.events
 		public static const UPDATE:String = "update";
 		
 		private var _trans:Transitioner;
-		private var _param:String;
+		private var _params:Array;
 		
 		/** Transitioner used in the visualization update. */
 		public function get transitioner():Transitioner { return _trans; }
 		
 		/** Parameter provided to the visualization update. If not null,
-		 *  this string indicates the named operator that was run. */
-		public function get param():String { return _param; }
+		 *  this string indicates the named operators that were run. */
+		public function get params():Array { return _params; }
 		
 		/**
 		 * Creates a new VisualizationEvent.
@@ -28,10 +28,10 @@ package flare.vis.events
 		 * @param trans the Transitioner used in the visualization update
 		 */		
 		public function VisualizationEvent(type:String,
-			trans:Transitioner=null, param:String=null)
+			trans:Transitioner=null, params:Array=null)
 		{
 			super(type);
-			_param = param;
+			_params = params;
 			_trans = trans==null ? Transitioner.DEFAULT : trans;
 		}
 		

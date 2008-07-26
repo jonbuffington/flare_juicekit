@@ -37,6 +37,12 @@ package flare.vis.operator
 		public function get enabled():Boolean { return _enabled; }
 		public function set enabled(b:Boolean):void { _enabled = b; }
 		
+		/** @inheritDoc */
+		public function set parameters(params:Object):void
+		{
+			Operator.applyParameters(this, params);
+		}
+		
 		/** An array of the operators contained in the operator list. */
 		public function set list(ops:Array):void {
 			// first remove all current operators
@@ -51,7 +57,6 @@ package flare.vis.operator
 		
 		/** The number of operators in the list. */
 		public function get length():uint { return _list.length; }
-		
 		/** Returns the first operator in the list. */
 		public function get first():Object { return _list[0]; }
 		/** Returns the last operator in the list. */

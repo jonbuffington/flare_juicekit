@@ -17,7 +17,6 @@ package flare.vis.operator.layout
 	 */
 	public class IcicleTreeLayout extends Layout
 	{
-		private var _t:Transitioner;
 		private var _orient:String = Orientation.TOP_TO_BOTTOM; // orientation
 		private var _dspace:Number = 50; // the spacing between depth levels
 		private var _maxDepth:int = 0;
@@ -46,10 +45,8 @@ package flare.vis.operator.layout
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		protected override function layout():void
 		{
-			_t = (t==null ? Transitioner.DEFAULT : t);
-			
 			// get bounds parameters
 			var root:NodeSprite = layoutRoot as NodeSprite;
 			var b:Rectangle = layoutBounds;
@@ -95,9 +92,8 @@ package flare.vis.operator.layout
 			}
 			
 			// perform the layout
-			layout(root, bMin, bMax, d, dInc);
+			doLayout(root, bMin, bMax, d, dInc);
 			updateEdgePoints(_t);
-			_t = null;
 		}
 		
 		private function firstPass(n:NodeSprite, d:int):Number
@@ -115,7 +111,7 @@ package flare.vis.operator.layout
 			return extent;
 		}
 		
-		private function layout(n:NodeSprite, b1:Number, b2:Number,
+		private function doLayout(n:NodeSprite, b1:Number, b2:Number,
 			d:Number, dInc:Number):void
 		{
 			var pw:Number = n.props.icicleWidth;
@@ -129,7 +125,7 @@ package flare.vis.operator.layout
 				for (var i:int=0; i<n.childDegree; ++i) {
 					var c:NodeSprite = n.getChildNode(i);
 					var cw:Number = w * c.props.icicleWidth / pw;
-					layout(c, x, x+cw, d+dInc, dInc);
+					doLayout(c, x, x+cw, d+dInc, dInc);
 					x += cw;
 				}
 			}

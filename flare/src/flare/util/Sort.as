@@ -10,18 +10,20 @@ package flare.util
 	 * 
 	 * <p>Sort criteria are generally expressed as an array of property names
 	 * to sort on. These properties are accessed by sorting functions using the
-	 * <code>Property</code> class. Additionally, each property name may be
-	 * followed in the array by an optional Boolean value indicating the sort
-	 * order. A value of <code>true</code> indicates an ascending sort order,
-	 * while a value of <code>false</code> indicates a descending sort order.
+	 * <code>Property</code> class. Sort criteria are expressed as an
+	 * array of property names to sort on. These properties are accessed
+	 * by sorting functions using the <code>Property</code> class.
+	 * The default is to sort in ascending order. If the field name
+	 * includes a "-" (negative sign) prefix, that variable will instead
+	 * be sorted in descending order.
 	 * </p>
 	 */
 	public class Sort
 	{
-		/** Flag indicating an ascending sort order. */
-		public static const ASC:Boolean = true;
-		/** Flag indicating a descending sort order. */
-		public static const DSC:Boolean = false;
+		/** Prefix indicating an ascending sort order. */
+		public static const ASC:Number = '+'.charCodeAt(0);
+		/** Prefix indicating a descending sort order. */
+		public static const DSC:Number = '-'.charCodeAt(0);
 		
 		private var _comp:Function;
 		private var _crit:Array;
@@ -32,10 +34,9 @@ package flare.util
 		/** The sorting criteria. Sort criteria are expressed as an
 		 *  array of property names to sort on. These properties are accessed
 		 *  by sorting functions using the <code>Property</code> class.
-		 *  Additionally, each property name may be followed in the array by an
-		 *  optional Boolean value indicating the sort order. A value of
-		 *  <code>true</code> indicates an ascending sort order, while a value
-		 *  of <code>false</code> indicates a descending sort order. */
+		 *  The default is to sort in ascending order. If the field name
+		 *  includes a "-" (negative sign) prefix, that variable will instead
+		 *  be sorted in descending order. */
 		public function get criteria():Array { return Arrays.copy(_crit); }
 		public function set criteria(crit:*):void {
 			if (crit is String) {
@@ -46,7 +47,7 @@ package flare.util
 				throw new ArgumentError("Invalid Sort specification type. " +
 					"Input must be either a String or Array");
 			}
-			_comp = sorter(_crit);
+			_comp = $(_crit);
 		}
 		
 		/**
@@ -54,10 +55,9 @@ package flare.util
 		 * @param crit the sorting criteria. Sort criteria are expressed as an
 		 *  array of property names to sort on. These properties are accessed
 		 *  by sorting functions using the <code>Property</code> class.
-		 *  Additionally, each property name may be followed in the array by an
-		 *  optional Boolean value indicating the sort order. A value of
-		 *  <code>true</code> indicates an ascending sort order, while a value
-		 *  of <code>false</code> indicates a descending sort order.
+		 *  The default is to sort in ascending order. If the field name
+		 *  includes a "-" (negative sign) prefix, that variable will instead
+		 *  be sorted in descending order.
 		 */
 		public function Sort(crit:*) {
 			this.criteria = crit;
@@ -87,34 +87,16 @@ package flare.util
 		}
 		
 		/**
-		 * Sorts the input array using an optional comparator function. This
-		 * method attempts to use optimized sorting routines based on the
-		 * choice of comparators.
-		 * @param list the array to sort
-		 * @param cmp an optional comparator Function or comparison
-		 *  specification. A specification is an array containing a set of data
-		 *  field names to sort on, in priority order. In addition, an optional
-		 *  boolean argument can follow each name, indicating whether sorting
-		 *  on the preceding field should be done in ascending (true) or
-		 *  descending (false) order.
-		 */
-		/*
-		public static function sort(list:Array, cmp:*=null):void
-		{
-			mergeSort(list, getComparator(cmp), 0, list.length-1);
-		}*/
-		
-		/**
 		 * Sorts the children of the given DisplayObjectContainer using
 		 * an optional comparator function.
 		 * @param d a display object container to sort. The sort may change the
 		 *  rendering order in which the contained display objects are drawn.
-		 * @param cmp an optional comparator Function or comparison
-		 *  specification. A specification is an array containing a set of data
-		 *  field names to sort on, in priority order. In addition, an optional
-		 *  boolean argument can follow each name, indicating whether sorting
-		 *  on the preceding field should be done in ascending (true) or
-		 *  descending (false) order.
+		 * @param cmp an optional comparator Function or sort criteria. Sort
+		 *  criteria are expressed as an array of property names to sort on.
+		 *  These properties are accessed by sorting functions using the
+		 *  <code>Property</code> class. The default is to sort in ascending
+		 *  order. If the field name includes a "-" (negative sign) prefix,
+		 *  that variable will instead be sorted in descending order.
 		 */
 		public static function sortChildren(
 			d:DisplayObjectContainer, cmp:*=null):void
@@ -136,7 +118,7 @@ package flare.util
 			if (cmp is Function) {
 				c = cmp as Function;
 			} else if (cmp is Array) {
-				c = sorter(cmp as Array);
+				c = $(cmp as Array);
 			} else if (cmp == null) {
 				c = defaultComparator;
 			} else {
@@ -149,42 +131,31 @@ package flare.util
 		 * Creates a set of sorting functions using the specification given
 		 * in the input array. The resulting sorting functions can be used
 		 * to sort objects based on their properties.
-		 * @param a An array containing a set of data field
-		 * names to sort on, in priority order. In addition, an optional boolean
-		 * argument can follow each name, indicating whether sorting on the
-		 * preceding field should be done in ascending (true) or descending
-		 * (false) order.
+		 * @param a A multi-parameter list of a single array containing a set
+		 * of data field names to sort on, in priority order. The default is
+		 * to sort in ascending order. If the field name includes a "-"
+		 * (negative sign) prefix, that variable will instead be sorted in
+		 * descending order.
 		 * @return a comparison function for use in sorting objects.
 		 */
-		public static function sorter(a:Array):Function
+		public static function $(...a):Function
 		{
-			if (a.length < 1) {
-				throw new ArgumentError("Bad input.");	
-			} else if (a.length == 1) {
-				return sortOn(a[0], true);
-			} else if (a.length == 2 && a[1] is Boolean) {
-				return sortOn(a[0], a[1]);
+			if (a && a.length > 0 && a[0] is Array) a = a[0];
+			if (a==null || a.length < 1)
+				throw new ArgumentError("Bad input.");
+
+			if (a.length == 1) {
+				return sortOn(a[0]);
 			} else {
-				var sorts:Array = new Array();
-				var field:String, asc:Boolean;
-				for (var i:uint=0; i<a.length; ++i) {
-					field = a[i];
-					asc = a[i+1] is Boolean ? a[++i] : true;
-					sorts.push(sortOn(field, asc));
+				var sorts:Array = [];
+				for each (var field:String in a) {
+					sorts.push(sortOn(field));
 				}
 				return multisort(sorts);
 			}
 		}
 		
-		/**
-		 * Given an array of comparison functions, returns a combined
-		 * chain of comparison functions. If a comparison results in
-		 * a tie (i.e., the function returns 0), the next comparison
-		 * function in the array will be used.
-		 * @param f an array of comparison functions
-		 * @return a combined comparison function
-		 */
-		public static function multisort(f:Array):Function
+		private static function multisort(f:Array):Function
 		{
 			return function(a:Object, b:Object):int {
 				var c:int;
@@ -195,15 +166,11 @@ package flare.util
 			}
 		}
 		
-		/**
-		 * Given a property name and an ascending/descending flag,
-		 * returns a comparison function for sorting objects.
-		 * @param field the property name. This can be nested (e.g., "a.b.c").
-		 * @param asc true for an ascending sort order, false for descending.
-		 * @return a comparison function for objects
-		 */
-		public static function sortOn(field:String, asc:Boolean):Function
+		private static function sortOn(field:String):Function
 		{
+			var c:Number = field.charCodeAt(0);
+			var asc:Boolean = (c==ASC || c!=DSC);
+			if (c==ASC || c==DSC) field = field.substring(1);
 			var p:Property = Property.$(field);
 			return function(a:Object, b:Object):int {
 				var da:* = p.getValue(a);

@@ -105,9 +105,8 @@ package flare.query
 		/**
 		 * Sets the sort order for query results.
 		 * @param terms the sort terms as a list of field names to sort on.
-		 *  Each name can optionally be followed by a boolean value indicating
-		 *  if ascending (true) or descending (false) sort order should be
-		 *  used.
+		 *  By default, fields are sorted in ascending order. Add the prefix
+		 *  "-" (negative sign) to the field name to sort in descending order.
 		 * @return this query object
 		 */
 		public function orderby(...terms):Query
