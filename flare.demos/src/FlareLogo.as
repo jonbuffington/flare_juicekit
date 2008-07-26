@@ -26,14 +26,21 @@ package
 		
 		private var w:Number = 10;
 		private var h:Number = 10;
-		private var xb:Number = -25/2;
-		private var yb:Number = -7/2;
+		private var xb:Number = 0;//-25/2;
+		private var yb:Number = 0;//-7/2;
 		
 		private var _dance:Transition;
 		private var _glow:Transition;
 		
-		public function FlareLogo()
+		public function get glow():Transition { return _glow; }
+		public function get dance():Transition { return _dance; }
+		
+		public function FlareLogo(size:Number=10, center:Boolean=true)
 		{
+			w = size;
+			h = size;
+			xb = center ? size * -5/4 : 0;
+			yb = center ? size * -7/20 : 0;
 			var inc:Number = 2, linc:Number = 4;
 			var con:Sprite = new Sprite();
 			for (var i:int=0; i<points.length; i+=2) {

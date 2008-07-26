@@ -1,4 +1,4 @@
-package flare.util
+package flare.demos.util
 {
 	import flare.vis.data.NodeSprite;
 	import flare.vis.data.Data;

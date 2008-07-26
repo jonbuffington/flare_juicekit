@@ -10,7 +10,7 @@ package flare.demos
 	import flare.animate.Scheduler;
 
 	/**
-	 * Simple smoke simulation.
+	 * Demo showcasing use of the physics engine to simulate smoke.
 	 * Based on the smoke example from the traer physics library
 	 * for processing (http://www.cs.princeton.edu/~traer/physics/).
 	 */
@@ -27,29 +27,35 @@ package flare.demos
 		{
 			name = "Smoke";
 			_shapes = new Array();
-			_sim = new Simulation(0, -0.1, 0.001, 0);
 			_dict = new Dictionary();
 			_last = null;
+			
+			// a simulation with slight upward gravity
+			_sim = new Simulation(0, -0.1, 0.001, 0);
 		}
 
 		override public function play():void
 		{
+			// add to scheduler, which will call the evaluate method
 			Scheduler.instance.add(this);
 		}
 		
 		override public function stop():void
 		{
+			// remove from the scheduler
 			Scheduler.instance.remove(this);
 		}
 
 		public function evaluate(t:Number) : Boolean
 		{
+			// update smoke simulation on scheduler callback
 			drawSmoke();
 			return false;
 		}
 
 		private function getShape():Shape
 		{
+			// get a new shape, check object pool before allocating a new one
 			var s:Shape;
 			if (_spool.length > 0) {
 				s = _spool.pop();
@@ -65,11 +71,13 @@ package flare.demos
 		
 		private function reclaim(s:Shape):void
 		{
+			// reclaim shape in object pool for reuse
 			_spool.push(s);
 		}
 
 		private function drawSmoke():void
-		{				
+		{
+			// create five new smoke particles on each simulation tick	
 			for (var i:uint = 0; i<5; ++i) {
 				var p:Particle = _sim.addParticle(1, root.mouseX, root.mouseY-10);
 				
@@ -85,8 +93,11 @@ package flare.demos
 				}
 				_last = p;
 			}
+			
+			// run the simulation one timestep
 			_sim.tick();
 
+			// update positions, handle removal of dead particles
 			for (i = _shapes.length; --i >= 0; ) {
 				s = _shapes[i] as Shape;
 				p = _dict[s] as Particle;
@@ -103,5 +114,6 @@ package flare.demos
 				}
 			}
   		}
-	}
+  		
+	} // end of class Smoke
 }

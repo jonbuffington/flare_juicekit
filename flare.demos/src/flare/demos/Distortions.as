@@ -1,7 +1,7 @@
 package flare.demos
 {
-	import flare.util.Button;
-	import flare.util.GraphUtil;
+	import flare.demos.util.GraphUtil;
+	import flare.demos.util.Link;
 	import flare.vis.Visualization;
 	import flare.vis.controls.AnchorControl;
 	import flare.vis.operator.OperatorSwitch;
@@ -12,28 +12,34 @@ package flare.demos
 	import flare.vis.operator.layout.NodeLinkTreeLayout;
 	
 	import flash.display.DisplayObject;
-	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
-	public class Distortion extends Demo
+	/**
+	 * Demo showcasing different layout distortions. 
+	 */
+	public class Distortions extends Demo
 	{
 		private var vis:Visualization;
 		private var layout:Layout;
 		private var distort:Layout;
 		private var oswitch:OperatorSwitch;
 		
-		public function Distortion() {
-			name = "Distortion";
-			
+		public function Distortions() {
+			name = "Distortions";
+		}
+		
+		public override function init():void
+		{	
 			// create visualization
 			addChild(vis = new Visualization(GraphUtil.diamondTree(4, 6, 6)));
-			vis.bounds = new Rectangle(0, 0, WIDTH, HEIGHT-40);
+			vis.bounds = bounds;
+			vis.x = 15;
 			vis.operators.add(new PropertyEncoder({scaleX:1, scaleY:1}));
 			vis.operators.add(layout=new NodeLinkTreeLayout());
-			layout.layoutAnchor = new Point(20, vis.bounds.height/2);
+			layout.layoutAnchor = new Point(50, vis.bounds.height/2);
+			// create a switch for choosing between distortions
 			oswitch = new OperatorSwitch(
 				new FisheyeDistortion(4,0,2),
 				new FisheyeDistortion(0,4,2),
@@ -46,29 +52,34 @@ package flare.demos
 			setDistortion(0);
 			vis.update();
 			
-			// create buttons
-			var btnSprite:Sprite = new Sprite();
-			var btns:Array = ["Fisheye X","Fisheye Y","Fisheye XY",
-							  "Bifocal X","Bifocal Y","Bifocal XY"];
-			var w:Number = 0;
-			for (var i:uint=0; i<btns.length; ++i) {
-				var btn:Button = new Button(btns[i]);
-				btn.addEventListener(MouseEvent.CLICK, function(e:Event):void {
-					setDistortion(btnSprite.getChildIndex(e.target as DisplayObject));
+			// create distortion selection links
+			var names:Array = ["Fisheye X","Fisheye Y","Fisheye XY",
+							   "Bifocal X","Bifocal Y","Bifocal XY"];
+			for (var i:uint=0; i<names.length; ++i) {
+				var link:Link = new Link(names[i]);
+				link.addEventListener(MouseEvent.CLICK, function(e:Event):void {
+					setDistortion(links.getChildIndex(e.target as DisplayObject));
 				});
-				btn.x = 10 + w;
-				w += 10 + btn.width;
-				btnSprite.addChild(btn);
+				links.add(link);
+				if (i==0) links.select(link);
 			}
-			btnSprite.y = HEIGHT - 10 - btnSprite.height;
-			addChild(btnSprite);
 		}
 		
 		private function setDistortion(idx:int):void
 		{
+			// update the switch index and re-init the anchor control
 			oswitch.index = idx;
 			distort = oswitch.getOperatorAt(idx) as Layout;
 			stop(); play();
+		}
+		
+		public override function resize():void
+		{
+			bounds.width -= 30;
+			if (vis) {
+				vis.bounds = bounds;
+				vis.update();
+			}
 		}
 		
 		public override function play():void {
@@ -79,5 +90,5 @@ package flare.demos
 			vis.controls.clear();
 		}
 
-	}
+	} // end of class Distortions
 }
