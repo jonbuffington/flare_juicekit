@@ -14,6 +14,7 @@ package {
 	import flare.demos.TreeMap;
 	import flare.demos.util.Link;
 	import flare.demos.util.LinkGroup;
+	import flare.display.LineSprite;
 	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
@@ -31,6 +32,7 @@ package {
 		private var _demo:Sprite;
 		private var _home:FlareLogo;
 		private var _logo:FlareLogo;
+		private var _line:LineSprite;
 		private var _cur:int = -1;
 		
 		public function demos()
@@ -51,6 +53,8 @@ package {
 		
 		private function createDemos():void
 		{
+			addChild(_line = new LineSprite());
+			
 			_demo = new Sprite();
 			addChild(_demo);
 			
@@ -66,7 +70,7 @@ package {
 			_demos.push(new Bars());
 			_demos.push(new Pie());
 			
-			_home = new FlareLogo(4, false);
+			_home = new FlareLogo(4.5, false);
 			_home.name = "Logo";
 			_home.buttonMode = true;
 			_home.glow.play();
@@ -75,10 +79,21 @@ package {
 			
 			_links = new LinkGroup(); addChild(_links);
 			for (var i:uint=0; i<_demos.length; ++i) {
-				var link:Link = new Link(_demos[i].name);
+				var link:Link = new Link(_demos[i].name, 18);
 				link.addEventListener(MouseEvent.CLICK, showDemo);
 				_links.add(link);
 			}
+			
+			_home.x = 15;
+			_home.y = 15;
+			_links.x = _home.x + _home.width + 15;
+			_links.y = 13;
+			Demo.LINK_X = _links.x;
+			Demo.LINK_Y = _links.y + (4/5)*_links.height + 1;
+			_line.lineColor = 0xffededed;
+			_line.x1 = 0; _line.x2 = stage.stageWidth;
+			_line.y = _home.y + _home.height + 8;
+			
 		}
 		
 		private function showDemo(event:MouseEvent):void
@@ -135,14 +150,11 @@ package {
 		private function onResize(event:Event=null):void
 		{
 			_logo.x = stage.stageWidth / 2;
-			_logo.y = (stage.stageHeight - 50) / 2;
-			_home.x = 15;
-			_home.y = stage.stageHeight - _home.height - 15;
-			_links.x = _home.x + _home.width + 10;
-			_links.y = stage.stageHeight - (4/5)*_links.height - 15;
-			Demo.LINK_X = _links.x;
+			_logo.y = (stage.stageHeight + 50) / 2;
+			_line.x2 = stage.stageWidth;
 			if (_cur >= 0) {
-				_demos[_cur].bounds = new Rectangle(0,0,stage.stageWidth,_home.y-20);
+				_demos[_cur].bounds = new Rectangle(0, _line.y,
+					stage.stageWidth, stage.stageHeight-(_line.y));
 			}
 		}
 		

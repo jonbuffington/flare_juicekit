@@ -73,9 +73,19 @@ package flare.demos
 			vis.operators.add(opt[idx].op);
 			vis.setOperator("nodes", new PropertyEncoder(opt[idx].nodes, "nodes"));
 			vis.setOperator("edges", new PropertyEncoder(opt[idx].edges, "edges"));
-			vis.controls.add(new HoverControl(NodeSprite, 0,
-				function(e:SelectionEvent):void {e.node.fillColor=0x88ff0000;},
-				function(e:SelectionEvent):void {e.node.fillColor=0x88aaaaaa;}));
+			vis.controls.add(new HoverControl(NodeSprite,
+				// by default, move highlighted items to front
+				HoverControl.MOVE_AND_RETURN,
+				// highlight node border on mouse over
+				function(e:SelectionEvent):void {
+					e.node.lineWidth = 2;
+					e.node.lineColor = 0x88ff0000;
+				},
+				// remove highlight on mouse out
+				function(e:SelectionEvent):void {
+					e.node.lineWidth = 0;
+					e.node.lineColor = opt[idx].nodes.lineColor;
+				}));
 			vis.controls.add(opt[idx].ctrl);
 			vis.update();
 			addChild(vis);
@@ -116,6 +126,9 @@ package flare.demos
 			vis.operators.add(cur.op);
 			vis.setOperator("nodes", new PropertyEncoder(cur.nodes, "nodes"));
 			vis.setOperator("edges", new PropertyEncoder(cur.edges, "edges"));
+			// update controls
+			HoverControl(vis.controls[0]).movePolicy = cur.dontMove
+				? HoverControl.DONT_MOVE : HoverControl.MOVE_AND_RETURN;
 			vis.controls.removeControlAt(1);
 			if (cur.ctrl != null) vis.controls.add(cur.ctrl);
 			
@@ -254,7 +267,8 @@ package flare.demos
 					name: "Circle Pack",
 					op: new CirclePackingLayout(4, true, "childDegree"),
 					edges: {alpha:0, visible:false},
-					canStraighten: true
+					canStraighten: true,
+					dontMove: true
 				},
 				{
 					name: "Icicle",

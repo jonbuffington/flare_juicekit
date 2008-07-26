@@ -7,6 +7,7 @@ package flare.demos
 	import flare.scale.ScaleType;
 	import flare.util.Strings;
 	import flare.vis.Visualization;
+	import flare.vis.controls.AnchorControl;
 	import flare.vis.controls.HoverControl;
 	import flare.vis.controls.SelectionControl;
 	import flare.vis.controls.TooltipControl;
@@ -40,6 +41,7 @@ package flare.demos
 		
 		private var vis:Visualization;
 		private var distort:Distortion;
+		private var anchor:AnchorControl;
 		
 		public function Scatter() {
 			name = "Scatter";
@@ -120,7 +122,17 @@ package flare.demos
 				var xb:ScaleBinding = AxisLayout(vis.operators[0]).xScale;
 				if (xb.scaleType != type) {
 					xb.scaleType = type;
-					vis.update(new Transitioner(2)).play();
+					var t:Transitioner = vis.update(2);
+					if (distort != null) {
+						// prevent distortion update during animation
+						vis.controls.remove(anchor);
+						t.addEventListener(TransitionEvent.END,
+							function(evt:TransitionEvent):void {
+								vis.controls.addAt(anchor, 0);
+							}
+						);
+					}
+					t.play();
 				}
 			};
 			
@@ -141,24 +153,24 @@ package flare.demos
 			ld.x += 12;
 			ld.addEventListener(MouseEvent.CLICK, function(evt:MouseEvent):void {
 				if (distort != null) {
-					ld.bold = false;
-					// remove distortion operator and frame listener
-					vis.operators.remove(distort);
-					distort = null;
-					removeEventListener(Event.ENTER_FRAME, mouseUpdate);
+					ld.selected = false;
+					// remove distortion operator and anchor control
+					vis.operators.remove(distort); distort = null;
+					vis.controls.remove(anchor); anchor = null;
 					// animate back to non-distorted view
-					vis.update(new Transitioner(1)).play();
+					vis.update(1).play();
 				} else {
-					ld.bold = true;
+					ld.selected = true;
 					// add and initialize distortion operator 
 					vis.operators.add(distort=new BifocalDistortion());
 					distort.distortSize = false;
 					distort.layoutAnchor = new Point(vis.mouseX, vis.mouseY);
-					// animate into distorted view, add frame listener
-					var t:Transitioner = vis.update(new Transitioner(1));
+					// animate into distorted view, add anchor control
+					var t:Transitioner = vis.update(1);
 					t.addEventListener(TransitionEvent.END,
-						function(evt:Event):void {
-							addEventListener(Event.ENTER_FRAME, mouseUpdate);
+						function(evt:TransitionEvent):void {
+							anchor = new AnchorControl(distort);
+							vis.controls.addAt(anchor, 0);
 						}
 					);
 					t.play();
@@ -174,18 +186,6 @@ package flare.demos
 				vis.bounds = bounds;
 				vis.update();
 			}
-		}
-		
-		private function mouseUpdate(evt:Event):void
-		{
-			// get current anchor, run update if changed
-			var p1:Point = distort.layoutAnchor;
-			distort.layoutAnchor = new Point(vis.mouseX, vis.mouseY);
-			// distortion might snap the anchor to the layout bounds
-			// so we need to re-retrieve the point to get an accurate point
-			var p2:Point = distort.layoutAnchor;
-			// compare the old and new points to prevent unneeded updates
-			if (p1.x != p2.x || p1.y != p2.y) vis.update();
 		}
 		
 		public static function getData(n:int):Data

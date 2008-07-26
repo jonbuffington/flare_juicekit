@@ -33,13 +33,9 @@ package flare.demos.util
 		
 		public function select(link:Link):void {
 			if (link != null && !_map[link]) return;
-			if (_cur) {
-				_cur.bold = false;
-			}
+			if (_cur) _cur.selected = false;
 			_cur = link;
-			if (_cur) {
-				_cur.bold = true;
-			}
+			if (_cur) _cur.selected = true;
 		}
 		
 	} // end of class LinkGroup

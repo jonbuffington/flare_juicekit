@@ -1,5 +1,7 @@
 package flare.demos
 {
+	import flare.animate.TransitionEvent;
+	import flare.animate.Transitioner;
 	import flare.demos.util.GraphUtil;
 	import flare.demos.util.Link;
 	import flare.vis.Visualization;
@@ -14,7 +16,6 @@ package flare.demos
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.geom.Point;
 	
 	/**
 	 * Demo showcasing different layout distortions. 
@@ -36,9 +37,9 @@ package flare.demos
 			addChild(vis = new Visualization(GraphUtil.diamondTree(4, 6, 6)));
 			vis.bounds = bounds;
 			vis.x = 15;
+			vis.y = 30;
 			vis.operators.add(new PropertyEncoder({scaleX:1, scaleY:1}));
 			vis.operators.add(layout=new NodeLinkTreeLayout());
-			layout.layoutAnchor = new Point(50, vis.bounds.height/2);
 			// create a switch for choosing between distortions
 			oswitch = new OperatorSwitch(
 				new FisheyeDistortion(4,0,2),
@@ -49,7 +50,8 @@ package flare.demos
 				new BifocalDistortion(0.1, 3.0, 0.1, 3.0)
 			);
 			vis.operators.add(oswitch);
-			setDistortion(0);
+			distort = oswitch[oswitch.index=0] as Layout;
+			play();
 			vis.update();
 			
 			// create distortion selection links
@@ -57,8 +59,9 @@ package flare.demos
 							   "Bifocal X","Bifocal Y","Bifocal XY"];
 			for (var i:uint=0; i<names.length; ++i) {
 				var link:Link = new Link(names[i]);
-				link.addEventListener(MouseEvent.CLICK, function(e:Event):void {
-					setDistortion(links.getChildIndex(e.target as DisplayObject));
+				link.addEventListener(MouseEvent.CLICK, function(e:Event):void
+				{
+					setDistortion(links.getChildIndex(DisplayObject(e.target)));
 				});
 				links.add(link);
 				if (i==0) links.select(link);
@@ -68,14 +71,20 @@ package flare.demos
 		private function setDistortion(idx:int):void
 		{
 			// update the switch index and re-init the anchor control
+			oswitch[idx].layoutAnchor = oswitch[oswitch.index].layoutAnchor;
 			oswitch.index = idx;
 			distort = oswitch.getOperatorAt(idx) as Layout;
-			stop(); play();
+			stop();
+			var t:Transitioner = vis.update(1);
+			t.addEventListener(TransitionEvent.END,
+				function(e:TransitionEvent):void { play(); });
+			t.play();
 		}
 		
 		public override function resize():void
 		{
 			bounds.width -= 30;
+			bounds.height -= 60;
 			if (vis) {
 				vis.bounds = bounds;
 				vis.update();

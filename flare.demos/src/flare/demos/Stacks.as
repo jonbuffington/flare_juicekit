@@ -10,6 +10,7 @@ package flare.demos
 	import flare.vis.operator.layout.StackedAreaLayout;
 	import flare.vis.util.Shapes;
 	
+	import flash.display.Shape;
 	import flash.display.StageQuality;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -20,6 +21,7 @@ package flare.demos
 	public class Stacks extends Demo
 	{
 		private var vis:Visualization;
+		private var labelMask:Shape = new Shape();
 		
 		public function Stacks() {
 			name = "Stacks";
@@ -44,6 +46,10 @@ package flare.demos
 			vis.y = 15;
 			vis.update();
 			addChild(vis);
+			
+			// add mask to hide animating labels
+			vis.xyAxes.addChild(labelMask);
+			vis.xyAxes.yAxis.labels.mask = labelMask;
 			
 			// add "show all" link to make all stacks visible
 			var show:Link = new Link("Show All"); links.add(show);
@@ -75,6 +81,11 @@ package flare.demos
 				vis.bounds = bounds;
 				vis.update();
 			}
+			// mask the y-axis labels to hide extreme animation
+			labelMask.graphics.clear();
+			labelMask.graphics.beginFill(0);
+			labelMask.graphics.drawRect(
+				bounds.left-50, -10+bounds.top, 50, 20+bounds.height);
 		}
 		
 		private function update(t:Transitioner):void

@@ -8,6 +8,7 @@ package flare.demos
 	public class Demo extends Sprite
 	{
 		public static var LINK_X:Number;
+		public static var LINK_Y:Number;
 		
 		private var _init:Boolean = false;
 		private var _bounds:Rectangle;
@@ -18,7 +19,7 @@ package flare.demos
 			_bounds = b;
 			if (_links) {
 				_links.x = LINK_X;
-				_links.y = stage.stageHeight - 15 - (1.65)*_links.height;
+				_links.y = LINK_Y;
 				setChildIndex(_links, numChildren-1);
 			}
 			resize();
@@ -44,7 +45,7 @@ package flare.demos
 			play();
 			if (_links) {
 				_links.x = LINK_X;
-				_links.y = stage.stageHeight - 15 - (1.65)*_links.height;
+				_links.y = LINK_Y;
 				setChildIndex(_links, numChildren-1);
 			}
 		}
