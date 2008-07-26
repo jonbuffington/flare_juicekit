@@ -6,19 +6,19 @@ package flare.query
 	 * by this class. The function table can be extended to introduce custom
 	 * functions into the query language.
 	 */
-	public class Func extends CompositeExpression
+	public class Fn extends CompositeExpression
 	{
 		private var _name:String;
 		private var _func:Function;
 		private var _args:Array;
 		
 		/**
-		 * Creates a new Func (function) operator.
+		 * Creates a new Fn (function) operator.
 		 * @param name the name of the function. This should map to an entry
 		 *  in the static function table.
 		 * @params args sub-expressions for the function arguments
 		 */
-		public function Func(name:String, ...args) {
+		public function Fn(name:String, ...args) {
 			_name = name.toUpperCase();
 			_func = table[_name];
 			super(args);
@@ -29,7 +29,7 @@ package flare.query
 		 */
 		public override function clone():Expression
 		{
-			return new Func(_name, _children);
+			return new Fn(_name, _children);
 		}
 		
 		/**
@@ -121,5 +121,5 @@ package flare.query
 			YEAR:		DateUtil.year
 		};
 		
-	} // end of class Func
+	} // end of class Fn
 }

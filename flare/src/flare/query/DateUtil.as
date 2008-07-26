@@ -3,7 +3,7 @@ package flare.query
 	/**
 	 * Utility class providing functions for manipulating <code>Date</code>
 	 * objects. These functions are intended for use by the
-	 * <code>Function</code> operator.
+	 * <code>Fn</code> operator.
 	 */
 	public class DateUtil
 	{

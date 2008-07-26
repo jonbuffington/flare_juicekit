@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Xor;
 	
 	/**
-	 * Creates a new 'Xor' (exclusive or) query operator
+	 * Creates a new <code>Xor</code> (exclusive or) query operator.
 	 * @param rest a list of expressions to include in the exclusive or
 	 * @return the new query operator
 	 */

@@ -2,7 +2,7 @@ package flare.scale
 {
 	/**
 	 * Constants defining known scale types, such as linear, log, and
-	 * time scales.
+	 * date/time scales.
 	 */
 	public class ScaleType
 	{

@@ -5,12 +5,12 @@ package flare.vis.operator.label
 	import flare.vis.data.DataSprite;
 	
 	/**
-	 * Labeler for a stacked area chart. Adds labels to stacks whose maximum
-	 * height exceeds a minimum threshold. Labels are added to a new
-	 * layer sprite named "_labels" that is added as a child of the
-	 * visualization.
+	 * Labeler for a stacked area chart. Use in conjunction with the
+	 * <code>StackedAreaLayout</code> operator. Adds labels to stacks whose
+	 * maximum height in pixels exceeds the minimum <code>threshold</code>
+	 * value.
 	 * 
-	 * <p>NOTE: This has only been tested for use with horizontally
+	 * <p><b>NOTE</b>: This has only been tested for use with horizontally
 	 * oriented stacks. In the future, this will be extended to work with
 	 * vertically oriented stacks as well.</p>
 	 */

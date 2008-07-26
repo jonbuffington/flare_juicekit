@@ -6,7 +6,7 @@ package flare.vis.operator.layout
 	import flash.geom.Rectangle;
 	
 	/**
-	 * Layout that places nodes in an "icicle" layout that distributes nodes
+	 * Layout that places nodes in an icicle layout, distributing nodes
 	 * evenly within the display bounds. To get a standard icicle view, set
 	 * the nodes <code>shape</code> property to <code>Shapes.BLOCK</code> and
 	 * hide all edges. By default, this operator will attempt to scale the

@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.IsA;
 
 	/**
-	 * Creates a new 'IsType' query operator
+	 * Creates a new <code>IsType</code> query operator.
 	 * @param type the class type to check for
 	 * @param x the expression to type check
 	 *  This value can be an expression or a literal value.

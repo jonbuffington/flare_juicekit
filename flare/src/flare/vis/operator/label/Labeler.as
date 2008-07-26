@@ -16,11 +16,31 @@ package flare.vis.operator.label
 	/**
 	 * Labeler that adds labels for items in a visualization. By default, this
 	 * operator adds labels that are centered on each data sprite; this can be
-	 * changed by configuring the offset and anchor settings. For later access
-	 * and manipulation, all created labels are stored in the
-	 * <code>props.label</code> property of the labeled data sprites. This
-	 * property can be changed by setting the <code>access</code> property of
-	 * this class.
+	 * changed by configuring the offset and anchor settings.
+	 * 
+	 * <p>Labelers support two different approaches for adding labels:
+	 * <code>CHILD</code> mode (the default) and <code>LAYER</code> mode.
+	 * <ul>
+	 *  <li>In <code>CHILD</code> mode, labels are added as children of
+	 *      <code>DataSprite</code> instances and so become part of the data
+	 *      sprite itself. In this mode, labels will automatically change
+	 *      position as data sprites are re-positioned.</li>
+	 *  <li>In <code>LAYER</code> mode, labels are instead added to a separate
+	 *      layer of the visualization above the
+	 *      <code>Visualization.marks</code> layer that contains the data
+	 *      sprites. A new layer will be created as needed and can be accessed
+	 *      through the <code>Visualization.labels</code> property. This mode
+	 *      is particularly useful for ensuring that no labels can be occluded
+	 *      by data marks. In <code>LAYER</code> mode, labels will not
+	 *      automatically move along with the labeled <code>DataSprite</code>
+	 *      instances if they are re-positioned. Instead, the labeler must be
+	 *      re-run to keep the layout current.</li>
+	 * </ul></p>
+	 * 
+	 * <p>To access created labels after a <code>Labeler</code> has been run,
+	 * use the <code>props.label</code> property of a <code>DataSprite</code>.
+	 * To have labels stored under a different property name, set the
+	 * <code>access</code> property of this class to the desired name.</p>
 	 */
 	public class Labeler extends Operator
 	{

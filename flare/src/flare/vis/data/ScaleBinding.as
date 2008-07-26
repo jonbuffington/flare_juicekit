@@ -14,10 +14,11 @@ package flare.vis.data
 	
 	/**
 	 * Utility class that binds a data property to a descriptive scale.
-	 * The created scale can be used for layout and encoding of data
-	 * values. When scale parameters, such as the scale type or bounds, are
-	 * updated, an underlying scale instance will be accordingly updated or 
-	 * a new scale instance will be created as needed.
+	 * A ScaleBinding provides a layer of indirection between a data field and
+	 * a data scale describing that field. The created scale can be used for
+	 * layout and encoding of data values. When scale parameters such as the
+	 * scale type or value range are updated, an underlying scale instance will
+	 * be updated accordingly or a new instance will be created as needed.
 	 */
 	public class ScaleBinding extends Scale
 	{

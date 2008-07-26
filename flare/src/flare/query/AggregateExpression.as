@@ -1,7 +1,7 @@
 package flare.query
 {
 	/**
-	 * Base class representing an aggregate (group-by) query operator.
+	 * Base class representing an aggregate query operator.
 	 */
 	public class AggregateExpression extends Expression
 	{

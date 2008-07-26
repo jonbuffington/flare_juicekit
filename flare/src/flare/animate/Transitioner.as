@@ -417,6 +417,58 @@ package flare.animate
 			return r;
 		}
 		
+		/**
+		 * Computes the approximate bounds of the given object after this
+		 * transitioner has been run. This calculation is performed by
+		 * applying the final <code>scaleX</code>, <code>scaleY</code>,
+		 * <code>size</code>, <code>x</code>, and <code>y</code> values of
+		 * the object. 
+		 * @param d the display object to compute the size for
+		 * @param coords the target coordinate space for the bounds
+		 * @return a rectangle whose <code>width</code> and <code>height</code>
+		 *  properties contain the end size values. 
+		 */
+		public function endBounds(d:DisplayObject,
+			coords:DisplayObject):Rectangle
+		{
+			var r:Rectangle = new Rectangle();
+			var t:Tween, v:Object, o:Object = Object(d);
+			var scaleX:Number, scaleY:Number, size:Number, x:Number, y:Number;
+			
+			if (_immediate || (t=_lookup[d])==null) {
+				r = d.getBounds(coords);
+			} else {
+				v = t.values;
+				if (v.hasOwnProperty("scaleX")) {
+					scaleX = d.scaleX;
+					d.scaleX = v.scaleX;
+				}
+				if (v.hasOwnProperty("scaleY")) {
+					scaleY = d.scaleY;
+					d.scaleY = v.scaleY;	
+				}
+				if (v.hasOwnProperty("size")) {
+					size = o.size;
+					o.size = v.size;
+				}
+				if (v.hasOwnProperty("x")) {
+					x = d.x;
+					d.x = v.x;
+				}
+				if (v.hasOwnProperty("y")) {
+					y = d.y;
+					d.y = v.y;
+				}
+				r = d.getBounds(coords);
+				if (v.hasOwnProperty("scaleX")) d.scaleX = scaleX;
+				if (v.hasOwnProperty("scaleY")) d.scaleY = scaleY;
+				if (v.hasOwnProperty("size"))   o.size = size;
+				if (v.hasOwnProperty("x"))      d.x = x;
+				if (v.hasOwnProperty("y"))      d.y = y;
+			}
+			return r;
+		}
+		
 		// --------------------------------------------------------------------
 		
 		private static var _maxPoolSize:int = 10000;

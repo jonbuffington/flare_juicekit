@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Arithmetic;
 
 	/**
-	 * Creates a new 'Divide' query operator
+	 * Creates a new division <code>Arithmetic</code> query operator.
 	 * @param a the left side argument. 
 	 *  This value can be an expression or a literal value.
 	 *  Literal values are parsed using the Expression.expr method.

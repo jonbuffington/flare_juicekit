@@ -3,9 +3,8 @@ package flare.query
 	import flare.util.Property;
 	
 	/**
-	 * Expression operator that retrieves a variable value from an object
-	 * property. Uses a <code>flare.util.Property</code> instance to access
-	 * the variable value.
+	 * Expression operator that retrieves a value from an object property.
+	 * Uses a <code>flare.util.Property</code> instance to access the value.
 	 * @see flare.util.Property
 	 */
 	public class Variable extends Expression

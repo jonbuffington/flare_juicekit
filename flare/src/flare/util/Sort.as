@@ -4,9 +4,10 @@ package flare.util
 		
 	/**
 	 * Utility class for sorting and creating sorting functions. This class
-	 * provides static methods for sorting and creating sorting comparison
-	 * functions. Instances of this class can be used to encapsulate a set of
-	 * sort criteria and retrieve a corresponding sorting function.
+	 * provides a static <code>$()</code> method for creating sorting
+	 * comparison functions from sort criteria. Instances of this class can be
+	 * used to encapsulate a set of sort criteria and retrieve a corresponding
+	 * sorting function.
 	 * 
 	 * <p>Sort criteria are generally expressed as an array of property names
 	 * to sort on. These properties are accessed by sorting functions using the

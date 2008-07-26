@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Sum;
 	
 	/**
-	 * Creates a new 'Sum' aggregate query expression.
+	 * Creates a new 'sum' <code>Arithmetic</code> query operator.
 	 * @param expr the input expression
 	 * @return the new query operator
 	 */

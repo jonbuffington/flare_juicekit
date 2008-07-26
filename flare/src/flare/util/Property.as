@@ -5,7 +5,7 @@ package flare.util
 	 * nested property expressions (e.g., <code>x.a.b.c</code> or 
 	 * <code>x.a[1]</code>). To reduce initialization times, this class also
 	 * maintains a static cache of all Property instances created using the
-	 * static <code>$</code> method.
+	 * static <code>$()</code> method.
 	 */
 	public class Property implements IEvaluable, IPredicate
 	{

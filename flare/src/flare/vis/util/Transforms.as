@@ -6,9 +6,9 @@ package flare.vis.util
 	import flash.geom.Matrix;
 	
 	/**
-	 * Utility class providing methods for perfoming camera transforms. These
-	 * methods update the transformation matrix of a display object to simulate
-	 * pan, zoom, and rotate camera movements. When used on a container, these
+	 * Utility class providing methods for camera transforms. These methods
+	 * update the transformation matrix of a display object to simulate pan,
+	 * zoom, and rotate camera movements. When used on a container, these
 	 * operations will correspondingly pan, zoom, and rotate the contents of
 	 * the container.
 	 */

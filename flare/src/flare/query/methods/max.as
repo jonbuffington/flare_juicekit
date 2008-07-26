@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Maximum;
 	
 	/**
-	 * Creates a new 'Maximum' aggregate query expression.
+	 * Creates a new <code>Maximum</code> query operator.
 	 * @param expr the input expression
 	 * @return the new query operator
 	 */

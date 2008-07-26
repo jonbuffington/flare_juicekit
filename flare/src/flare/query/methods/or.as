@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Or;
 	
 	/**
-	 * Creates a new 'Or' query operator
+	 * Creates a new <code>Or</code> query operator.
 	 * @param rest a list of expressions to include in the or
 	 * @return the new query operator
 	 */

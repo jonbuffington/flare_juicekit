@@ -4,9 +4,9 @@ package flare.scale
 	import flare.util.Arrays;
 	
 	/**
-	 * Scale for sequential, ordered data. This supports both numeric and
-	 * non-numeric data, and simply places each element in sequence according
-	 * to an ordering specified by an input data array.
+	 * Scale for ordered sequential data. This supports both numeric and
+	 * non-numeric data, and simply places each element in sequence using
+	 * the ordering found in the input data array.
 	 */
 	public class OrdinalScale extends Scale
 	{

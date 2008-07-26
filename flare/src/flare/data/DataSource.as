@@ -12,7 +12,7 @@ package flare.data
 	import flash.events.ProgressEvent;
 	
 	/**
-	 * The DataSource class provides access to remote data on the Internet.
+	 * A data source provides access to remote data on the Internet.
 	 * A DataSource requires a URL for retrieving a data file, and a format
 	 * string representing the data format. The currently supported formats are
 	 * "tab" (Tab-Delimited Text) and "json" (JavaScript Object Notation).

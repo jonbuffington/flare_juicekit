@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Range;
 	
 	/**
-	 * Creates a new 'Range' query operator
+	 * Creates a new <code>Range</code> query operator.
 	 * @param min the minimum range value.
 	 *  This value can be an expression or a literal value.
 	 *  Literal values are parsed using the Expression.expr method.

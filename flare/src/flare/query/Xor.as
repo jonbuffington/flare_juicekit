@@ -1,7 +1,7 @@
 package flare.query
 {
 	/**
-	 * Expression operator that computes the exclusive or ("xor") of
+	 * Expression operator that computes the exclusive-or ("xor") of
 	 * sub-expression clauses.
 	 */
 	public class Xor extends CompositeExpression

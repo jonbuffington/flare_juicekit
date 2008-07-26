@@ -1,7 +1,7 @@
 package flare.data
 {
 	/**
-	 * A table of data that maintains a collection of data objects, each
+	 * A data table maintains a collection of data objects, each
 	 * representing a row of data, and an optional data schema describing
 	 * the data variables.
 	 */

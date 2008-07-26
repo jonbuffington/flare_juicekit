@@ -3,12 +3,14 @@ package flare.util
 	import flash.utils.Dictionary;
 	
 	/**
-	 * Utility class for creating filter functions. Filter functions are
-	 * functions that take one argument and return a Boolean value. The input
-	 * argument passes the filter if the function returns true and fails the
-	 * filter if the function returns false. The static <code>$</code> method
-	 * takes an arbitrary object as input and returns a corresponding filter
-	 * function.
+	 * Utility methods for creating filter functions. The static
+	 * <code>$()</code> method takes an arbitrary object and generates a
+	 * corresponding filter function.
+	 * 
+	 * <p>Filter functions are functions that take one argument and return a
+	 * <code>Boolean</code> value. The input argument to a filter function
+	 * passes the filter if the function returns true and fails the
+	 * filter if the function returns false.</p>
 	 */
 	public class Filter
 	{
@@ -22,11 +24,21 @@ package flare.util
 		
 		/**
 		 * Convenience method that returns a filter function determined by the
-		 * input object. If the input is null or of type function, it is simply
-		 * returned. If the input is of type <code>Expression</code>, its
-		 * predicate function is returned. In any other case, an error is
-		 * thrown.
-		 * @param f the input object providing a filter
+		 * input object.
+		 * <ul>
+		 *  <li>If the input is null or a <code>Function</code>, it is simply
+		 *      returned.</li>
+		 *  <li>If the input is an <code>IPredicate</code>, its
+		 *      <code>predicate</code> function is returned.</li>
+		 *  <li>If the input is a <code>String</code>, a <code>Property</code>
+		 *      instance with the string as the property name is generated, and
+		 *      the <code>predicate</code> function of the property is
+		 *      returned.</li>
+		 *  <li>If the input is a <code>Class</code> instance, a function that
+		 *      performs type-checking for that class type is returned.</li>
+		 *  <li>In any other case, an error is thrown.</li>
+		 * </ul>
+		 * @param f an input object specifying the filter criteria
 		 * @return the filter function
 		 */
 		public static function $(f:*):Function
@@ -46,8 +58,8 @@ package flare.util
 		
 		/**
 		 * Returns a filter function that performs type-checking. 
-		 * @param type the class type to check for
-		 * @return a Boolean-valued type checking filter function
+		 * @param type the <code>Class</code> type to check for
+		 * @return a <code>Boolean</code>-valued type checking filter function
 		 */
 		public static function typeChecker(type:Class):Function
 		{

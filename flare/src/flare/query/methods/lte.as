@@ -3,7 +3,8 @@ package flare.query.methods
 	import flare.query.Comparison;
 
 	/**
-	 * Creates a new 'LessThanOrEqual' query operator
+	 * Creates a new less-than-or-equal <code>Comparison</code> query
+	 * operator.
 	 * @param a the left side argument. 
 	 *  This value can be an expression or a literal value.
 	 *  Literal values are parsed using the Expression.expr method.

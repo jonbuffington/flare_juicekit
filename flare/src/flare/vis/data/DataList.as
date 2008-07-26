@@ -20,11 +20,18 @@ package flare.vis.data
 	[Event(name="remove", type="flare.vis.events.DataEvent")]
 
 	/**
-	 * A list of nodes or edges maintained by a Data instance. Items contained
-	 * in this list can be accessed using array notation (<code>[]</code>),
-	 * iterated over using the <code>for each</code> construct, or can be
-	 * processed by passing a visitor function to the <code>visit</code>
-	 * method.
+	 * Data structure for a collection of <code>DataSprite</code> instances.
+	 * Items contained in this list can be accessed using array notation
+	 * (<code>[]</code>), iterated over using the <code>for each</code>
+	 * construct, or can be processed by passing a visitor function to the
+	 * <code>visit</code> method.
+	 * 
+	 * <p>Data lists provide methods for sorting elements both in a one-time
+	 * and persistent fashion, for setting the properties of contained
+	 * items in a batch-processing style (see the <code>setProperty</code>
+	 * and <code>setProperties</code> methods), and for computing and
+	 * caching summary statistics of data variables (see the
+	 * <code>stats</code> method.</p>
 	 * 
 	 * <p>Data lists also support listeners for add and remove events. These
 	 * events are fired <em>before</em> the add or remove is executed. These
@@ -318,7 +325,20 @@ package flare.vis.data
 		// -- Set Values ------------------------------------------------------
 		
 		/**
-		 * Sets a property value on all items in the list.
+		 * Sets a property value on all items in the list. The value can take
+		 *  a number of forms:
+		 * <ul>
+		 *  <li>If the value is a <code>Function</code>, it will be evaluated
+		 *      for each element and the result will be used as the property
+		 *      value for that element.</li>
+		 *  <li>If the value is an <code>IEvaluable</code> instance, such as
+		 *      <code>flare.util.Property</code> or
+		 *      <code>flare.query.Expression</code>, it will be evaluated for
+		 *      each element and the result will be used as the property value
+		 *      for that element.</li>
+		 *  <li>In all other cases, the property value will be treated as a
+		 *      literal and assigned for all elements.</li>
+		 * </ul>
 		 * @param name the name of the property
 		 * @param value the value of the property
 		 * @param t a transitioner or time span for updating object values. If
@@ -350,7 +370,20 @@ package flare.vis.data
 		}
 		
 		/**
-		 * Sets property values on all sprites in a given group.
+		 * Sets property values on all sprites in a given group. The values
+		 * within the <code>vals</code> argument can take a number of forms:
+		 * <ul>
+		 *  <li>If a value is a <code>Function</code>, it will be evaluated
+		 *      for each element and the result will be used as the property
+		 *      value for that element.</li>
+		 *  <li>If a value is an <code>IEvaluable</code> instance, such as
+		 *      <code>flare.util.Property</code> or
+		 *      <code>flare.query.Expression</code>, it will be evaluated for
+		 *      each element and the result will be used as the property value
+		 *      for that element.</li>
+		 *  <li>In all other cases, a property value will be treated as a
+		 *      literal and assigned for all elements.</li>
+		 * </ul>
 		 * @param vals an object containing the properties and values to set.
 		 * @param t a transitioner or time span for updating object values. If
 		 *  the input is a transitioner, it will be used to store the updated
@@ -390,6 +423,7 @@ package flare.vis.data
 		 * accept a <code>Transitioner</code> as its sole argument and then
 		 * executes the <code>setProperties</code> method. 
 		 * @param vals an object containing the properties and values to set.
+		 *  This is treated the same as the <code>setProperties</code> method.
 		 * @param filter an optional Boolean-valued filter function for
 		 * 	limiting which items are visited
 		 * @return a function that accepts a <code>Transitioner</code> argument

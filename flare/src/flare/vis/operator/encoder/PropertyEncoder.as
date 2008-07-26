@@ -7,14 +7,30 @@ package flare.vis.operator.encoder
 	import flare.vis.operator.Operator;
 
 	/**
+	 * Encodes property values for a collection of visual items.
 	 * A property encoder simply sets a group of properties to static
 	 * values for all data sprites. An input object determines which
 	 * properties to set and what their values are.
 	 * 
-	 * For example, a PropertyEncoder created with this call:
+	 * <p>For example, a <code>PropertyEncoder</code> created with this code:
 	 * <code>new PropertyEncoder({size:1, lineColor:0xff0000ff{);</code>
 	 * will set the size to 1 and the line color to blue for all
-	 * data sprites processed by the encoder.
+	 * data sprites processed by the encoder.</p>
+	 * 
+	 * <p>Property values can take a number of forms, as determined by
+	 * the <code>flare.vis.data.DataList.setProperties</code> method:
+	 * <ul>
+	 *  <li>If a value is a <code>Function</code>, it will be evaluated
+	 *      for each element and the result will be used as the property
+	 *      value for that element.</li>
+	 *  <li>If a value is an <code>IEvaluable</code> instance, such as
+	 *      <code>flare.util.Property</code> or
+	 *      <code>flare.query.Expression</code>, it will be evaluated for
+	 *      each element and the result will be used as the property value
+	 *      for that element.</li>
+	 *  <li>In all other cases, a property value will be treated as a
+	 *      literal and assigned for all elements.</li>
+	 * </ul></p>
 	 */
 	public class PropertyEncoder extends Operator
 	{

@@ -10,13 +10,17 @@ package flare.vis.operator.layout
 
 	/**
 	 * Layout that places nodes as circles compacted into a larger circle.
-	 * Circle sizes are determined by node's <code>size</code> property. It is
-	 * assumed that the sizes are set <i>before</i> this operator is run,
-	 * for example, by placing a <code>SizeEncoder</code> prior to this layout
-	 * in an operator list.
 	 * 
-	 * <p>NOTE: This operator will set a node's <code>renderer</code> and
-	 * <code>shape</code> properties, overriding any previous values.</p>
+	 * <p>Circle sizes are determined by a node's <code>size</code> property.
+	 * It is assumed that the sizes are set <i>before</i> this operator is run,
+	 * for example, by placing a <code>SizeEncoder</code> prior to this layout
+	 * in an operator list.</p>
+	 * 
+	 * <p>If the <code>treeLayout</code> property is <code>false</code>, all
+	 * nodes will be treated the same and the result will be a "bubble" chart.
+	 * If the <code>treeLayout<code> property is <code>true<code>, circles will
+	 * be nested inside each other according to the tree structure of the data.
+	 * </p>
 	 * 
 	 * <p>The results of this layout can vary dramatically based on the sort
 	 * order of the nodes. For example, sorting the nodes by the
@@ -24,6 +28,9 @@ package flare.vis.operator.layout
 	 * can result in much cleaner layouts. Use the <code>sort</code> property
 	 * of this class to set a preferred sorting routine. By default, this
 	 * operator will not perform any sorting.</p>
+	 * 
+	 * <p>NOTE: This operator will set a node's <code>renderer</code> and
+	 * <code>shape</code> properties, overriding any previous values.</p>
 	 * 
 	 * <p>The algorithm used to perform the circle packing is adapted from
 	 * W. Wang, H. Wang, G. Dai, and H. Wang's <a

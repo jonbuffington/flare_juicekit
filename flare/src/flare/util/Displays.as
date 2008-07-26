@@ -9,7 +9,8 @@ package flare.util
 	import flash.geom.Rectangle;
 	
 	/**
-	 * Utility class providing methods for working with display objects.
+	 * Utility methods for working with display objects. The methods include
+	 * support for generating thumbnail images and adding stage listeners.
 	 */
 	public class Displays
 	{

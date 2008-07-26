@@ -107,7 +107,7 @@ package flare.vis.controls
 		 * @param ic the control to place in the list
 		 * @return the control previously at the index
 		 */
-		public function setOperatorAt(i:uint, ic:IControl):IControl
+		public function setControlAt(i:uint, ic:IControl):IControl
 		{
 			var old:IControl = _list[i];
 			_list[i] = ic;
@@ -124,6 +124,17 @@ package flare.vis.controls
 		{
 			ic.attach(_vis);
 			_list.push(ic);
+		}
+		
+		/**
+		 * Adds a control at the specified index in the list.
+		 * @param ic the control to add
+		 * @param idx the index into the list
+		 */
+		public function addAt(ic:IControl, idx:int):void
+		{
+			ic.attach(_vis);
+			_list.splice(idx, 0, ic);
 		}
 		
 		/**

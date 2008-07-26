@@ -96,7 +96,7 @@ package flare.vis.operator.distortion
 				if (useSizeField) { o.size = 1; }
 				else { o.scaleX = 1; o.scaleY = 1; }
 			}
-			var bb:Rectangle = d.getBounds(d.parent);
+			var bb:Rectangle = _t.endBounds(d, d.parent);
 			
 			if (distortX) o.x = xDistort(o.x);
 			if (distortY) o.y = yDistort(o.y);

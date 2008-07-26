@@ -3,7 +3,9 @@ package flare.util
 	import flash.utils.ByteArray;
 	
 	/**
-	 * Utility methods for working with String instances.
+	 * Utility methods for working with String instances. The
+	 * <code>format</code> method provides a powerful mechanism for formatting
+	 * and templating strings.
 	 */
 	public class Strings
 	{	

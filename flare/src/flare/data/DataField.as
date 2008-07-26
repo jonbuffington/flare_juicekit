@@ -1,7 +1,7 @@
 package flare.data
 {
 	/**
-	 * Represents metadata for an individual data field.
+	 * A data field stores metadata for an individual data variable.
 	 */
 	public class DataField
 	{

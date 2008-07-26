@@ -6,7 +6,7 @@ package flare.vis.operator.layout
 	import flare.vis.data.NodeSprite;
 	
 	/**
-	 * Layout that places items in a dendrogram for displaying the results of a
+	 * Layout that places items in a dendrogram for displaying the results of
 	 * hierarchical clustering. This class computes a dendrogram layout and sets
 	 * edge control points to create "U" shaped dendrogram branches. It is
 	 * common, though by no means required, to hide the node instances in a

@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Query;
 	
 	/**
-	 * Create a new Query with the given filter expression.
+	 * Create a new <code>Query</code> with the given filter expression.
 	 * @param expr the filter expression
 	 * @return the created query.
 	 */

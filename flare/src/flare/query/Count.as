@@ -1,8 +1,7 @@
 package flare.query
 {
 	/**
-	 * Aggregate (group-by) operator for counting the number of items in a set
-	 * of values.
+	 * Aggregate operator for counting the number of items in a set of values.
 	 */
 	public class Count extends AggregateExpression
 	{

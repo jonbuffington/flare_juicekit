@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Variable;
 	
 	/**
-	 * Returns a new Variable expression for the given variable name.
+	 * Returns a new <code>Variable</code> operator for a given variable name.
 	 * @param name the variable name to use
 	 * @return the new Variable expression
 	 */

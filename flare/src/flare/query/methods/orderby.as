@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Query;
 	
 	/**
-	 * Create a new Query with the given sort criteria.
+	 * Create a new <code>Query</code> with the given sort criteria.
 	 * @param terms a list of sort criteria
 	 * @return the created query.
 	 */

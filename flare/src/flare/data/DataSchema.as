@@ -3,7 +3,7 @@ package flare.data
 	import flare.util.Arrays;
 	
 	/**
-	 * A DataSchema represents a set of data variables and their associated 
+	 * A data schema represents a set of data variables and their associated 
 	 * types. A schema maintains a collection of <code>DataField</code>
 	 * objects.
 	 * @see flare.data.DataField

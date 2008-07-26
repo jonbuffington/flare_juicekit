@@ -4,7 +4,7 @@ package flare.scale
 	import flare.util.Strings;
 	
 	/**
-	 * Scale that statistically organizes data into discrete bins by quantiles.
+	 * Scale that organizes data into discrete bins by quantiles.
 	 * For example, the quantile scale can be used to create a discrete size
 	 * encoding by statistically dividing the data into bins. Quantiles are
 	 * computed using the <code>flare.util.Maths.quantile</code> method.

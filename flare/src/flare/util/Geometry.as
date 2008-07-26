@@ -4,7 +4,7 @@ package flare.util
 	import flash.geom.Rectangle;
 	
 	/**
-	 * Utility class providing methods for computational geometry.
+	 * Utility methods for computational geometry.
 	 */
 	public final class Geometry
 	{		

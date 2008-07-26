@@ -10,12 +10,27 @@ package flare.vis.operator.layout
 	import flash.geom.Rectangle;
 	
 	/**
-	 * Layout that places items in a circle. The order in which items are
-	 * placed can be determined either by the sort order of the data container
-	 * or through a barycentric sorting technique for graph structures. The
-	 * barycentric sort attempts to sort items based on their connectivity to
-	 * other items; this often results in different graph clusters emerging
-	 * along the final sort order.
+	 * Layout that places items in a circular layout. This operator is quite
+	 * flexible and offers a number of layout options:
+	 * <ul>
+	 *  <li>By default, all items are arranged along the circumference of the
+	 *      circle using the sort order of the underlying data list.</li>
+	 *  <li>If a data field for either the radius or angle is provided, this
+	 *      layout will act as a radial scatter plot, using the data fields
+	 *      to determine the radius or angle values of the layout.</li>
+	 *  <li>If no data field is provided but the <code>treeLayout<code>
+	 *      property is set to <code>true</code>, the layout will use an
+	 *      underlying tree structure to layout the data. Leaf nodes will be
+	 *      placed along the circumference of the circle, but parent nodes will
+	 *      be placed in the interior. Also, the layout will add spacing to
+	 *      differentiate sibling groups along the circumference.</li>
+	 * <ul>
+	 * 
+	 * <p>The layout also supports mixes of the above modes. For example, if
+	 * <code>treeLayout</code> is set to <code>true</code> and a data field for
+	 * the radius is set, the angles in the layout will be determined as in
+	 * a normal ciruclar tree layout, but the radius values will be derived
+	 * using the data field.</p>
 	 */
 	public class CircleLayout extends Layout
 	{	

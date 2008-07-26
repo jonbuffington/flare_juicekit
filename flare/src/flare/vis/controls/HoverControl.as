@@ -44,6 +44,20 @@ package flare.vis.controls
 		private var _idx:int;
 		private var _movePolicy:int;
 		
+		/** The policy for moving items forward when highlighted.
+		 *  One of <code>DONT_MOVE</code>, <code>MOVE_TO_FRONT</code>, or
+		 *  <code>MOVE_AND_RETURN</code>. */
+		public function get movePolicy():int { return _movePolicy; }
+		public function set movePolicy(p:int):void {
+			if (p == _movePolicy) return;
+			if (_cur != null && p != MOVE_TO_FRONT &&
+				_movePolicy == MOVE_AND_RETURN)
+			{
+				_cur.parent.setChildIndex(_cur, _idx);
+			}
+			_movePolicy = p;
+		}
+		
 		// --------------------------------------------------------------------
 		
 		/**

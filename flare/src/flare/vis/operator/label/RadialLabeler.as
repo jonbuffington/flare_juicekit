@@ -8,8 +8,16 @@ package flare.vis.operator.label
 	import flash.text.TextFormat;
 
 	/**
-	 * Labeler that orients labels placed on a circle. Labels can be rotated
-	 * such that they align radially.
+	 * Labeler that positions labels around a circle in polar coordinates.
+	 * 
+	 * <p>If <code>rotateLabels</code> is set to <codetrue</code>, labels will
+	 * be rotated such that they align radially. That is, the will be aligned
+	 * along lines emanating out of the center of the circle. In this case, it
+	 * is recommend that each label's <code>textMode</code> property be set to
+	 * <code>TextSprite.EMBED</code> and that the appropriate fonts be
+	 * embedded in your application. Otherwise, the text labels may be
+	 * illegible due to rotation artifacts (for <code>BITMAP</code> labels) or
+	 * will disappear alltogether (for <code>DEVICE</code> labels).</p>
 	 */
 	public class RadialLabeler extends Labeler
 	{

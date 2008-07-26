@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.Count;
 	
 	/**
-	 * Creates a new 'Count' aggregate query expression.
+	 * Creates a new <code>Count</code> query operator.
 	 * @param expr the input expression
 	 * @return the new query operator
 	 */

@@ -3,7 +3,7 @@ package flare.query.methods
 	import flare.query.If;
 	
 	/**
-	 * Creates a new 'If' query operator
+	 * Creates a new <code>If</code> query operator.
 	 * @param test the if test expression. 
 	 *  This value can be an expression or a literal value.
 	 *  Literal values are parsed using the Expression.expr method.

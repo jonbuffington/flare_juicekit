@@ -46,7 +46,8 @@ package flare.vis.operator.layout
         	_maxDepth = 0;
         
         	var a:Point = layoutAnchor;
-        	_ax = a.x; _ay = a.y;
+        	_ax = a.x + layoutBounds.x;
+        	_ay = a.y + layoutBounds.y;
         
         	var root:NodeSprite = layoutRoot as NodeSprite;
         	if (root == null) return; // TODO: throw exception?

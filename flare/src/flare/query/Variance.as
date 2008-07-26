@@ -1,8 +1,7 @@
 package flare.query
 {
 	/**
-	 * Aggregate (group-by) operator for computing the variance or
-	 * standard deviation of a set of values.
+	 * Aggregate operator for computing variance or standard deviation.
 	 */
 	public class Variance extends AggregateExpression
 	{

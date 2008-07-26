@@ -5,8 +5,7 @@ package flare.scale
 	import mx.core.IMXMLObject;
 	
 	/**
-	 * Base class for all data scale classes that represent a range of
-	 * data values.
+	 * Base class for all data scale types.
 	 */
 	public class Scale implements IMXMLObject
 	{

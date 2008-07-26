@@ -3,7 +3,7 @@ package flare.query
 	import flash.utils.ByteArray;
 	
 	/**
-	 * Base class for expressions with an arbitrary number of sub-epxressions.
+	 * Base class for expressions with an arbitrary number of sub-expressions.
 	 */
 	public class CompositeExpression extends Expression
 	{

@@ -1,7 +1,7 @@
 package flare.query
 {	
 	/**
-	 * Expression instance for a literal value.
+	 * Expression operator for a literal value.
 	 */
 	public class Literal extends Expression
 	{

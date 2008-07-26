@@ -1,8 +1,7 @@
 package flare.query
 {
 	/**
-	 * Aggregate (group-by) operator for computing the sum of a set of
-	 * values.
+	 * Aggregate operator for computing the sum of a set of values.
 	 */
 	public class Sum extends AggregateExpression
 	{

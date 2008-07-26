@@ -1,8 +1,7 @@
 package flare.data
 {	
 	/**
-	 * A data set is a collection of one or more data tables that represent
-	 * a table or graph data structure.
+	 * A data set is a collection of data tables.
 	 */
 	public class DataSet
 	{
