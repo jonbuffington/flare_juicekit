@@ -3,13 +3,15 @@ package flare.tests
 	import flare.vis.data.Data;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
-	import flare.vis.util.Filters;
+	
 	import unitest.TestCase;
 	
 	public class DataTests extends TestCase
 	{
 		public function DataTests()
 		{
+			addTest("createNodesOnList");
+			addTest("createEdgesOnList");
 			addTest("createNodes");
 			addTest("createEdges");
 			addTest("containsNodes");
@@ -25,12 +27,48 @@ package flare.tests
 		private static const N:int = 100;
 		private var data:Data;
 		
+		public function createNodesOnList():void
+		{
+			data = new Data();
+			for (var i:uint=0; i<N; ++i) {
+				data.nodes.add(new NodeSprite());
+				assertEquals(data.nodes.length, i+1);
+			}
+			
+			var e:EdgeSprite = new EdgeSprite(data.nodes[0], data.nodes[1]);
+			assertNull(data.nodes.add(e));
+		}
+		
+		public function createEdgesOnList():void
+		{
+			data = new Data();
+			for (var i:uint=0; i<N; ++i) {
+				data.addNode({id:i});
+				assertEquals(data.nodes.length, i+1);
+					
+				if (i > 0) {
+					var s:NodeSprite = data.nodes[i-1];
+					var t:NodeSprite = data.nodes[i];
+					var e:EdgeSprite = new EdgeSprite(s, t);
+					data.edges.add(e);
+					assertEquals(data.edges.length, i);
+					assertEquals(e.source, s);
+					assertEquals(e.target, t);
+				}
+			}
+			
+			var n:NodeSprite = new NodeSprite();
+			e = new EdgeSprite(data.nodes[0], n);
+			assertNull(data.edges.add(e));
+			assertNull(data.edges.add(n));
+		}
+		
 		public function createNodes():void
 		{
 			data = new Data();
 			for (var i:uint=0; i<N; ++i) {
 				data.addNode({id:i});
-				assertEquals(data.nodes.size, i+1);
+				assertEquals(data.nodes.length, i+1);
 			}
 		}
 		
@@ -39,13 +77,13 @@ package flare.tests
 			data = new Data();
 			for (var i:uint=0; i<N; ++i) {
 				data.addNode({id:i});
-				assertEquals(data.nodes.size, i+1);
+				assertEquals(data.nodes.length, i+1);
 					
 				if (i > 0) {
 					var s:NodeSprite = data.nodes[i-1];
 					var t:NodeSprite = data.nodes[i];
 					var e:EdgeSprite = data.addEdgeFor(s, t);
-					assertEquals(data.edges.size, i);
+					assertEquals(data.edges.length, i);
 					assertEquals(e.source, s);
 					assertEquals(e.target, t);
 				}
@@ -71,14 +109,14 @@ package flare.tests
 				prev = curr;
 			}
 			
-			for (i=0; i<data.nodes.size; ++i) {
+			for (i=0; i<data.nodes.length; ++i) {
 				curr = data.nodes[i];
 				assertEquals(_x, curr.x);
 				assertEquals(_y, curr.y);
 				assertEquals(_t, curr.props.temp);
 				assertEquals(_na, curr.alpha);
 			}
-			for (i=0; i<data.edges.size; ++i) {
+			for (i=0; i<data.edges.length; ++i) {
 				var e:EdgeSprite = data.edges[i];
 				assertEquals(_lw, e.lineWidth);
 				assertEquals(_ea, e.alpha);
@@ -109,7 +147,7 @@ package flare.tests
 		public function containsEdges():void
 		{
 			createEdges();
-			for (var i:uint=0; i<data.edges.size; ++i) {
+			for (var i:uint=0; i<data.edges.length; ++i) {
 				assertTrue(data.contains(data.edges[i]));
 				assertTrue(data.edges.contains(data.edges[i]));
 			}
@@ -127,24 +165,39 @@ package flare.tests
 			for (var i:uint=N; --i>=0;) {
 				n = data.nodes[i];
 				data.removeNode(n);
-				assertEquals(i, data.nodes.size);
+				assertEquals(i, data.nodes.length);
 				assertFalse(data.nodes.contains(n));
 			}
 			
 			createNodes(); i=N;
 			data.nodes.visit(function(n:NodeSprite):void {
 				data.removeNode(n); --i;
-				assertEquals(data.nodes.size, i);
+				assertEquals(data.nodes.length, i);
 			});
 			assertEquals(0, i);
 			
 			createEdges(); i=N;
 			data.nodes.visit(function(n:NodeSprite):void {
 				data.removeNode(n); --i;
-				assertEquals(data.nodes.size, i);
+				assertEquals(data.nodes.length, i);
 			});
 			assertEquals(0, i);
-			assertEquals(0, data.edges.size);
+			assertEquals(0, data.edges.length);
+			
+			createNodes(); i=N;
+			data.nodes.visit(function(n:NodeSprite):void {
+				data.nodes.remove(n); --i;
+				assertEquals(data.nodes.length, i);
+			});
+			assertEquals(0, i);
+			
+			createEdges(); i=N;
+			data.nodes.visit(function(n:NodeSprite):void {
+				data.nodes.remove(n); --i;
+				assertEquals(data.nodes.length, i);
+			});
+			assertEquals(0, i);
+			assertEquals(0, data.edges.length);
 		}
 		
 		public function removeEdges():void
@@ -155,19 +208,28 @@ package flare.tests
 			for (var i:uint=N-1; --i>=0;) {
 				e = data.edges[i];
 				data.removeEdge(e);
-				assertEquals(i, data.edges.size);
+				assertEquals(i, data.edges.length);
 				assertFalse(data.edges.contains(e));
 			}
-			assertEquals(N, data.nodes.size);
+			assertEquals(N, data.nodes.length);
 			
 			createEdges(); i=N-1;
 			data.edges.visit(function(e:EdgeSprite):void {
 				data.removeEdge(e); --i;
-				assertEquals(data.edges.size, i);
+				assertEquals(data.edges.length, i);
 			});
 			assertEquals(0, i);
-			assertEquals(0, data.edges.size);
-			assertEquals(N, data.nodes.size);
+			assertEquals(0, data.edges.length);
+			assertEquals(N, data.nodes.length);
+			
+			createEdges(); i=N-1;
+			data.edges.visit(function(e:EdgeSprite):void {
+				data.edges.remove(e); --i;
+				assertEquals(data.edges.length, i);
+			});
+			assertEquals(0, i);
+			assertEquals(0, data.edges.length);
+			assertEquals(N, data.nodes.length);
 		}
 		
 		public function visit():void
@@ -184,17 +246,17 @@ package flare.tests
 			
 			// visit nodes, count filtered on id
 			data.nodes.visit(counter, false, id10);
-			assertEquals(data.nodes.size-10, count);
+			assertEquals(data.nodes.length-10, count);
 			
 			// visit all, count nodes only
 			count = 0;
-			data.visit(counter, null, false, Filters.isNodeSprite);
-			assertEquals(data.nodes.size, count);
+			data.visit(counter, null, false, NodeSprite);
+			assertEquals(data.nodes.length, count);
 			
 			// visit all, count edges only
 			count = 0;
-			data.visit(counter, null, false, Filters.isEdgeSprite);
-			assertEquals(data.edges.size, count);
+			data.visit(counter, null, false, EdgeSprite);
+			assertEquals(data.edges.length, count);
 		}
 		
 	} // end of class DataTests

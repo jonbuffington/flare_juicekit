@@ -282,7 +282,7 @@ package flare.tests
 			r = q.eval(data);
 			assertEquals(6, r.length);
 			
-			r = q.orderby("cat", false).eval(data);
+			r = q.orderby("-cat").eval(data);
 			assertEquals(6, r.length);
 			assertEquals("b", r[0].cat);
 			assertEquals("a", r[5].cat);
@@ -300,7 +300,7 @@ package flare.tests
 	 			{cat:"d", val:7}, {cat:"d", val:8}
 	 		];
 	 
-	 		r = orderby("cat", true, "val", false).eval(data);
+	 		r = orderby("cat", "-val").eval(data);
 	 		assertEquals(8, r.length);
 	 		assertEquals(2, r[0].val); assertEquals(1, r[1].val); 
 	 		assertEquals(4, r[2].val); assertEquals(3, r[3].val); 

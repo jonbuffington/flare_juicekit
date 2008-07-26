@@ -30,32 +30,32 @@ package flare.tests
 				{
 				 items:[a, b, c, d, e, f, g, h],
 				 check:[h, g, f, e, d, c, b, a],
-				 sort: Sort.sortOn("x", false)
+				 sort: Sort.$("-x")
 				},
 				{
 				 items:[a, b, c, d, e, f, g, h],
 				 check:[g, h, e, f, c, d, a, b],
-				 sort: Sort.sortOn("y", false)
+				 sort: Sort.$("-y")
 				},
 				{
 				 items:[a, b, c, d, e, f, g, h],
 				 check:[e, f, g, h, a, b, c, d],
-				 sort: Sort.sorter(["z", false, "x", true])
+				 sort: Sort.$("-z", "+x")
 				},
 				{
 				 items:[a, b, c, d, e, f, g, h],
 				 check:[b, a, d, c, f, e, h, g],
-				 sort: Sort.sorter(["y", "x", false])
+				 sort: Sort.$("y", "-x")
 				},
 				{
 				 items:[a, b, c, d, e, f, g, h],
 				 check:[a, b, c, d, e, f, g, h],
-				 sort: Sort.sorter(["z", "y", "x"])
+				 sort: Sort.$("z", "y", "x")
 				},
 				{
 				 items:[a, b, c, d, e, f, g, h],
 				 check:[g, h, e, f, c, d, a, b],
-				 sort: Sort.sorter(["z", false, "y", false, "x"])
+				 sort: Sort.$(["-z", "-y", "x"])
 				},
 			];
 			
@@ -82,17 +82,17 @@ package flare.tests
 				{
 				 items:[sa, sb, sc, sd, se, sf, sg, sh],
 				 check:[sh, sg, sf, se, sd, sc, sb, sa],
-				 sort: Sort.sortOn("x", false)
+				 sort: Sort.$("-x")
 				},
 				{
 				 items:[sa, sb, sc, sd, se, sf, sg, sh],
 				 check:[sg, sh, se, sf, sc, sd, sa, sb],
-				 sort: Sort.sortOn("y", false)
+				 sort: Sort.$("-y")
 				},
 				{
 				 items:[sa, sb, sc, sd, se, sf, sg, sh],
 				 check:[sb, sa, sd, sc, sf, se, sh, sg],
-				 sort: Sort.sorter(["y", "x", false])
+				 sort: Sort.$("y", "-x")
 				}
 			];
 			

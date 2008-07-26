@@ -98,8 +98,8 @@ package flare.tests
 			
 			// finally, do a test of data construction
 			var d:Data = Data.fromDataSet(data);
-			assertEquals(data.nodes.data.length, d.nodes.size);
-			assertEquals(data.edges.data.length, d.edges.size);
+			assertEquals(data.nodes.data.length, d.nodes.length);
+			assertEquals(data.edges.data.length, d.edges.length);
 		}
 		
 		private static const GRAPHML:XML =
