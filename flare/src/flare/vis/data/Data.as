@@ -266,18 +266,26 @@ package flare.vis.data
 		 * with the same group are sequentially connected to each other in
 		 * sorted order by new edges. This method is useful for generating
 		 * line charts from a plot of nodes.
+		 * <p>If an edge already exists between nodes, by default this method
+		 * will not add a new edge. Use the <code>ignoreExistingEdges</code>
+		 * argument to change this behavior. </p>
+		 * 
 		 * @param sortBy the criteria for sorting the nodes, using the format
 		 *  of <code>flare.util.Sort</code>. The input can either be a string
-		 *  with a single property name, or an array of property names, with
-		 *  optional boolean sort order parameters (true for ascending, false
-		 *  for descending) following each name.
+		 *  with a single property name, or an array of property names.  Items
+		 *  are sorted in ascending order by default, prefix a property name
+		 *  with a "-" (minus) character to sort in descending order.
 		 * @param groupBy the criteria for grouping the nodes, using the format
 		 *  of <code>flare.util.Sort</code>. The input can either be a string
-		 *  with a single property name, or an array of property names, with
-		 *  optional boolean sort order parameters (true for ascending, false
-		 *  for descending) following each name.
+		 *  with a single property name, or an array of property names. Items
+		 *  are sorted in ascending order by default, prefix a property name
+		 *  with a "-" (minus) character to sort in descending order.
+		 * @param ignoreExistingEdges if false (the default), this method will
+		 *  not create a new edge if one already exists between two nodes. If
+		 *  true, new edges will be created regardless.
 		 */
-		public function createEdges(sortBy:*=null, groupBy:*=null):void
+		public function createEdges(sortBy:*=null, groupBy:*=null,
+			ignoreExistingEdges:Boolean=false):void
 		{
 			// create arrays and sort criteria
 			var a:Array = Arrays.copy(_nodes.list);
@@ -306,6 +314,8 @@ package flare.vis.data
 			// connect all items who match on the last group by field
 			for (i=1; i<a.length; ++i) {
 				if (!f || f.getValue(a[i-1]) == f.getValue(a[i])) {
+					if (!ignoreExistingEdges && a[i].isConnected(a[i-1]))
+						continue;
 					var e:EdgeSprite = addEdgeFor(a[i-1], a[i], directedEdges);
 					// add data values from nodes
 					for (var j:uint=0; j<p.length; ++j) {
