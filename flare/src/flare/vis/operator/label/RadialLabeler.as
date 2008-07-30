@@ -50,7 +50,7 @@ package flare.vis.operator.label
 		 *  separate label layer) or CHILD (for adding labels as children of
 		 *  data objects)
 		 */
-		public function RadialLabeler(source:*, rotate:Boolean=false,
+		public function RadialLabeler(source:*=null, rotate:Boolean=false,
 			format:TextFormat=null, filter:*=null, policy:String=CHILD)
 		{
 			super(source, Data.NODES, format, filter, policy);

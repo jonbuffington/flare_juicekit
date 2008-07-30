@@ -39,6 +39,14 @@ package flare.vis.operator.layout
 		
 		private var _scale:QuantitativeScale = new LinearScale(0,0,10,true);
 		
+		/** Array containing the column names. */
+		public function get columns():Array { return _columns; }
+		public function set columns(cols:Array):void {
+			_columns = Arrays.copy(cols);
+			_peaks = new Array(cols.length);
+			_poly = new Array(cols.length);
+		}
+		
 		/** Flag indicating if the visualization should be normalized. */		
 		public function get normalize():Boolean { return _normalize; }
 		public function set normalize(b:Boolean):void { _normalize = b; }
@@ -77,14 +85,19 @@ package flare.vis.operator.layout
 		/**
 		 * Creates a new StackedAreaLayout.
 		 * @param cols an ordered array of properties for the column values
+		 * @param padding percentage of space to leave as a padding margin
+		 *  for the stacked chart
 		 */		
-		public function StackedAreaLayout(cols:Array, padding:Number=0.05) {
+		public function StackedAreaLayout(cols:Array=null, padding:Number=0.05)
+		{
+			if(cols != null){
+				_columns =  Arrays.copy(cols);
+				_peaks = new Array(cols.length);
+				_poly = new Array(cols.length);
+			}
 			layoutType = CARTESIAN;
 			
 			this.padding = padding;
-			_columns = Arrays.copy(cols);
-			_peaks = new Array(cols.length);
-			_poly = new Array(4*cols.length);
 		}
 		
 		/** @inheritDoc */
@@ -204,7 +217,7 @@ package flare.vis.operator.layout
 	            
 	            // update data sprite layout
 	            obj.x = 0; obj.y = 0;
-	            if (_t.immediate || !d.visible) {
+	            if (_t.immediate) {
 	            	d.points = Arrays.copy(_poly, d.points);
 	            } else {
 	            	obj.points = Arrays.copy(_poly, d.props.poly);

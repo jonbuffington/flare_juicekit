@@ -72,13 +72,13 @@ package flare.vis.operator.encoder
 		 * @param filter a filter function controlling which items are encoded
 		 */		
 		public function Encoder(source:String=null, target:String=null,
-							group:String=Data.NODES, filter:Function=null)
+							group:String=Data.NODES, filter:*=null)
 		{
 			_binding = new ScaleBinding();
 			_binding.property = source;
 			_binding.group = group;
 			_target = target;
-			_filter = filter;
+			this.filter = filter;
 		}
 		
 		/** @inheritDoc */

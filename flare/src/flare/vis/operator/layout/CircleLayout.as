@@ -103,6 +103,12 @@ package flare.vis.operator.layout
 				
 		/**
 		 * Creates a new CircleLayout.
+		 * @param radiusField optional data field to encode as radius length
+		 * @param angleField optional data field to encode as angle
+		 * @param treeLayout boolean flag indicating if any tree-structure in
+		 *  the data should be used to inform the layout
+		 * @param group the data group to process. If tree layout is set to
+		 *  true, this value may get ignored.
 		 */
 		public function CircleLayout(
 			radiusField:String=null, angleField:String=null,

@@ -64,6 +64,13 @@ package flare.flex
 		public function get visualization():Visualization {
 			return _vis;
 		}
+		public function set visualization(v:Visualization):void{
+			if (rawChildren.contains(_vis))
+				rawChildren.removeChild(_vis);
+			_vis = v;
+			rawChildren.addChild(_vis);
+			_vis.x = _margin;
+		}
 		
 		public function get visWidth():Number { return _vis.bounds.width; }
 		public function set visWidth(w:Number):void {

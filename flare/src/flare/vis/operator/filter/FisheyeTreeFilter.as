@@ -45,7 +45,8 @@ package flare.vis.operator.filter
 		 *  these nodes or their ancestors up to the root.
 		 * @param distance graph distance within which items will be visible
 		 */		
-		public function FisheyeTreeFilter(focusNodes:Array, distance:int=1) {
+		public function FisheyeTreeFilter(focusNodes:Array=null,distance:int=1)
+		{
 			this.focusNodes = focusNodes;
 			this.distance = distance;
 		}

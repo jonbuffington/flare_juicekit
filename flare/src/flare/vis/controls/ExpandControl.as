@@ -21,9 +21,7 @@ package flare.vis.controls
 		 *  visualization with a 1-second transitioner. */
 		public var update:Function = function():void {
 			var vis:Visualization = _object as Visualization;
-			if (vis) {
-				vis.update(new Transitioner(1,null,true)).play();
-			}
+			if (vis) vis.update(1).play();
 		}
 		
 		// --------------------------------------------------------------------

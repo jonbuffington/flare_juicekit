@@ -11,6 +11,7 @@ package flare.vis.legend
 	import flare.vis.operator.encoder.Encoder;
 	import flare.vis.operator.encoder.ShapeEncoder;
 	import flare.vis.operator.encoder.SizeEncoder;
+	import flare.vis.operator.layout.Orientation;
 	import flare.vis.palette.ColorPalette;
 	import flare.vis.palette.ShapePalette;
 	import flare.vis.palette.SizePalette;
@@ -26,15 +27,6 @@ package flare.vis.legend
 	 */
 	public class Legend extends Sprite
 	{
-		/** Constant indicating a left-to-right orientation */
-		public static const LEFT_TO_RIGHT:uint = 0;
-		/** Constant indicating a right-to-left orientation */
-		public static const RIGHT_TO_LEFT:uint = 1;
-		/** Constant indicating a top-to-bottom orientation */
-		public static const TOP_TO_BOTTOM:uint = 2;
-		/** Constant indicating a bottom-to-top orientation */
-		public static const BOTTOM_TO_TOP:uint = 3;
-
 		/** The layout bounds for this legend instance. */
 		protected var _bounds:Rectangle = new Rectangle(0, 0, 200, 500);
 		/** The data field this legend describes. */
@@ -62,14 +54,16 @@ package flare.vis.legend
 		protected var _sizes:SizePalette;
 		
 		/** Flag indicating the desired orientation of this legend. */
-		protected var _orient:int = TOP_TO_BOTTOM;
+		protected var _orient:String = Orientation.TOP_TO_BOTTOM;
 		/** Margin spacing value. */
 		protected var _margin:Number = 2;
 		
 		/** Label formatting string for legend items. */
 		protected var _labelFormat:String = null;
 		/** TextFormat (font, size, style) of legend item labels. */
-		protected var _labelTextFormat:TextFormat = new TextFormat("Arial",12,0);
+		protected var _labelTextFormat:TextFormat = new TextFormat("Arial",12,0);	
+		/** Label text mode. */
+		protected var _labelTextMode:int = TextSprite.BITMAP;
 	
 		/** The calculated internal width of the legend. */
 		protected var _iw:Number;
@@ -123,9 +117,9 @@ package flare.vis.legend
 		public function get sizePalette():SizePalette { return _sizes; }
 		public function set sizePalette(sp:SizePalette):void { _sizes = sp; }
 		
-		/** Flag indicating the desired orientation of this legend. */
-		public function get orientation():int { return _orient; }
-		public function set orientation(o:int):void { _orient = o; }
+		/** The desired orientation of this legend. */
+		public function get orientation():String { return _orient; }
+		public function set orientation(o:String):void { _orient = o; }
 
 		/** Margin spacing value. */		
 		public function get margin():Number { return _margin; }
@@ -144,6 +138,12 @@ package flare.vis.legend
 		}
 		public function set labelFormat(fmt:String):void {
 			_labelFormat = "{0:"+fmt+"}"; updateItems();
+		}
+		
+		/** Label text mode. */
+		public function get labelTextMode():int { return _labelTextMode; }
+		public function set labelTextMode(mode:int):void {
+			_labelTextMode = mode; updateItems();
 		}
 		
 		// -- Initialization --------------------------------------------------
@@ -234,7 +234,7 @@ package flare.vis.legend
 		 */
 		protected function layout(trans:Transitioner) : void
 		{
-			var vert:Boolean = _orient==TOP_TO_BOTTOM || _orient==BOTTOM_TO_TOP;
+			var vert:Boolean = Orientation.isVertical(_orient);
 			var o:Object;
 			var b:Rectangle = layoutBounds;
 			var x:Number = 0, y:Number = 0, th:Number = 0;
@@ -287,7 +287,7 @@ package flare.vis.legend
 		 */
 		protected function layoutItemsDiscrete(trans:Transitioner):void
 		{
-			var vert:Boolean = _orient==TOP_TO_BOTTOM || _orient==BOTTOM_TO_TOP;
+			var vert:Boolean = Orientation.isVertical(_orient);
 			var x:Number = 0;
 			var y:Number = 0;
 			var item:LegendItem;
@@ -336,7 +336,8 @@ package flare.vis.legend
 		 */
 		protected function updateItem(item:LegendItem) : void
 		{
-			item.label.textFormat = _labelTextFormat;
+			item.label.textMode = _labelTextMode;
+			item.label.applyFormat(_labelTextFormat);
 			/*
 			label.text = _labelFormat==null ? label.value.toString()
 					   : Strings.format(_labelFormat, label.value);

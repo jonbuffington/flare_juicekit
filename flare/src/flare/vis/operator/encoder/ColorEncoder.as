@@ -34,9 +34,9 @@ package flare.vis.operator.encoder
 		 * @param palette the color palette to use. If null, a default color
 		 *  ramp will be used
 		 */
-		public function ColorEncoder(source:String=null, group:String=Data.NODES,
-			target:String="lineColor", scaleType:String="linear",
-			palette:ColorPalette=null)
+		public function ColorEncoder(source:String=null,
+			group:String=Data.NODES, target:String="lineColor",
+			scaleType:String="linear", palette:ColorPalette=null)
 		{
 			super(source, target, group);
 			_binding.scaleType = scaleType;

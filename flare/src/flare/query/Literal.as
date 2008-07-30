@@ -14,6 +14,7 @@ package flare.query
 		
 		/** The literal value of this expression. */
 		public function get value():Object { return _value; }
+		public function set value(val:Object):void { _value = val; }
 		
 		/**
 		 * Creates a new Literal instance.

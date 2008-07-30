@@ -42,6 +42,7 @@ package flare.vis.operator.layout
 			this.removeSharedAncestor = removeSharedAncestor;
 		}
 		
+		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
 			t = (t==null ? Transitioner.DEFAULT : t);

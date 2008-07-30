@@ -33,8 +33,8 @@ package flare.vis.operator.encoder
 		 * @param group the data group to process
 		 * @param palette the shape palette for assigning shapes
 		 */
-		public function ShapeEncoder(field:String=null, group:String=Data.NODES,
-			palette:ShapePalette=null)
+		public function ShapeEncoder(field:String=null,
+			group:String=Data.NODES, palette:ShapePalette=null)
 		{
 			super(field, "shape", group);
 			_binding.scaleType = ScaleType.CATEGORIES;

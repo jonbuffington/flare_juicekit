@@ -138,7 +138,7 @@ package flare.query
 		
 		public static function substring(s:String, pos:int, len:int=-1):String
 		{
-			return len>=0 ? s.substr(pos) : s.substr(pos, len);
+			return len<0 ? s.substr(pos) : s.substr(pos, len);
 		}
 		
 		public static function upper(s:String):String
@@ -153,8 +153,13 @@ package flare.query
 		
 		public static function endsWith(s:String, p:String):Boolean
 		{
-			var idx:int = s.indexOf(p);
-			return (idx > 0 && idx == (s.length - p.length));
+			var diff:int = s.length - p.length;
+			if (diff < 0) return false;
+			for (var i:uint=0; i<p.length; ++i) {
+				if (s.charCodeAt(i+diff) != p.charCodeAt(i))
+					return false;
+			}
+			return true;
 		}
 
 	} // end of class StringUtil

@@ -156,7 +156,8 @@ package flare.vis.operator.layout
 			});
 		}
 		
-		private function rescale():void {
+		/** @private */
+		protected function rescale():void {
 			var xmap:Object = _xStacks ? new Object() : null;
 			var ymap:Object = _yStacks ? new Object() : null;
 			var xmax:Number = 0;

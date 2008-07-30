@@ -29,7 +29,7 @@ package flare.vis.operator.encoder
 		 * @param source the source property
 		 * @param group the data group to process
 		 */
-		public function SizeEncoder(source:String=null, group:String=Data.NODES)
+		public function SizeEncoder(source:String=null,group:String=Data.NODES)
 		{
 			super(source, "size", group);
 			_binding.scaleType = ScaleType.QUANTILE;

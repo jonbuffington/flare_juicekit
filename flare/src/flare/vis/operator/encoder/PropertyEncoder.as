@@ -76,12 +76,12 @@ package flare.vis.operator.encoder
 		 *  immediately rather than being processed by any transitioners
 		 */		
 		public function PropertyEncoder(values:Object=null,
-			group:String=Data.NODES, filter:Function=null,
+			group:String=Data.NODES, filter:*=null,
 			ignoreTransitioner:Boolean=false)
 		{
 			_values = values==null ? {} : values;
 			_group = group;
-			_filter = filter;
+			this.filter = filter;
 			_ignoreTrans = ignoreTransitioner;
 		}
 		

@@ -48,8 +48,8 @@ package flare.query
 		 * @param right the right-hand-side sub-expression to compare
 		 * @param comparator a function to use for comparison (null by default)
 		 */
-		public function Comparison(op:int, left:*,
-			right:*, comparator:Function=null)
+		public function Comparison(op:int=2, left:*="",
+			right:*="", comparator:Function=null)
 		{
 			super(op, LT, GTEQ, left, right);
 			_cmp = comparator;

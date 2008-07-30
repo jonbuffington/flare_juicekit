@@ -9,7 +9,8 @@ package flare.query
 	 */
 	public class Variable extends Expression
 	{
-		private var _prop:Property;
+		/** @private */
+		protected var _prop:Property;
 		
 		/** The name of the variable property. */
 		public function get name():String { return _prop.name; }

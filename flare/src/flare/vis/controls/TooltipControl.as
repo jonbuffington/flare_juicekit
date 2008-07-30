@@ -131,21 +131,21 @@ package flare.vis.controls
 			tip.y = s.mouseY + yOffset;
 			
 			var b:Rectangle = tipBounds ? tipBounds : getStageBounds(s);
-			var r:Rectangle = tip.getRect(s);
+			var r:Rectangle = tip.getBounds(s);
 			
 			if (r.width > b.width) {
 				tip.x = b.left;
-			} else if (r.left < b.left) {
-				tip.x += (b.left - r.left) + 5;
-			} else if (r.right > b.right) {
-				tip.x -= (r.right - b.right) + 5;
+			} else if (r.left < b.left + 5) {
+				tip.x = s.mouseX + xOffset;
+			} else if (r.right > b.right - 5) {
+				tip.x = s.mouseX - 2 - r.width;
 			}
 			if (r.height > b.height) {
 				tip.y = b.top;
-			} if (r.top < b.top) {
-				tip.y += (b.top - r.top) + 5;
-			} else if (r.bottom > b.bottom) {
-				tip.y -= (r.bottom - b.bottom) + 5;
+			} if (r.top < b.top + 5) {
+				tip.y = s.mouseY - yOffset;
+			} else if (r.bottom > b.bottom - 5) {
+				tip.y = s.mouseY - 7 - r.height;
 			}
 		}
 		

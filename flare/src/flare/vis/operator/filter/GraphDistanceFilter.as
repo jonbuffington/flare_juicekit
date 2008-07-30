@@ -1,12 +1,12 @@
 package flare.vis.operator.filter
 {
-	import flare.vis.operator.Operator;
 	import flare.animate.Transitioner;
-	import flare.vis.data.NodeSprite;
-	import flash.utils.Dictionary;
-	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.DataSprite;
-	import flare.vis.data.Data;
+	import flare.vis.data.EdgeSprite;
+	import flare.vis.data.NodeSprite;
+	import flare.vis.operator.Operator;
+	
+	import flash.utils.Dictionary;
 
 	/**
 	 * Filter operator that sets visible all items within a specified graph
@@ -29,8 +29,8 @@ package flare.vis.operator.filter
 		 * @param links flag indicating which graph links to traverse. The
 		 *  default value is <code>NodeSprite.GRAPH_LINKS</code>.
 		 */		
-		public function GraphDistanceFilter(focusNodes:Array, distance:int=1,
-			links:int=3/*NodeSprite.GRAPH_LINKS*/)
+		public function GraphDistanceFilter(focusNodes:Array=null,
+			distance:int=1, links:int=3/*NodeSprite.GRAPH_LINKS*/)
 		{
 			this.focusNodes = focusNodes;
 			this.distance = distance;
@@ -56,7 +56,15 @@ package flare.vis.operator.filter
 			var xe:EdgeSprite, xn:NodeSprite, d:int;
 			while (q.length > 0) {
 				xe = q.shift(); d = depths[xe];
-				xn = (depths[xe.source] == undefined ? xe.source : xe.target);
+				// -- fix to bug 1924891 by goosebumps4all
+				if (depths[xe.source] == undefined) {
+					xn = xe.source;
+				} else if (depths[xe.target] == undefined) {
+					xn = xe.target;
+				} else {
+					continue;
+				}
+				// -- end fix
 				depths[xn] = d;
 				if (d == distance) continue; // stop traversal at max distance
 				

@@ -53,11 +53,14 @@ package flare.vis.operator.filter
 		 * @param predicate the predicate function for filtering items. This
 		 *  should be a Boolean-valued function that returns true for items
 		 *  that pass the filtering criteria and false for those that do not.
-		 * @param which flag indicating which data group (NODES, EDGES, or ALL)
-		 *  should be processed by this filter.
+		 * @param group the data group to process.
+		 * @param filter a Boolean-valued filter function that determines which
+		 *  items are considered by this visibility filter. Only tems that pass
+		 *  this filter will then have their visibility value set according
+		 *  to the <code>predicate</code> argument.
 		 */
-		public function VisibilityFilter(predicate:Function,
-						group:String=Data.NODES, filter:Function=null)
+		public function VisibilityFilter(predicate:Function=null,
+						group:String=Data.NODES, filter:*=null)
 		{
 			this.predicate = predicate;
 			this.group = group;

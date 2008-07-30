@@ -2,8 +2,8 @@ package flare.vis.operator.label
 {
 	import flare.animate.Transitioner;
 	import flare.display.TextSprite;
-	import flare.query.Expression;
 	import flare.util.Filter;
+	import flare.util.IEvaluable;
 	import flare.util.Property;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
@@ -132,17 +132,17 @@ package flare.vis.operator.label
 		 *  separate label layer) or CHILD (for adding labels as children of
 		 *  data objects)
 		 */
-		public function Labeler(source:*, group:String=Data.NODES,
+		public function Labeler(source:*=null, group:String=Data.NODES,
 			format:TextFormat=null, filter:*=null, policy:String=CHILD)
 		{
 			if (source is String) {
 				_source = Property.$(source);
 			} else if (source is Property) {
-				_source = source;
+				_source = Property(source);
+			} else if (source is IEvaluable) {
+				textFunction = IEvaluable(source).eval;
 			} else if (source is Function) {
 				textFunction = source;
-			} else if (source is Expression) {
-				textFunction = source.eval;
 			}
 			_group = group;
 			textFormat = format ? format : new TextFormat("Arial",12);

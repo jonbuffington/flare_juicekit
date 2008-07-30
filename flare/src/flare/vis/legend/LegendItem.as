@@ -137,11 +137,12 @@ package flare.vis.legend
 				draw(g, size);
 			} else {
 				g.beginFill(_color);
-				g.lineStyle(1, 0xcccccc);
-				Shapes.drawSquare(g, size);
+				Shapes.drawCircle(g, size);
 				g.endFill();
 			}
 			
+			this._w = 3*_margin + _iconSize + _label.width;
+			this._h = 2*_margin + _iconSize;
 			super.render();
 		}
 		

@@ -3,7 +3,6 @@ package flare.vis.operator.layout
 	import flare.util.Arrays;
 	import flare.vis.data.NodeSprite;
 	
-	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	/**
@@ -124,12 +123,14 @@ package flare.vis.operator.layout
 	        	doLayout(n, _radiusInc, _theta1, _theta2);
 	        } else if (n.childDegree > 0) {
 	        	n.visitTreeDepthFirst(function(n:NodeSprite):void {
-            		_t.$(n).radius = 0;
-            		_t.$(n).alpha = 0;
-            		_t.$(n).mouseEnabled = false;
-            		if (n.parentEdge != null) {
-            			_t.$(n.parentEdge).alpha = 0;
-            		}
+	        		n.origin = _anchor;
+	        		var o:Object = _t.$(n);
+	        		// collapse to inner radius
+					o.radius = o.h = o.v = _radiusInc / 2;
+					o.alpha = 0;
+					o.mouseEnabled = false;
+					if (n.parentEdge != null)
+						_t.$(n.parentEdge).alpha = false;
             	});
 	        }
 	        
@@ -318,8 +319,12 @@ package flare.vis.operator.layout
 			var o:Object = _t.$(n), alpha:Number = v ? 1 : 0;
 			o.radius = r;
 			o.angle = a;
-			o.h = r + _radiusInc/2;
-			o.v = r - _radiusInc/2;
+			if (aw == 0) {
+				o.h = o.v = r - _radiusInc/2;
+			} else {
+				o.h = r + _radiusInc/2;
+				o.v = r - _radiusInc/2;
+			}
 			o.w = aw;
 			o.u = a - aw/2;
 			o.alpha = alpha;
