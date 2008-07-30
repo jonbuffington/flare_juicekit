@@ -24,7 +24,7 @@ package {
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 
-	[SWF(backgroundColor="#ffffff", frameRate="30")]
+	[SWF(width="1000",height="700",backgroundColor="#ffffff", frameRate="30")]
 	public class demos extends Sprite
 	{
 		private var _demos:Array;

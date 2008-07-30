@@ -37,11 +37,8 @@ package flare.tests
 			var s:String = "a";
 			assertTrue(_(s) is Literal);
 			assertEquals("a", _(s).eval());
-			assertTrue($(s) is Variable);
-			assertEquals("a", $(s).name);
 			assertTrue(Expression.expr(s) is Variable);
 			assertTrue(Expression.expr(_(s)) is Literal);
-			assertTrue(Expression.expr($(s)) is Variable);
 		}
 		
 		// test variables
@@ -192,8 +189,8 @@ package flare.tests
 		
 		public function testExpressionMethods():void 
 		{
-			var a:Variable = $("a");
-			var b:Variable = $("b");
+			var a:String = "a";
+			var b:String = "b";
 			
 			_lt  = lt(a, b);
 			_gt  = gt(a, b);
@@ -264,7 +261,7 @@ package flare.tests
 			assertEquals(12, r[0].sum);
 			
 			r = select({sum:sum("val")})
-				.where(eq("cat", $("a"))) // use a as variable
+				.where(eq("cat", "a")) // use a as variable
 				.eval(data);
 			assertEquals(0, r.length);
 			

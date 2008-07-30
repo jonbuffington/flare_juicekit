@@ -90,7 +90,6 @@
     <classEntry path="flare.query.Variable"/>
     <classEntry path="flare.query.Variance"/>
     <classEntry path="flare.query.Xor"/>
-    <classEntry path="flare.query.methods.$"/>
     <classEntry path="flare.query.methods._"/>
     <classEntry path="flare.query.methods.add"/>
     <classEntry path="flare.query.methods.and"/>
@@ -224,7 +223,5 @@
     <classEntry path="flare.vis.util.Transforms"/>
   </includeClasses>
   <includeResources/>
-  <namespaceManifests>
-    <namespaceManifestEntry manifest="../manifest.xml" namespace="http://flare.prefuse.org/2008/mxml"/>
-  </namespaceManifests>
+  <namespaceManifests/>
 </flexLibProperties>

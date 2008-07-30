@@ -22,8 +22,8 @@
 
   <property name="flare.src" value="${basedir}/flare/src"/>
   <property name="flare.lib" value="${basedir}/flare/lib"/>
-  <property name="demos.src" value="${basedir}/flare.demos"/>
-  <property name="tests.src" value="${basedir}/flare.tests"/>
+  <property name="demos.src" value="${basedir}/flare.demos/src"/>
+  <property name="tests.src" value="${basedir}/flare.tests/src"/>
   <property name="tests.lib" value="${basedir}/flare.tests/lib"/>
 
   <property name="build.dir" value="${basedir}/build"/>

@@ -6,7 +6,6 @@ package flare.demos
 	import flare.animate.Transitioner;
 	import flare.demos.util.GraphUtil;
 	import flare.demos.util.Link;
-	import flare.query.methods.$;
 	import flare.query.methods.add;
 	import flare.vis.Visualization;
 	import flare.vis.controls.DragControl;
@@ -258,7 +257,7 @@ package flare.demos
 				{
 					name: "Bubbles",
 					op: new CirclePackingLayout(4, false, "depth"),
-					nodes: {size: add(1, $("depth"))},
+					nodes: {size: add(1, "depth")},
 					edges: {alpha:0, visible:false},
 					ctrl: new DragControl(NodeSprite),
 					canStraighten: true
