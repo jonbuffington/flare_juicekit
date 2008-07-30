@@ -1,8 +1,5 @@
 package flare.vis.palette
 {
-	import flare.scale.QuantitativeScale;
-	import flare.scale.Scale;
-	import flare.scale.ScaleType;
 	import flare.util.Colors;
 	
 	/**

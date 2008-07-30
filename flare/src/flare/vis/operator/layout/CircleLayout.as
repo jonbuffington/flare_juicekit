@@ -18,13 +18,13 @@ package flare.vis.operator.layout
 	 *  <li>If a data field for either the radius or angle is provided, this
 	 *      layout will act as a radial scatter plot, using the data fields
 	 *      to determine the radius or angle values of the layout.</li>
-	 *  <li>If no data field is provided but the <code>treeLayout<code>
+	 *  <li>If no data field is provided but the <code>treeLayout</code>
 	 *      property is set to <code>true</code>, the layout will use an
 	 *      underlying tree structure to layout the data. Leaf nodes will be
 	 *      placed along the circumference of the circle, but parent nodes will
 	 *      be placed in the interior. Also, the layout will add spacing to
 	 *      differentiate sibling groups along the circumference.</li>
-	 * <ul>
+	 * </ul>
 	 * 
 	 * <p>The layout also supports mixes of the above modes. For example, if
 	 * <code>treeLayout</code> is set to <code>true</code> and a data field for
