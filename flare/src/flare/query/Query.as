@@ -1,8 +1,8 @@
 package flare.query
 {
+	import flare.util.Filter;
 	import flare.util.Property;
 	import flare.util.Sort;
-	import flare.vis.data.DataList;
 	
 	/**
 	 * Performs query processing over a collection of ActionScript objects.
@@ -42,7 +42,7 @@ package flare.query
 		private var _select:Array;
 		private var _orderby:Array;
 		private var _groupby:Array;
-		private var _where:Expression;
+		private var _where:Function;
 		private var _sort:Sort;
 		private var _aggrs:Array;
 		
@@ -62,11 +62,11 @@ package flare.query
 		 *  format of the <code>flare.util.Sort</code> class methods.
 		 * @see flare.util.Sort
 		 */
-		public function Query(select:Array=null, where:Expression=null,
+		public function Query(select:Array=null, where:*=null,
 							  orderby:Array=null, groupby:Array=null)
 		{
 			if (select != null) setSelect(select);
-			_where = where;
+			this.where(where);
 			_orderby = orderby;
 			_groupby = groupby;
 		}
@@ -98,7 +98,7 @@ package flare.query
 		 */
 		public function where(e:*):Query
 		{
-			_where = Expression.expr(e);
+			_where = Filter.$(e);
 			return this;
 		}
 				
@@ -195,10 +195,11 @@ package flare.query
 			var visitor:Function;
 			if (input is Array) {
 				visitor = (input as Array).forEach;
-			} else if (input is DataList) {
-				visitor = (input as DataList).visit;
 			} else if (input is Function) {
 				visitor = input as Function;
+			} else if (Object(input).hasOwnProperty("visit") &&
+					   Object(input).visit is Function) {
+				visitor = Object(input).visit as Function;
 			} else {
 				throw new ArgumentError("Illegal input argument: "+input);
 			}
@@ -206,9 +207,7 @@ package flare.query
 			// collect and filter
 			if (_where != null) {
 				visitor(function(item:Object, ...rest):void {
-					if (_where.predicate(item)) {
-						results.push(item);
-					}
+					if (_where(item)) results.push(item);
 				});
 			} else {
 				visitor(function(item:Object, ...rest):void {
