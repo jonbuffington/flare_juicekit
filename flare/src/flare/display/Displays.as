@@ -1,4 +1,4 @@
-package flare.util
+package flare.display
 {
 	import flare.display.DirtySprite;
 	

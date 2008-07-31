@@ -3,7 +3,7 @@ package flare.vis
 	import flare.animate.ISchedulable;
 	import flare.animate.Scheduler;
 	import flare.animate.Transitioner;
-	import flare.util.Displays;
+	import flare.display.Displays;
 	import flare.vis.axis.Axes;
 	import flare.vis.axis.CartesianAxes;
 	import flare.vis.controls.ControlList;
