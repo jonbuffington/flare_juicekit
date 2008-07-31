@@ -1,11 +1,10 @@
 package flare.tests
 {
-	import flare.analytics.graph.SpanningTree;
-	import flare.util.Property;
 	import flare.vis.data.Data;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
 	import flare.vis.data.Tree;
+	import flare.vis.data.TreeBuilder;
 	
 	import unitest.TestCase;
 	
@@ -63,7 +62,7 @@ package flare.tests
 		//  e--f--g
 		public function mstTest():void
 		{
-			data.treePolicy = SpanningTree.MINIMUM_SPAN;
+			data.treePolicy = TreeBuilder.MINIMUM_SPAN;
 			data.treeEdgeWeight = "data.w";
 			data.root = f;
 			var tree:Tree = data.tree;
@@ -93,7 +92,7 @@ package flare.tests
 		//  e  f  g
 		public function bfsTest():void
 		{
-			data.treePolicy = SpanningTree.BREADTH_FIRST;
+			data.treePolicy = TreeBuilder.BREADTH_FIRST;
 			var tree:Tree = data.tree;
 
 			assertEquals(7, tree.nodes.length);
@@ -119,7 +118,7 @@ package flare.tests
 		// a-b-c-d-g-f-e
 		public function dfsTest():void
 		{
-			data.treePolicy = SpanningTree.DEPTH_FIRST;
+			data.treePolicy = TreeBuilder.DEPTH_FIRST;
 			var tree:Tree = data.tree;
 			
 			assertEquals(7, tree.nodes.length);
@@ -147,7 +146,7 @@ package flare.tests
 		//  e  f  g
 		public function bfsTwiceTest():void
 		{
-			data.treePolicy = SpanningTree.BREADTH_FIRST;
+			data.treePolicy = TreeBuilder.BREADTH_FIRST;
 			data.root = c;
 			var tree:Tree = data.tree;
 				

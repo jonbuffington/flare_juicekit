@@ -1,5 +1,7 @@
 package flare.tests
 {
+	import flare.animate.Scheduler;
+	import flare.animate.Tween;
 	import flare.animate.interpolate.ArrayInterpolator;
 	import flare.animate.interpolate.ColorInterpolator;
 	import flare.animate.interpolate.DateInterpolator;
@@ -26,6 +28,7 @@ package flare.tests
 			addTest("testPointInterp");
 			addTest("testRectangleInterp");
 			addTest("testMatrixInterp");
+			addTest("testIdCancel");
 		}
 		
 		public function testNumberInterp():void {
@@ -188,6 +191,40 @@ package flare.tests
 			}
 			assertNotEquals(s, o.v);
 			assertNotEquals(t, o.v);
+		}
+		
+		public function testIdCancel():void {
+			var o:Object = {a:1, b:2};
+			var t0:Tween = new Tween(o, 1, {a:0});
+			var t1:Tween = new Tween(o, 1, {a:2}); t1.id = "tween";
+			var t2:Tween = new Tween(o, 1, {a:3}); t2.id = "tween";
+			
+			try {
+				t1.id = "change";
+				t1.id = "tween";
+				assertEquals("tween", t1.id);
+			} catch (err:Error) {
+				fail("id change for non-running tween caused exception.");
+			}
+			
+			t0.play();
+			try {
+				t0.id = "change";
+				fail("Allowed id change for running transition");
+			} catch (e:Error) {	}
+			t1.play();
+			try {
+				t1.id = "change";
+				fail("Allowed id change for running transition");
+			} catch (e:Error) {	}
+			t2.play();
+			
+			assertTrue(t0.running);
+			assertTrue(Scheduler.instance.remove(t0));
+			assertFalse(t1.running);
+			assertFalse(Scheduler.instance.remove(t1));
+			assertTrue(t2.running);
+			assertTrue(Scheduler.instance.remove(t2));
 		}
 		
 	} // end of class AnimationTests
