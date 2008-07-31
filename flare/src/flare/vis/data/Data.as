@@ -1,6 +1,5 @@
 package flare.vis.data
 {
-	import flare.analytics.graph.SpanningTree;
 	import flare.data.DataField;
 	import flare.data.DataSchema;
 	import flare.data.DataSet;
@@ -529,10 +528,10 @@ package flare.vis.data
 		// -- Spanning Tree ---------------------------------------------------
 		
 		/** The spanning tree constructor class. */
-		protected var _span:SpanningTree = new SpanningTree(null,true,false);
+		protected var _span:TreeBuilder = new TreeBuilder();
 		/** The root node of the spanning tree. */
 		protected var _root:NodeSprite = null;
-		/** The root node of the spanning tree. */
+		/** The the spanning tree. */
 		protected var _tree:Tree = null;
 		
 		/** The spanning tree creation policy. 
@@ -578,7 +577,7 @@ package flare.vis.data
 		{
 			if (_tree == null) { // build tree if necessary
 				if (_root == null) _span.root = _nodes[0];
-				_span.calculate(this, _span.root, _span.edgeWeight);
+				_span.calculate(this, _span.root);
 				_tree = _span.tree;
 			}
 			return _tree;	

@@ -21,13 +21,14 @@ package flare.animate
 	 */
 	public class Scheduler
 	{
-		private static var _scheduler:Scheduler = new Scheduler();
+		private static const _instance:Scheduler = new Scheduler(_Lock);
 		/** The default Scheduler instance. */
-		public static function get instance():Scheduler { return _scheduler; }
+		public static function get instance():Scheduler { return _instance; }
 		
-		private var _scheduled:Array;
-		private var _timer:Timer;
-		private var _obj:Shape;
+		private var _scheduled:Array; // list of all currently scheduled items
+		private var _ids:Object;      // map of all named items
+		private var _timer:Timer;     // timer for interval-based scheduling
+		private var _obj:Shape;       // shape for getting ENTER_FRAME events
 		
 		/**
 		 * Sets the timer interval (in milliseconds) at which the scheduler
@@ -46,13 +47,18 @@ package flare.animate
 		/**
 		 * Creates a new Scheduler--this constructor should be not used;
 		 * instead use the <code>instance</code> property.
+		 * @param lock a lock object to emulate a private constructor
 		 */
-		public function Scheduler() {
-			_scheduled = new Array();
-			_timer = new Timer(0);
-			_obj = new Shape();
-			
-			_timer.addEventListener(TimerEvent.TIMER, tick);
+		public function Scheduler(lock:Class) {
+			if (lock == _Lock) {
+				_scheduled = [];
+				_ids = {};
+				_obj = new Shape();
+				_timer = new Timer(0);
+				_timer.addEventListener(TimerEvent.TIMER, tick);
+			} else {
+				throw new Error("Invalid constructor. Use Scheduler.instance.");
+			}
 		}
 		
 		/**
@@ -86,6 +92,14 @@ package flare.animate
 		 */
 		public function add(item:ISchedulable) : void
 		{
+			if (item.id) {
+				var s:ISchedulable = _ids[item.id];
+				if (s != null) {
+					remove(s);
+					s.cancelled();
+				}
+				_ids[item.id] = item;
+			}
 			_scheduled.push(item);
 			play();
 		}
@@ -97,8 +111,11 @@ package flare.animate
 		 */
 		public function remove(item:ISchedulable) : Boolean
 		{
-			var idx:uint = _scheduled.indexOf(item);
-			if (idx >= 0) _scheduled.splice(idx,1);
+			var idx:int = _scheduled.indexOf(item);
+			if (idx >= 0) {
+				_scheduled.splice(idx,1);
+				if (item.id) delete _ids[item.id];
+			}
 			return (idx >= 0);
 		}
 		
@@ -122,3 +139,6 @@ package flare.animate
         
 	} // end of class Scheduler
 }
+
+// scheduler lock class to enforce singleton pattern
+class _Lock { }

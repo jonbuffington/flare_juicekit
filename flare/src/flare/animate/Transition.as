@@ -4,9 +4,10 @@ package flare.animate
 	
 	import flash.events.EventDispatcher;
 
-	[Event(name="start", type="flare.animate.TransitionEvent")]
-	[Event(name="step",  type="flare.animate.TransitionEvent")]
-	[Event(name="end",   type="flare.animate.TransitionEvent")]
+	[Event(name="start",  type="flare.animate.TransitionEvent")]
+	[Event(name="step",   type="flare.animate.TransitionEvent")]
+	[Event(name="end",    type="flare.animate.TransitionEvent")]
+	[Event(name="cancel", type="flare.animate.TransitionEvent")]
 
 	/**
 	 * Base class representing an animated transition. Provides support for
@@ -34,7 +35,8 @@ package flare.animate
 		// -- Properties ------------------------------------------------------
 
 		private var _easing:Function = DEFAULT_EASING; // easing function
-				
+		
+		private var _id:String = null;        // transition id, default null
 		private var _duration:Number;         // duration, in seconds
 		private var _delay:Number;            // delay, in seconds
 		private var _frac:Number;             // animation fraction
@@ -45,6 +47,18 @@ package flare.animate
 		protected var _running:Boolean = false;
 		/** Flag indicating this Transition is running in reverse. */
 		protected var _reverse:Boolean = false;
+		
+		/** @inheritDoc */
+		public function get id():String { return _id; }
+		public function set id(s:String):void
+		{
+			if (_running) {
+				throw new Error(
+					"The id can't be changed while a transition is running.");
+			} else {
+				_id = s;
+			}
+		}
 		
 		/** The total duration, including both delay and active duration. */
 		public function get totalDuration():Number { return duration + delay; }
@@ -122,6 +136,17 @@ package flare.animate
 		}
 		
 		/**
+		 * Informs this transition that it was cancelled by the scheduler.
+		 * Assumes that the scheduler has already removed the transition.
+		 * Clients should not call this method, but should use the
+		 * <code>stop()</code> method to end a transition early.
+		 */
+		public function cancelled():void
+		{
+			doEnd(TransitionEvent.CANCEL);
+		}
+		
+		/**
 		 * Resets the transition, so that any cached starting values are
 		 * cleared and reset the next time this transition is played.
 		 */
@@ -181,14 +206,14 @@ package flare.animate
 			}
 		}
 		
-		internal function doEnd():void
+		internal function doEnd(evtType:String=TransitionEvent.END):void
 		{
 			_frac = _reverse ? 0 : 1;
 			end();
 			_state = INIT;
 			_running = false;
-			if (hasEventListener(TransitionEvent.END)) {
-				dispatchEvent(new TransitionEvent(TransitionEvent.END, this));
+			if (hasEventListener(evtType)) {
+				dispatchEvent(new TransitionEvent(evtType, this));
 			}
 		}
 		

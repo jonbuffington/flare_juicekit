@@ -1,16 +1,11 @@
 package flare.analytics.graph
 {
-	import flare.analytics.util.FibonacciHeap;
-	import flare.analytics.util.HeapNode;
 	import flare.animate.Transitioner;
-	import flare.util.Property;
-	import flare.vis.data.Data;
-	import flare.vis.data.EdgeSprite;
+	import flare.vis.Visualization;
 	import flare.vis.data.NodeSprite;
-	import flare.vis.data.Tree;
+	import flare.vis.data.TreeBuilder;
+	import flare.vis.operator.IOperator;
 	import flare.vis.operator.Operator;
-	
-	import flash.utils.Dictionary;
 
 	/**
 	 * Calculates a spanning tree for a graph structure. This operator can
@@ -27,91 +22,29 @@ package flare.analytics.graph
 	 * contain the original nodes and edges in the input graph, and any
 	 * previous parent or child links for input nodes will be cleared and
 	 * overwritten.</p>
+	 * 
+	 * <p>This class extends the TreeBuilder class to also function as an
+	 * operator that can be added to a visualization's operator list.</p>
 	 */
-	public class SpanningTree extends Operator
+	public class SpanningTree extends TreeBuilder implements IOperator
 	{
-		/** Policy for a spanning tree built using depth-first search. */
-		public static const DEPTH_FIRST:String   = "depth-first";
-		/** Policy for a spanning tree built using breadth-first search. */
-		public static const BREADTH_FIRST:String = "breadth-first";
-		/** Policy for building a minimum spanning tree. */
-		public static const MINIMUM_SPAN:String  = "minimum-span";
+		private var _vis:Visualization;
+		private var _enabled:Boolean;
 		
-		private var _s:Property = Property.$("props.spanning");
-		private var _w:Function = null;
-		private var _policy:String = MINIMUM_SPAN;
-		private var _links:int = NodeSprite.GRAPH_LINKS;
-		private var _tree:Tree = null;
-		
-		/** Flag indicating if a spanning tree instance should be created. */
-		public var buildTree:Boolean;
-		/** Flag indicating if edges in the spanning tree should be annotated.
-		 *  If so, the <code>spanningField</code> property will be set for
-		 *  each edge in the graph. */
-		public var annotateEdges:Boolean;
-		
-		/** The tree created by this operator. */
-		public function get tree():Tree { return _tree; }
-		
-		/** The traveral policy used to generate the spanning tree. Should be
-		 *  one of DEPTH_FIRST, BREADTH_FIRST, or MINIMUM_SPAN (default). */
-		public function get policy():String { return _policy; }
-		public function set policy(p:String):void {
-			if (p==DEPTH_FIRST || p==BREADTH_FIRST || p==MINIMUM_SPAN) {
-				_policy = p;
-			} else {
-				throw new Error("Unrecognized policy: "+p);
-			}
+		/** @inheritDoc */
+		public function get visualization():Visualization { return _vis; }
+		public function set visualization(v:Visualization):void {
+			_vis = v; setup();
 		}
 		
-		/** The property with which to annotate edges that make up the spanning
-		 *  tree. The default value is "props.spanning". This property is used
-		 *  to annotate edges as "true" (if in the spanning forest) or "false"
-		 *  (if not in the spanning forest). */
-		public function get spanningField():String { return _s.name; }
-		public function set spanningField(f:String):void { _s = Property.$(f); }
+		/** @inheritDoc */
+		public function get enabled():Boolean { return _enabled; }
+		public function set enabled(b:Boolean):void { _enabled = b; }
 		
-		/** The root node for the spanning tree. */
-		public var root:NodeSprite;
-		
-		/** The link type to consider when constructing a spanning tree. Should
-		 *  be one of <code>NodeSprite.GRAPH_LINKS</code>,
-		 *  <code>NodeSprite.IN_LINKS</code>, or
-		 *  <code>NodeSprite.OUT_LINKS</code>. */
-		public function get links():int { return _links; }
-		public function set links(linkType:int):void {
-			if (linkType == NodeSprite.GRAPH_LINKS ||
-				linkType == NodeSprite.IN_LINKS ||
-				linkType == NodeSprite.OUT_LINKS) 
-			{
-				_links = linkType;
-			} else {
-				throw new Error("Unsupported link type: "+linkType);
-			}
-		}
-		
-		/** A function determining edge weights used in the spanning tree
-		 *  calculation. When setting this value, one can pass in either a
-		 *  Function, which should take an EdgeSprite as input and return a
-		 *  Number as output, or a String, in which case the string will be
-		 *  used as a property name from which to retrieve the edge weight
-		 *  value from an EdgeSprite instance. If the value is null (the
-		 *  default) all edges will be assumed to have weight 1.
-		 *  
-		 *  <p><b>NOTE:</b> Edge weights must be greater than or equal to zero!
-		 *  </p> */
-		public function get edgeWeight():Function { return _w; }
-		public function set edgeWeight(w:*):void {
-			if (w==null) {
-				_w = null;
-			} else if (w is String) {
-				_w = Property.$(String(w)).getValue;
-			} else if (w is Function) {
-				_w = w;
-			} else {
-				throw new Error("Unrecognized edgeWeight value. " +
-					"The value should be a Function or String.");
-			}
+		/** @inheritDoc */
+		public function set parameters(params:Object):void
+		{
+			Operator.applyParameters(this, params);
 		}
 		
 		// --------------------------------------------------------------------
@@ -134,153 +67,27 @@ package flare.analytics.graph
 			buildTree:Boolean=false, annotateEdges:Boolean=true,
 			root:NodeSprite=null, edgeWeight:*=null)
 		{
-			if (policy) this.policy = policy;
-			this.buildTree = buildTree;
-			this.annotateEdges = annotateEdges;
-			this.root = root;
-			this.edgeWeight = edgeWeight;
+			super(policy, buildTree, annotateEdges, root, edgeWeight);
 		}
 		
 		/** @inheritDoc */
-		public override function operate(t:Transitioner=null):void
+		public function operate(t:Transitioner=null):void
 		{
-			calculate(visualization.data, root, _w);
+			super.calculate(visualization.data, root);
 		}
 		
-		/**
-		 * Calculates the spanning tree.
-		 * @param data the data set containing a graph
-		 * @param n the root of the spanning tree
-		 * @param w a function returning weight values for edges. If null,
-		 *  all edges will be assumed to have equal weight.
-		 */
-		public function calculate(data:Data, n:NodeSprite, w:Function=null):void
+		/** @inheritDoc */
+		public function setup():void
 		{
-			if (n==null) { _tree = null; return; } // do nothing for null root
-			if (!buildTree && !annotateEdges) return; // nothing to do
-			
-			// initialize
-			if (buildTree) {
-				data.nodes.visit(function(nn:NodeSprite):void {
-					nn.removeEdges(NodeSprite.TREE_LINKS);
-				});
-				_tree = new Tree();
-				_tree.root = n;
-			} else {
-				_tree = null;
-			}
-			if (annotateEdges) {
-				data.edges.setProperty(_s.name, false);
-			}
-			
-			switch (_policy) {
-				case DEPTH_FIRST:
-					depthFirstTree(data, n);
-					return;
-				case BREADTH_FIRST:
-					breadthFirstTree(data, n);
-					return;
-				case MINIMUM_SPAN:
-					if (w==null) {
-						breadthFirstTree(data, n);
-					} else {
-						minimumSpanningTree(data, n, w);
-					}
-					return;
-			}
+			// for subclasses
 		}
 		
-		// -- Minimum Spanning Tree -------------------------------------------
+		// -- MXML ------------------------------------------------------------
 		
-		private function minimumSpanningTree(data:Data, n:NodeSprite, w:Function):void
+		/** @private */
+		public function initialized(document:Object, id:String):void
 		{
-			var hn:HeapNode, weight:Number, e:EdgeSprite;
-			_tree = null;
-			if (buildTree) {
-				_tree = new Tree();
-				_tree.root = n;
-			}
-			
-			// initialize the heap
-			var heap:FibonacciHeap = new FibonacciHeap();
-			data.nodes.visit(function(nn:NodeSprite):void {
-				nn.props.heapNode = heap.insert(nn);
-			});
-			heap.decreaseKey(n.props.heapNode, 0);
-			
-			// collect spanning tree edges (Prim's algorithm)
-			while (!heap.empty) {
-				hn = heap.removeMin();
-				n = hn.data as NodeSprite;
-				// add saved tree edge to spanning tree
-				if ((e=(n.props.treeEdge as EdgeSprite))) {
-					if (annotateEdges) _s.setValue(e, true);
-					if (buildTree) _tree.addChildEdge(e);	
-				}
-				
-				n.visitEdges(function(e:EdgeSprite):void {
-					var nn:NodeSprite = e.other(n);
-					var hnn:HeapNode = nn.props.heapNode;
-					weight = (w==null ? 1 : w(e));
-					if (hnn.inHeap && weight < hnn.key) {
-						nn.props.treeEdge = e; // set tree edge
-						heap.decreaseKey(hnn, weight);
-					}
-				}, _links);
-			}
-			
-			// clean-up nodes
-			data.nodes.visit(function(nn:NodeSprite):void {
-				delete nn.props.treeEdge;
-				delete nn.props.heapNode;
-			});
-		}
-		
-		// -- Breadth-First Traversal -----------------------------------------
-		
-		private function breadthFirstTree(data:Data, n:NodeSprite):void
-		{
-			var visited:Dictionary = buildTree ? null : new Dictionary();
-			
-			var q:Array = [n];
-			while (q.length > 0) {
-				n = q.shift();
-				n.visitEdges(function(e:EdgeSprite):void {
-					var nn:NodeSprite = e.other(n);
-					if (buildTree ? _tree.nodes.contains(nn) : visited[nn])
-						return;
-					if (annotateEdges) _s.setValue(e, true);
-					if (buildTree) {
-						_tree.addChildEdge(e);
-					} else {
-						visited[nn] = true;
-					}
-					q.push(nn);
-				}, _links);
-			}
-		}
-		
-		// -- Depth First Traversal -------------------------------------------
-		
-		private function depthFirstTree(data:Data, n:NodeSprite):void
-		{
-			depthFirstHelper(n, buildTree ? null : new Dictionary());
-		}
-		
-		private function depthFirstHelper(n:NodeSprite, visited:Dictionary):void
-		{
-			n.visitEdges(function(e:EdgeSprite):void {
-				var nn:NodeSprite = e.other(n);
-				if (buildTree ? _tree.nodes.contains(nn) : visited[nn])
-					return;
-				if (annotateEdges) _s.setValue(e, true);
-				if (buildTree) {
-					_tree.addChildEdge(e);
-				} else {
-					visited[nn] = true;
-				}
-				if (nn.degree > 1) depthFirstHelper(nn, visited);
-			}, _links);
+			// do nothing
 		}
 		
 	} // end of class SpanningTree

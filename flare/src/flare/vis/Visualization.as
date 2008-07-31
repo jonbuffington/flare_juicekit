@@ -423,7 +423,6 @@ package flare.vis
 	} // end of class Visualization
 }
 
-
 import flare.animate.ISchedulable;
 import flare.vis.Visualization;
 
@@ -432,11 +431,14 @@ import flare.vis.Visualization;
  * <code>update</code> method.
  */
 class Recurrence implements ISchedulable {
-	private var v:Visualization;
-	public function Recurrence(v:Visualization) {
-		this.v = v;
+	private var _vis:Visualization;
+	public function get id():String { return null; }
+	public function set id(s:String):void { /* do nothing */ }
+	public function cancelled():void { /* do nothing */ }
+	public function Recurrence(vis:Visualization) {
+		_vis = vis;
 	}
 	public function evaluate(t:Number):Boolean {
-		v.update(); return false;
+		_vis.update(); return false;
 	}
 }

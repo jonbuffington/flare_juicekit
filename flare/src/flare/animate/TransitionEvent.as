@@ -3,7 +3,8 @@ package flare.animate
 	import flash.events.Event;
 
 	/**
-	 * Event fired when a <code>Transition</code> starts, steps, or ends.
+	 * Event fired when a <code>Transition</code>
+	 * starts, steps, ends, or is canceled.
 	 */
 	public class TransitionEvent extends Event
 	{
@@ -13,6 +14,8 @@ package flare.animate
 		public static const STEP:String = "step";
 		/** A transition end event. */
 		public static const END:String = "end";
+		/** A transition cancel event. */
+		public static const CANCEL:String = "cancel";
 		
 		private var _t:Transition;
 		
