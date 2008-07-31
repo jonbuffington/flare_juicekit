@@ -1,20 +1,18 @@
 package flare.demos
 {
-	import flash.display.Sprite;
-	import flare.physics.Simulation;
-	import flash.utils.Dictionary;
 	import flare.physics.Particle;
-	import flash.events.Event;
+	import flare.physics.Simulation;
+	
 	import flash.display.Shape;
-	import flare.animate.ISchedulable;
-	import flare.animate.Scheduler;
+	import flash.events.Event;
+	import flash.utils.Dictionary;
 
 	/**
 	 * Demo showcasing use of the physics engine to simulate smoke.
 	 * Based on the smoke example from the traer physics library
 	 * for processing (http://www.cs.princeton.edu/~traer/physics/).
 	 */
-	public class Smoke extends Demo implements ISchedulable
+	public class Smoke extends Demo
 	{
 		private var _shapes:Array = new Array();
 		private var _spool:Array = new Array();
@@ -36,21 +34,12 @@ package flare.demos
 
 		override public function play():void
 		{
-			// add to scheduler, which will call the evaluate method
-			Scheduler.instance.add(this);
+			addEventListener(Event.ENTER_FRAME, drawSmoke);
 		}
 		
 		override public function stop():void
 		{
-			// remove from the scheduler
-			Scheduler.instance.remove(this);
-		}
-
-		public function evaluate(t:Number) : Boolean
-		{
-			// update smoke simulation on scheduler callback
-			drawSmoke();
-			return false;
+			removeEventListener(Event.ENTER_FRAME, drawSmoke);
 		}
 
 		private function getShape():Shape
@@ -75,7 +64,7 @@ package flare.demos
 			_spool.push(s);
 		}
 
-		private function drawSmoke():void
+		private function drawSmoke(evt:Event=null):void
 		{
 			// create five new smoke particles on each simulation tick	
 			for (var i:uint = 0; i<5; ++i) {
