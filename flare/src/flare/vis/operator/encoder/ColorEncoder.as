@@ -13,12 +13,14 @@ package flare.vis.operator.encoder
 	public class ColorEncoder extends Encoder
 	{
 		private var _palette:ColorPalette;
+		private var _setPalette:Boolean = true;
 		private var _ordinal:Boolean = false;
 		
 		/** @inheritDoc */
 		public override function get palette():Palette { return _palette; }
 		public override function set palette(p:Palette):void {
 			_palette = p as ColorPalette;
+			_setPalette = (_palette == null);
 		}
 		/** The palette as a ColorPalette instance. */
 		public function get colors():ColorPalette { return _palette; }
@@ -58,10 +60,8 @@ package flare.vis.operator.encoder
 			_binding.updateBinding();
 			
 			// create a default color palette if none explicitly set
-			var setPalette:Boolean = (_palette == null);
-			if (setPalette) _palette = getDefaultPalette();
+			if (_setPalette) _palette = getDefaultPalette();
 			super.operate(t); // run encoder
-			if (setPalette) _palette = null;
 		}
 		
 		/** @inheritDoc */

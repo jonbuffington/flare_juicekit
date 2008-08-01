@@ -3,8 +3,8 @@ package flare.vis.legend
 	import flare.animate.Transitioner;
 	import flare.display.RectSprite;
 	import flare.display.TextSprite;
-	import flare.scale.OrdinalScale;
 	import flare.scale.Scale;
+	import flare.scale.ScaleType;
 	import flare.vis.Visualization;
 	import flare.vis.operator.IOperator;
 	import flare.vis.operator.encoder.ColorEncoder;
@@ -93,7 +93,7 @@ package flare.vis.legend
 		public function get scale():Scale { return _scale; }
 		public function set scale(s:Scale):void {
 			_scale = s; 
-			_discrete = s ? _scale is OrdinalScale : true;
+			_discrete = s ? ScaleType.isOrdinal(_scale.scaleType) : true;
 		}
 		/** The LegendRange for this legend, if it is continuous. This
 		 *  value is null if the legend is discrete. */
