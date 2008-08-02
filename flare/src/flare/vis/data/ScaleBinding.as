@@ -50,6 +50,11 @@ package flare.vis.data
 		/** @private */
 		protected var _stats:Stats;
 		
+		/** If true, updates to the underlying data will be ignored, as will
+		 *  any calls to <code>updateBinding</code>. Set this flag if you want
+		 *  to prevent the scale values from changing automatically. */
+		public var ignoreUpdates:Boolean = false;
+		
 		/** The type of scale to create. */
 		public override function get scaleType():String {
 			return _scaleType ? _scaleType : scale.scaleType;
@@ -220,6 +225,7 @@ package flare.vis.data
 		 */
 		public function updateBinding():void
 		{
+			if (ignoreUpdates) return;
 			var stats:Stats = _data.group(_group).stats(_property);
 			if (stats !== _stats) { // object identity test
 				_stats = null;
@@ -234,6 +240,7 @@ package flare.vis.data
 		 */
 		private function onDataEvent(evt:DataEvent):void
 		{
+			if (ignoreUpdates) return;
 			if (evt.list.name == _group) {
 				if (evt.type == DataEvent.UPDATE) {
 					updateBinding();
