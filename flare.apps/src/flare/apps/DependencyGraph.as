@@ -70,8 +70,11 @@ package flare.apps
   		
   		private function visualize(data:Data):void
 		{
+			// place shorter names at the end of the data list
+			// that way they will the easiest to mouse over later
+			data.nodes.sortBy("-data.name.length");
+			
 			// prepare data with default settings
-			data.nodes.sortBy("depth");
 			data.nodes.setProperties({
 				shape: null,                  // no shape, use labels instead
 				visible: eq("childDegree",0), // only show leaf nodes
