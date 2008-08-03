@@ -237,7 +237,7 @@ package flare.display
 			_tf = new TextField();
 			_tf.selectable = false; // not selectable by default
 			_tf.autoSize = TextFieldAutoSize.LEFT;
-			_tf.defaultTextFormat = _fmt = format ? format : new TextFormat();
+			_tf.defaultTextFormat = (_fmt = format ? format : new TextFormat());
 			if (text != null) _tf.text = text;
 			_bmap = new Bitmap();
 			setMode(mode);
@@ -300,6 +300,7 @@ package flare.display
 			_fmt.underline = fmt.underline;
 			_fmt.url = fmt.url;
 			_tf.setTextFormat(_fmt);
+			if (_mode==BITMAP) dirty();
 		}
 		
 		/** @inheritDoc */

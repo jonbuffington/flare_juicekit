@@ -222,15 +222,18 @@ package flare.vis.data
 		/**
 		 * Checks to see if the binding is current. If not, the internal stats
 		 * and scale for this binding will be cleared and lazily recomputed.
+		 * @return true if the binding was updated, false otherwise
 		 */
-		public function updateBinding():void
+		public function updateBinding():Boolean
 		{
-			if (ignoreUpdates) return;
+			if (ignoreUpdates) return false;
 			var stats:Stats = _data.group(_group).stats(_property);
 			if (stats !== _stats) { // object identity test
 				_stats = null;
 				_scale = null;
+				return true;
 			}
+			return false;
 		}
 		
 		/**
