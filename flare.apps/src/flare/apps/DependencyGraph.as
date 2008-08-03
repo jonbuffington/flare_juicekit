@@ -2,7 +2,6 @@ package flare.apps
 {
 	import com.adobe.serialization.json.JSON;
 	
-	import flare.analytics.graph.BetweennessCentrality;
 	import flare.display.DirtySprite;
 	import flare.display.TextSprite;
 	import flare.query.methods.div;
@@ -17,15 +16,13 @@ package flare.apps
 	import flare.vis.data.NodeSprite;
 	import flare.vis.data.Tree;
 	import flare.vis.events.SelectionEvent;
-	import flare.vis.legend.LegendItem;
-	import flare.vis.operator.encoder.ColorEncoder;
+	import flare.vis.legend.Legend;
 	import flare.vis.operator.encoder.PropertyEncoder;
 	import flare.vis.operator.label.RadialLabeler;
 	import flare.vis.operator.layout.BundledEdgeRouter;
 	import flare.vis.operator.layout.CircleLayout;
 	import flare.widgets.ProgressBar;
 	
-	import flash.display.Sprite;
 	import flash.filters.DropShadowFilter;
 	import flash.geom.Rectangle;
 	import flash.net.URLLoader;
@@ -45,7 +42,7 @@ package flare.apps
 			
 		private var _vis:Visualization;
 		private var _detail:TextSprite;
-		private var _legend:Sprite
+		private var _legend:Legend;
 		private var _bar:ProgressBar;
 		private var _bounds:Rectangle;
 		
@@ -229,22 +226,16 @@ package flare.apps
 		private function addDetail():void
 		{	
 			var fmt:TextFormat = new TextFormat("Verdana",14);
-
-			var r:LegendItem = new LegendItem("Imports", 0xffff0000);
-			var g:LegendItem = new LegendItem("Is Imported By", 0xff00ff00);
-			r.label.textMode = TextSprite.EMBED;
-			g.label.textMode = TextSprite.EMBED;
-			r.label.applyFormat(fmt); r.iconSize = 9; r.margin = 0; r.render();
-			g.label.applyFormat(fmt); g.iconSize = 9; g.margin = 0; r.render();
-			g.y = r.y + r.height;
 			
-			_legend = new Sprite();
-			_legend.addChild(r);
-			_legend.addChild(g);
-			_legend.x = 15;
+			_legend = Legend.fromValues(null, [
+				{color: 0xffff0000, size: 0.75, label: "Imports"},
+				{color: 0xff00ff00, size: 0.75, label: "Is Imported By"}
+			]);
+			_legend.labelTextFormat = fmt;
+			_legend.labelTextMode = TextSprite.EMBED;
+			_legend.update();
 			addChild(_legend);
-			
-			//fmt.size = 12;
+
 			_detail = new TextSprite("", fmt, TextSprite.EMBED);
 			_detail.textField.multiline = true;
 			_detail.htmlText = _vis.data.nodes.length + " files";
@@ -272,15 +263,16 @@ package flare.apps
 				_vis.bounds.height = bounds.height - 10;
 				// update
 				_vis.update();
+				
+				// layout legend and details
+				_legend.x = _bounds.width  - _legend.width;
+				_legend.y = _bounds.height - _legend.border.height - 5;
+				_detail.y = _bounds.height - _detail.height - 5;
+				
 				// forcibly render to eliminate partial update bug, as
 				// the standard RENDER event routing can get delayed
 				// remove this line for faster but unsynchronized resizes
 				DirtySprite.renderDirty();
-
-				// layout legend and details
-				_legend.x = _bounds.width  - _legend.width;
-				_legend.y = _bounds.height - _legend.height;
-				_detail.y = _bounds.height - _detail.height - 5;
 			}
 		}
 		

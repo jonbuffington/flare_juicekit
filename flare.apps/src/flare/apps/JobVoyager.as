@@ -16,18 +16,18 @@ package flare.apps
 	import flare.vis.data.NodeSprite;
 	import flare.vis.events.SelectionEvent;
 	import flare.vis.events.TooltipEvent;
+	import flare.vis.legend.Legend;
 	import flare.vis.legend.LegendItem;
 	import flare.vis.operator.filter.VisibilityFilter;
 	import flare.vis.operator.label.StackedAreaLabeler;
+	import flare.vis.operator.layout.Orientation;
 	import flare.vis.operator.layout.StackedAreaLayout;
 	import flare.vis.util.Shapes;
 	import flare.widgets.ProgressBar;
 	import flare.widgets.SearchBox;
 	
 	import flash.display.Shape;
-	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.filters.DropShadowFilter;
 	import flash.geom.Rectangle;
 	import flash.net.URLLoader;
@@ -43,7 +43,7 @@ package flare.apps
 		private var _labelMask:Shape;
 		private var _title:TextSprite;
 		private var _search:SearchBox;
-		private var _gender:Sprite;
+		private var _gender:Legend;
 		
 		private var _fmt:TextFormat = new TextFormat("Helvetica,Arial",16,0,true);
 		private var _dur:Number = 1.25; // animation duration
@@ -204,7 +204,7 @@ package flare.apps
 			}
 			if (_gender) {
 				_gender.x = stage.stageWidth - _gender.width;
-				_gender.y = _search.y + 3;
+				_gender.y = _search.y;
 			}
 			
 		}
@@ -262,45 +262,35 @@ package flare.apps
 			addChild(_search);
 			
 			// create gender filter
-			_gender = new Sprite(); _gender.name = "gender";
-			_gender.addChild(new LegendItem("All", 0xff888888));
-			_gender.addChild(new LegendItem("Male", 0xff8888ff));
-			_gender.addChild(new LegendItem("Female", 0xffff8888))
-			for (var i:int=0; i<_gender.numChildren; ++i) {
-				var item:LegendItem = LegendItem(_gender.getChildAt(i));
-				item.label.applyFormat(_fmt);
-				item.buttonMode = true;
-				item.mouseChildren = false;
-				item.margin = 3;
-				item.render();
-				if (i > 0) {
-					var prev:LegendItem = LegendItem(_gender.getChildAt(i-1));
-					item.x = prev.x + prev.width;
-					item.alpha = 0.3;
-				}
-				item.addEventListener(MouseEvent.ROLL_OVER,
-					function(e:MouseEvent):void {
-						LegendItem(e.target).alpha = 1;
-					}
-				);
-				item.addEventListener(MouseEvent.ROLL_OUT,
-					function(e:MouseEvent):void {
-						var item:LegendItem = LegendItem(e.target);
-						if (item.text != _filter) item.alpha = 0.3;
-					}
-				);
-				item.addEventListener(MouseEvent.CLICK,
-					function(e:MouseEvent):void {
-						for (var i:uint=0; i<_gender.numChildren; ++i) {
-							LegendItem(_gender.getChildAt(i)).alpha = 0.3;
-						}
-						LegendItem(e.target).alpha = 1;
-						_filter = LegendItem(e.target).text;
-						onFilter();
-					}
-				);
-			}
+			_gender = Legend.fromValues(null, [
+				{label:"All",    color:0xff888888},
+				{label:"Male",   color:0xff8888ff},
+				{label:"Female", color:0xffff8888}
+			]);
+			_gender.orientation = Orientation.LEFT_TO_RIGHT;
+			_gender.labelTextFormat = _fmt;
+			_gender.margin = 3;
+			_gender.setItemProperties({buttonMode:true, alpha:0.3});
+			_gender.items.getChildAt(0).alpha = 1;
+			_gender.update();
 			addChild(_gender);
+			
+			// change alpha value on legend mouse-over
+			new HoverControl(LegendItem, 0,
+				function(e:SelectionEvent):void { e.object.alpha = 1; },
+				function(e:SelectionEvent):void {
+					var li:LegendItem = LegendItem(e.object);
+					if (li.text != _filter) li.alpha = 0.3;
+				}
+			).attach(_gender);
+			
+			// filter by gender on legend click
+			new ClickControl(LegendItem, 1, function(e:SelectionEvent):void {
+				_gender.setItemProperties({alpha:0.3});
+				e.object.alpha = 1;
+				_filter = LegendItem(e.object).text;
+				onFilter();
+			}).attach(_gender);
 		}
 		
 		// --------------------------------------------------------------------
