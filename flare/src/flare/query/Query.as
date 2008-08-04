@@ -46,6 +46,7 @@ package flare.query
 		private var _sort:Sort;
 		private var _aggrs:Array;
 		private var _map:Boolean = false;
+		private var _update:Boolean = false;
 		
 		/**
 		 * Creates a new Query.
@@ -79,14 +80,50 @@ package flare.query
 		 * of either a string representing the name of a variable to query or
 		 * an object of the form <code>{name:expr}</code>, where
 		 * <code>name</code> is the name of the query variable to include in
-		 * query result objects and <code>expr</code> is an Expression for
-		 * the actual query value.
-		 * @param terms a list query terms (select clauses)
+		 * query result objects and <code>expr</code> is an
+		 * <code>Expression</code> for the actual query value.
+		 * <p>Calling the <code>select</code> method will overwrite the effect
+		 * of any previous calls to the <code>select</code> or
+		 * <code>update</code> methods.</p>
+		 * @param terms a list of query terms (select clauses). If the first
+		 *  element is an array, it will be used as the term list.
 		 * @return this query object
 		 */
 		public function select(...terms):Query
 		{
+			if (terms.length > 0 && terms[0] is Array) {
+				terms = terms[0];
+			}
 			setSelect(terms);
+			_update = false;
+			return this;
+		}
+		
+		/**
+		 * Sets the select clauses used by this query to update the values
+		 * of the input set. An update clause consists of an object of the
+		 * form <code>{name:expr}</code>, where <code>name</code> is the name
+		 * of the data variable to set and <code>expr</code> is an
+		 * <code>Expression</code> for computing the value. When
+		 * <code>eval</code> is invoked for an update query, the values of the
+		 * input objects are updated and the returned result set is an array
+		 * containing these input objects.
+		 * <p>Calling the <code>update</code> method will overwrite the effect
+		 * of any previous calls to the <code>select</code> or
+		 * <code>update</code> methods.</p>
+		 * @param terms a list of query terms (update clauses). If the first
+		 *  element is an array, it will be used as the term list.
+		 * @return this query object
+		 */
+		public function update(...terms):Query
+		{
+			if (terms==null || terms.length==0) {
+				throw new Error("Nothing to update!");
+			} else if (terms[0] is Array) {
+				terms = terms[0];
+			}
+			setSelect(terms);
+			_update = true;
 			return this;
 		}
 		
@@ -143,6 +180,8 @@ package flare.query
 		 * group-by clause, in which case the aggregate operators will be
 		 * handled separately for each group, but the result set will still
 		 * contain a result for every tuple in the input set.</p>
+		 * <p>The map directive has no effect on "update" queries, which 
+		 * already apply map semantics. It only effects "select" queries.</p>
 		 * @param value if true (the default), aggregate operators will be
 		 *  applied (mapped) to all tuples; if false, normal group-by semantics
 		 *  will be used.
@@ -248,30 +287,39 @@ package flare.query
 				_sort.sort(results);
 			}
 			
-			if (_select == null)
+			if (_select == null) {
 				return results;
-			else if (_aggrs == null && _groupby==null)
+			} else if (_update && _aggrs==null && _groupby==null) {
+				return applyAll(results);
+			} else if (_aggrs==null && _groupby==null) {
 				return projectAll(results);
-			else
+			} else {
 				return aggregate(results);
+			}
 		}
 		
-		/**
-		 * Performs a projection of query results, removing any properties
-		 * not specified by the select clause.
-		 * @param results the filtered query results array
-		 * @return query results array of projected objects
-		 */
 		private function projectAll(results:Array):Array
-		{			
+		{					
 			for (var i:int=0; i<results.length; ++i) {
 				var item:Object = {};
 				for each (var pair:Object in _select) {
-					var name:String = pair.name;
+					var p:Property = Property.$(pair.name);
 					var expr:Expression = pair.expression;
-					item[name] = expr.eval(results[i]);
+					p.setValue(item, expr.eval(results[i]));
 				}
 				results[i] = item;
+			}
+			return results;
+		}
+		
+		private function applyAll(results:Array):Array
+		{
+			// TODO: generate results in new object first to avoid overlap?
+			for each (var pair:Object in _select) {
+				var p:Property = Property.$(pair.name);
+				var expr:Expression = pair.expression;
+				for each (var item:Object in results)
+					p.setValue(item, expr.eval(item));
 			}
 			return results;
 		}
@@ -308,9 +356,12 @@ package flare.query
 				if (i==items.length || 
 					!(_groupby==null || sameGroup(props, item, items[i])))
 				{
-					if (_map) {
+					if (_update) {
 						for (j=h; j<i; ++j)
-							results.push(project(items[j]));
+							apply(items[j]);
+					} else if (_map) {
+						for (j=h; j<i; ++j)
+							items[j] = project(items[j]);
 					} else {
 						results.push(project(item));
 					}
@@ -319,7 +370,7 @@ package flare.query
 				}
 			}
 			
-			return results;
+			return (_update || _map ? items : results);
 		}
 		
 		private function reset(aggrs:Array):void
@@ -329,13 +380,24 @@ package flare.query
 			}
 		}
 		
+		private function apply(item:Object):Object
+		{
+			// TODO: generate results in new object first to avoid overlap?
+			for each (var pair:Object in _select) {
+				var p:Property = Property.$(pair.name);
+				var expr:Expression = pair.expression;
+				p.setValue(item, expr.eval(item));
+			}
+			return item;
+		}
+		
 		private function project(item:Object):Object
 		{
 			var result:Object = {};
 			for each (var pair:Object in _select) {
-				var name:String = pair.name;
+				var p:Property = Property.$(pair.name);
 				var expr:Expression = pair.expression;
-				result[name] = expr.eval(item);
+				p.setValue(result, expr.eval(item));
 			}
 			return result;
 		}

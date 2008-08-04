@@ -119,6 +119,7 @@
     <classEntry path="flare.query.methods.stddev"/>
     <classEntry path="flare.query.methods.sub"/>
     <classEntry path="flare.query.methods.sum"/>
+    <classEntry path="flare.query.methods.update"/>
     <classEntry path="flare.query.methods.variance"/>
     <classEntry path="flare.query.methods.where"/>
     <classEntry path="flare.query.methods.xor"/>
