@@ -22,7 +22,8 @@ package flare.tests
 			addTest("testExpressions");
 			addTest("testExpressionMethods");
 			addTest("testQuery");
-			addTest("testAggregate");
+			addTest("testMap");
+			addTest("testUpdate");
 		}
 		
 		public function testParse():void
@@ -315,7 +316,7 @@ package flare.tests
 	  		assertEquals("c", r[2].cat); assertEquals(11, r[2].sum);
 		}
 		
-		public function testAggregate():void
+		public function testMap():void
 		{
 			var data:Array = [
 				{val:1, cat:"a"},
@@ -347,6 +348,46 @@ package flare.tests
 			r = q.eval(data);
 			for (i=0; i<r.length; ++i) {
 				assertEquals(data[i].val/sums[data[i].cat], r[i].val);
+			}
+		}
+		
+		public function testUpdate():void
+		{
+			var data:Array = [
+				{val:1, cat:"a"},
+				{val:2, cat:"a"},
+				{val:3, cat:"a"},
+				{val:4, cat:"b"},
+				{val:5, cat:"b"},
+				{val:6, cat:"b"},
+				{val:7, cat:"c"},
+				{val:8, cat:"c"},
+				{val:9, cat:"c"},
+				{val:10, cat:"d"}
+			];
+			
+			var sums:Object = {}
+			sums.all = sums.a = sums.b = sums.c = sums.d = 0;
+			for each (var o:Object in data) {
+				sums.all += o.val;
+				sums[o.cat] += o.val;
+			}
+			
+			var q:Query = update({norm:div("val",sum("val"))});
+			q.eval(data);
+			for (var i:uint=0; i<data.length; ++i) {
+				assertEquals(data[i].val/sums.all, data[i].norm);
+			}
+			
+			q.groupby("cat");
+			q.eval(data);
+			for (i=0; i<data.length; ++i) {
+				assertEquals(data[i].val/sums[data[i].cat], data[i].norm);
+			}
+			
+			update({val:add(1,"val")}).eval(data);
+			for (i=0; i<data.length; ++i) {
+				assertEquals(i+2, data[i].val);
 			}
 		}
 	}
