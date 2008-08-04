@@ -45,6 +45,7 @@ package flare.query
 		private var _where:Function;
 		private var _sort:Sort;
 		private var _aggrs:Array;
+		private var _map:Boolean = false;
 		
 		/**
 		 * Creates a new Query.
@@ -123,6 +124,33 @@ package flare.query
 		public function groupby(...terms):Query
 		{
 			_groupby = (terms.length > 0 ? terms : null);
+			return this;
+		}
+		
+		/**
+		 * Sets whether or not aggregate functions will be mapped to all
+		 * tuples in the data set. This allows the results of aggregate
+		 * operators to be applied for all tuples. For example, the
+		 * <code>map</code> directive allows queries of this form:
+		 * <pre>
+		 * var q:Query = select({a:div(a,sum(a))}).map().eval(...);
+		 * </pre>
+		 * <p>The result include normalized <code>a</code> values for
+		 * all tuples in the input data. Without the map directive, a
+		 * "group-by" for all data would be assumed and only a single tuple
+		 * would be returned in the result set (matching the normal behavior
+		 * of a SQL database). Map can also be specified with a
+		 * group-by clause, in which case the aggregate operators will be
+		 * handled separately for each group, but the result set will still
+		 * contain a result for every tuple in the input set.</p>
+		 * @param value if true (the default), aggregate operators will be
+		 *  applied (mapped) to all tuples; if false, normal group-by semantics
+		 *  will be used.
+		 * @return this query object
+		 */
+		public function map(value:Boolean=true):Query
+		{
+			_map = value;
 			return this;
 		}
 		
@@ -220,9 +248,12 @@ package flare.query
 				_sort.sort(results);
 			}
 			
-			if (_select == null) return results;
-			if (_aggrs == null && _groupby==null) return project(results);
-			return group(results);
+			if (_select == null)
+				return results;
+			else if (_aggrs == null && _groupby==null)
+				return projectAll(results);
+			else
+				return aggregate(results);
 		}
 		
 		/**
@@ -231,7 +262,7 @@ package flare.query
 		 * @param results the filtered query results array
 		 * @return query results array of projected objects
 		 */
-		protected function project(results:Array):Array
+		private function projectAll(results:Array):Array
 		{			
 			for (var i:int=0; i<results.length; ++i) {
 				var item:Object = {};
@@ -252,9 +283,9 @@ package flare.query
 		 * @param items the filtered query results array
 		 * @return aggregated query results array
 		 */
-		protected function group(items:Array):Array
+		private function aggregate(items:Array):Array
 		{
-			var i:int, item:Object;
+			var h:int, i:int, j:int, item:Object;
 			var results:Array = [], props:Array = [];
 			
 			// get group-by properties as key
@@ -268,15 +299,22 @@ package flare.query
 			
 			// process all groups
 			reset(_aggrs);
-			for (i=1, item=items[0]; i<=items.length; ++i) {
+			for (i=1, h=0, item=items[0]; i<=items.length; ++i) {
 				// update the aggregate functions
 				for each (var aggr:AggregateExpression in _aggrs) {
 					aggr.aggregate(items[i-1]);
 				}
 				// handle change of group
-				if (i==items.length || !sameGroup(props, item, items[i])) {
-					results.push(endGroup(item));
-					item = items[i];
+				if (i==items.length || 
+					!(_groupby==null || sameGroup(props, item, items[i])))
+				{
+					if (_map) {
+						for (j=h; j<i; ++j)
+							results.push(project(items[j]));
+					} else {
+						results.push(project(item));
+					}
+					item = items[(h=i)];
 					reset(_aggrs);
 				}
 			}
@@ -291,7 +329,7 @@ package flare.query
 			}
 		}
 		
-		private function endGroup(item:Object):Object
+		private function project(item:Object):Object
 		{
 			var result:Object = {};
 			for each (var pair:Object in _select) {
