@@ -22,6 +22,7 @@ package flare.tests
 			addTest("testExpressions");
 			addTest("testExpressionMethods");
 			addTest("testQuery");
+			addTest("testAggregate");
 		}
 		
 		public function testParse():void
@@ -314,5 +315,39 @@ package flare.tests
 	  		assertEquals("c", r[2].cat); assertEquals(11, r[2].sum);
 		}
 		
+		public function testAggregate():void
+		{
+			var data:Array = [
+				{val:1, cat:"a"},
+				{val:2, cat:"a"},
+				{val:3, cat:"a"},
+				{val:4, cat:"b"},
+				{val:5, cat:"b"},
+				{val:6, cat:"b"},
+				{val:7, cat:"c"},
+				{val:8, cat:"c"},
+				{val:9, cat:"c"},
+				{val:10, cat:"d"}
+			];
+			
+			var sums:Object = {}
+			sums.all = sums.a = sums.b = sums.c = sums.d = 0;
+			for each (var o:Object in data) {
+				sums.all += o.val;
+				sums[o.cat] += o.val;
+			}
+			
+			var q:Query = select({val:div("val",sum("val"))}).map();
+			var r:Array = q.eval(data);
+			for (var i:uint=0; i<r.length; ++i) {
+				assertEquals(data[i].val/sums.all, r[i].val);
+			}
+			
+			q.groupby("cat");
+			r = q.eval(data);
+			for (i=0; i<r.length; ++i) {
+				assertEquals(data[i].val/sums[data[i].cat], r[i].val);
+			}
+		}
 	}
 }
