@@ -373,21 +373,32 @@ package flare.tests
 				sums[o.cat] += o.val;
 			}
 			
+			// normalize across all items
 			var q:Query = update({norm:div("val",sum("val"))});
 			q.eval(data);
 			for (var i:uint=0; i<data.length; ++i) {
 				assertEquals(data[i].val/sums.all, data[i].norm);
 			}
 			
+			// normalize within category
 			q.groupby("cat");
 			q.eval(data);
 			for (i=0; i<data.length; ++i) {
 				assertEquals(data[i].val/sums[data[i].cat], data[i].norm);
 			}
 			
+			// check update without aggregates
 			update({val:add(1,"val")}).eval(data);
 			for (i=0; i<data.length; ++i) {
 				assertEquals(i+2, data[i].val);
+			}
+			
+			// ensure that value overwriting is not occurring
+			update({copy1:"val"},{val:add(1,"val")},{copy2:"val"}).eval(data);
+			for (i=0; i<data.length; ++i) {
+				assertEquals(i+2, data[i].copy1);
+				assertEquals(i+2, data[i].copy2);
+				assertEquals(i+3, data[i].val);
 			}
 		}
 	}
