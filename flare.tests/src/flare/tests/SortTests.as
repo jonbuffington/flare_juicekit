@@ -1,9 +1,11 @@
 package flare.tests
 {
+	import flare.util.Displays;
 	import flare.util.Sort;
-	import flash.display.Sprite;
+	
 	import flash.display.Shape;
-	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	
 	import unitest.TestCase;
 
 	public class SortTests extends TestCase
@@ -104,7 +106,7 @@ package flare.tests
 				for (i=0; i<test.items.length; ++i)
 					p.addChild(test.items[i]);
 				// sort
-				Sort.sortChildren(p, test.sort);
+				Displays.sortChildren(p, test.sort);
 				// check result
 				for (i=0; i<test.items.length; ++i)
 					assertEquals(test.check[i], p.getChildAt(i));

@@ -17,6 +17,7 @@ package flare.tests
 			addTest("containsNodes");
 			addTest("containsEdges");
 			addTest("removeNodes");
+			addTest("removeNodesWithEdges");
 			addTest("removeEdges");
 			addTest("createWithDefaults");
 			addTest("visit");
@@ -232,6 +233,21 @@ package flare.tests
 			assertEquals(N, data.nodes.length);
 		}
 		
+		public function removeNodesWithEdges():void
+		{
+			var n:NodeSprite, e:EdgeSprite;
+						
+			createEdges();
+			for (var i:uint=N; --i>=1;) {
+				n = data.nodes[i];
+				e = n.getInEdge(0);
+				data.removeNode(n);
+				assertFalse(data.edges.contains(e));
+				assertEquals(i-1, data.edges.length);
+			}
+			assertEquals(1, data.nodes.length);
+		}
+		
 		public function visit():void
 		{
 			createEdges();
@@ -245,17 +261,17 @@ package flare.tests
 			var count:int = 0;
 			
 			// visit nodes, count filtered on id
-			data.nodes.visit(counter, false, id10);
+			data.nodes.visit(counter, id10);
 			assertEquals(data.nodes.length-10, count);
 			
 			// visit all, count nodes only
 			count = 0;
-			data.visit(counter, null, false, NodeSprite);
+			data.visit(counter, null, NodeSprite);
 			assertEquals(data.nodes.length, count);
 			
 			// visit all, count edges only
 			count = 0;
-			data.visit(counter, null, false, EdgeSprite);
+			data.visit(counter, null, EdgeSprite);
 			assertEquals(data.edges.length, count);
 		}
 		

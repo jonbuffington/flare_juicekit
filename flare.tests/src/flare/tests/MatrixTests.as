@@ -1,8 +1,8 @@
 package flare.tests
 {
-	import flare.analytics.util.DenseMatrix;
-	import flare.analytics.util.IMatrix;
-	import flare.analytics.util.SparseMatrix;
+	import flare.util.matrix.DenseMatrix;
+	import flare.util.matrix.IMatrix;
+	import flare.util.matrix.SparseMatrix;
 	
 	import unitest.TestCase;
 
