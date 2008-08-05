@@ -1,6 +1,6 @@
 package flare.vis.controls
 {
-	import flare.vis.util.Transforms;
+	import flare.util.Displays;
 	
 	import flash.display.InteractiveObject;
 	import flash.display.Stage;
@@ -123,14 +123,14 @@ package flare.vis.controls
 			
 			if (!event.ctrlKey) {
 				dx = dy = NaN;
-				Transforms.panBy(_object, x-mx, y-my);
+				Displays.panBy(_object, x-mx, y-my);
 			} else {
 				if (isNaN(dx)) {
 					dx = event.stageX;
 					dy = event.stageY;
 				}
 				var dz:Number = 1 + (y-my)/100;
-				Transforms.zoomBy(_object, dz, dx, dy);
+				Displays.zoomBy(_object, dz, dx, dy);
 			}
 			mx = x;
 			my = y;
@@ -148,7 +148,7 @@ package flare.vis.controls
 		{
 			var dw:Number = 1.1 * event.delta;
 			var dz:Number = dw < 0 ? 1/Math.abs(dw) : dw;
-			Transforms.zoomBy(_object, dz);
+			Displays.zoomBy(_object, dz);
 		}
 		
 	} // end of class PanZoomControl

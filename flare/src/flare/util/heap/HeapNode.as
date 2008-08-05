@@ -1,4 +1,4 @@
-package flare.analytics.util
+package flare.util.heap
 {
 	/**
 	 * A node in a heap data structure.

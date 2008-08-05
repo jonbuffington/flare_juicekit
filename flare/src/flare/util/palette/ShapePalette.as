@@ -1,6 +1,6 @@
-package flare.vis.palette
+package flare.util.palette
 {
-	import flare.vis.util.Shapes;
+	import flare.util.Shapes;
 	
 	/**
 	 * Palette for shape values that maps integer indices to shape drawing

@@ -2,11 +2,11 @@ package flare.vis.operator.layout
 {
 	import flare.animate.Transitioner;
 	import flare.util.Arrays;
+	import flare.util.Shapes;
 	import flare.vis.data.DataSprite;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
 	import flare.vis.operator.Operator;
-	import flare.vis.util.Shapes;
 
 	/**
 	 * Layout that routes edges in a graph so that they form groups, reducing
@@ -84,14 +84,10 @@ package flare.vis.operator.layout
 				// set the bundling strength by adjusting control points
 				var b:Number = bundling, ib:Number = 1-b, N:int = p.length;
 				if (b < 1) {
-					o = t.$(u); 
-					ux = o.x;//o.shape==Shapes.BLOCK ? o.u + o.w/2 : o.x;
-					uy = o.y;//o.shape==Shapes.BLOCK ? o.v + o.h/2 : o.y;
-					o = t.$(v);
-					dx = o.x;//o.shape==Shapes.BLOCK ? o.u + o.w/2 : o.x;
-					dy = o.y;//o.shape==Shapes.BLOCK ? o.v + o.h/2 : o.y;
+					o = t.$(u); ux = o.x; uy = o.y;
+					o = t.$(v);	dx = o.x; dy = o.y;
 					dx = (dx-ux)/(N+2);
-					dy = (dx-uy)/(N+2);
+					dy = (dy-uy)/(N+2);
 
 					for (i=0; i<N; i+=2) {
 						p[i]   = b*p[i]   + ib*(ux + (i+2)*dx);
@@ -112,13 +108,8 @@ package flare.vis.operator.layout
 		private static function addPoint(p:Array, d:DataSprite, t:Transitioner):void
 		{
 			var o:Object = t.$(d);
-			/*if (o.shape == Shapes.BLOCK) {
-				p.push(o.u+o.w/2);
-				p.push(o.v+o.h/2);
-			} else {*/
-				p.push(o.x);
-				p.push(o.y);
-			//}
+			p.push(o.x);
+			p.push(o.y);
 		}
 		
 	} // end of class BundledEdgeRouter

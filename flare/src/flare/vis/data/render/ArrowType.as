@@ -1,11 +1,9 @@
-package flare.vis.util
-{
-	import flash.display.Graphics;
-	
+package flare.vis.data.render
+{	
 	/**
 	 * Utility class defining arrow types for directed edges.
 	 */
-	public class Arrows
+	public class ArrowType
 	{
 		/** Indicates that no arrows should be drawn. */
 		public static const NONE:String = "none";
@@ -17,10 +15,10 @@ package flare.vis.util
 		/**
 		 * This constructor will throw an error, as this is an abstract class. 
 		 */
-		public function Arrows()
+		public function ArrowType()
 		{
 			throw new Error("This is an abstract class.");
 		}
 
-	} // end of class Arrows
+	} // end of class ArrowType
 }

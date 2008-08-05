@@ -1,10 +1,10 @@
 package flare.vis.operator.layout
 {
 	import flare.util.Property;
+	import flare.util.Shapes;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataList;
 	import flare.vis.data.DataSprite;
-	import flare.vis.util.Shapes;
 	
 	import flash.geom.Point;
 	import flash.geom.Rectangle;

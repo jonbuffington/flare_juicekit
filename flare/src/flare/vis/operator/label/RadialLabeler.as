@@ -1,9 +1,9 @@
 package flare.vis.operator.label
 {
 	import flare.display.TextSprite;
+	import flare.util.Shapes;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
-	import flare.vis.util.Shapes;
 	
 	import flash.text.TextFormat;
 

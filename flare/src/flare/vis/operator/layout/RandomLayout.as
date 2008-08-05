@@ -25,12 +25,12 @@ package flare.vis.operator.layout
 		protected override function layout():void
 		{
 			var r:Rectangle = layoutBounds;
-			visualization.data.group(group).visit(function(d:DataSprite):void
+			visualization.data.visit(function(d:DataSprite):void
 			{
 				var o:Object = _t.$(d);
 				o.x = r.x + r.width * Math.random();
 				o.y = r.y + r.height * Math.random();
-			});
+			}, group);
 		}
 		
 	} // end of class RandomLayout

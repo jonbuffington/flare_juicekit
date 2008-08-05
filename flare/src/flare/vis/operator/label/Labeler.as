@@ -5,10 +5,10 @@ package flare.vis.operator.label
 	import flare.util.Filter;
 	import flare.util.IEvaluable;
 	import flare.util.Property;
+	import flare.util.Shapes;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.Operator;
-	import flare.vis.util.Shapes;
 	
 	import flash.display.Sprite;
 	import flash.text.TextFormat;
@@ -169,7 +169,7 @@ package flare.vis.operator.label
 		public override function operate(t:Transitioner=null):void
 		{
 			_t = (t ? t : Transitioner.DEFAULT);
-			visualization.data.group(group).visit(process, false, filter);
+			visualization.data.visit(process, group, filter);
 			_t = null;
 		}
 		

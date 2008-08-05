@@ -1,10 +1,10 @@
 package flare.vis.operator.layout
 {
+	import flare.util.Shapes;
 	import flare.util.Sort;
 	import flare.vis.data.Data;
 	import flare.vis.data.NodeSprite;
 	import flare.vis.data.render.ShapeRenderer;
-	import flare.vis.util.Shapes;
 	
 	import flash.geom.Rectangle;
 

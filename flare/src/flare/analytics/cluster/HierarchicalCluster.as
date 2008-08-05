@@ -137,19 +137,18 @@ package flare.analytics.cluster
 		 * @private
 		 * Constructs the cluster tree from the cluster results
 		 */
-		protected function buildTree(data:Data):Tree
+		protected function buildTree(list:DataList):Tree
 		{
 			var tree:Tree = new Tree();
 			
 			var e:MergeEdge, i:int, j:int, ii:int, map:Object = {};
 			var l:NodeSprite, r:NodeSprite, p:NodeSprite;
-			var g:DataList = data.group(group);
 			
 			// populate the leaf notes
 			for (i=0; i<_size; ++i) {
 				map[i] = (p = new NodeSprite());
-				p.data = g[i].data;
-				p.props.node = g[i];
+				p.data = list[i].data;
+				p.props.node = list[i];
 				p.props.size = 0;
 			}
 			

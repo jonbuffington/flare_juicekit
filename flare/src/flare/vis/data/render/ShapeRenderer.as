@@ -1,7 +1,7 @@
 package flare.vis.data.render
 {
+	import flare.util.Shapes;
 	import flare.vis.data.DataSprite;
-	import flare.vis.util.Shapes;
 	
 	import flash.display.Graphics;
 

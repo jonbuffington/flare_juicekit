@@ -1,11 +1,10 @@
 package flare.vis.data.render
 {
 	import flare.util.Geometry;
+	import flare.util.Shapes;
 	import flare.vis.data.DataSprite;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;
-	import flare.vis.util.Arrows;
-	import flare.vis.util.Shapes;
 	
 	import flash.display.Graphics;
 	import flash.geom.Point;
@@ -23,7 +22,7 @@ package flare.vis.data.render
 	 * <code>caps</code> properties).
 	 */
 	public class EdgeRenderer implements IRenderer
-	{
+	{		
 		private static const ROOT3:Number = Math.sqrt(3);
 		
 		private static var _instance:EdgeRenderer = new EdgeRenderer();
@@ -62,7 +61,7 @@ package flare.vis.data.render
 			var dx:Number, dy:Number, dd:Number;
 
 			// modify end points as needed to accomodate arrow
-			if (e.arrowType != Arrows.NONE)
+			if (e.arrowType != ArrowType.NONE)
 			{
 				// determine arrow head size
 				var ah:Number = e.arrowHeight, aw:Number = e.arrowWidth/2;
@@ -93,7 +92,7 @@ package flare.vis.data.render
 				// set final point positions
 				dd = e.lineWidth/2;
 				// if drawing as lines, offset arrow tip by half the line width
-				if (e.arrowType == Arrows.LINES) {
+				if (e.arrowType == ArrowType.LINES) {
 					_p.x -= dd*dx;
 					_p.y -= dd*dy;
 					dd += e.lineWidth;
@@ -141,19 +140,19 @@ package flare.vis.data.render
 			}
 			
 			// draw an arrow
-			if (e.arrowType != Arrows.NONE) {
+			if (e.arrowType != ArrowType.NONE) {
 				// get other arrow points
 				x1 = _p.x - ah*dx + aw*dy; y1 = _p.y - ah*dy - aw*dx;
 				x2 = _p.x - ah*dx - aw*dy; y2 = _p.y - ah*dy + aw*dx;
 								
-				if (e.arrowType == Arrows.TRIANGLE) {
+				if (e.arrowType == ArrowType.TRIANGLE) {
 					g.lineStyle();
 					g.moveTo(_p.x, _p.y);
 					g.beginFill(e.lineColor, e.lineAlpha);
 					g.lineTo(x1, y1);
 					g.lineTo(x2, y2);
 					g.endFill();
-				} else if (e.arrowType == Arrows.LINES) {
+				} else if (e.arrowType == ArrowType.LINES) {
 					g.moveTo(x1, y1);
 					g.lineTo(_p.x, _p.y);
 					g.lineTo(x2, y2);

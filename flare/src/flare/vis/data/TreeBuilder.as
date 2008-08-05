@@ -1,9 +1,9 @@
 package flare.vis.data
 {
-	import flare.analytics.util.FibonacciHeap;
-	import flare.analytics.util.HeapNode;
 	import flare.util.IEvaluable;
 	import flare.util.Property;
+	import flare.util.heap.FibonacciHeap;
+	import flare.util.heap.HeapNode;
 	
 	import flash.utils.Dictionary;
 

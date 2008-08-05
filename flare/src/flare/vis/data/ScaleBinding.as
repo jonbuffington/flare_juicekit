@@ -307,7 +307,7 @@ package flare.vis.data
 		/** @private */
 		protected function buildScale(stats:Stats):Scale
 		{
-			var type:String = _scaleType ? _scaleType : ScaleType.LINEAR;
+			var type:String = _scaleType ? _scaleType : ScaleType.UNKNOWN;
 			var vals:Array = _ordinals ? _ordinals : stats.distinctValues;
 			var scale:Scale;
 			

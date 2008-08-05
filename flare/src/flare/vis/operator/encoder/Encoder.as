@@ -3,11 +3,11 @@ package flare.vis.operator.encoder
 	import flare.animate.Transitioner;
 	import flare.util.Filter;
 	import flare.util.Property;
+	import flare.util.palette.Palette;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.data.ScaleBinding;
 	import flare.vis.operator.Operator;
-	import flare.vis.palette.Palette;
 
 	/**
 	 * Base class for Operators that perform encoding of visual variables such
@@ -91,14 +91,15 @@ package flare.vis.operator.encoder
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
+			if (visualization == null) return;
+			
 			_t = (t!=null ? t : Transitioner.DEFAULT);
 			var p:Property = Property.$(_binding.property);
 			_binding.updateBinding();
 			
-			if (visualization == null) return;
 			visualization.data.visit(function(d:DataSprite):void {
 				_t.setValue(d, _target, encode(p.getValue(d)));
-			}, _binding.group, false, _filter);
+			}, _binding.group, _filter);
 			
 			_t = null;
 		}

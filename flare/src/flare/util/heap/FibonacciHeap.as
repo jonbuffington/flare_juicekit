@@ -1,4 +1,4 @@
-package flare.analytics.util
+package flare.util.heap
 {
 	/**
 	 * A Fibonacci heap data structure for maintaining a sorted priority queue.

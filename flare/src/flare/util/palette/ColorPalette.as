@@ -1,4 +1,4 @@
-package flare.vis.palette
+package flare.util.palette
 {
 	import flare.util.Colors;
 	

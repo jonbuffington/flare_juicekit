@@ -5,9 +5,9 @@ package flare.vis.legend
 	import flare.scale.IScaleMap;
 	import flare.scale.Scale;
 	import flare.util.Colors;
+	import flare.util.Orientation;
 	import flare.util.Stats;
-	import flare.vis.operator.layout.Orientation;
-	import flare.vis.palette.ColorPalette;
+	import flare.util.palette.ColorPalette;
 	
 	import flash.display.GradientType;
 	import flash.display.Graphics;

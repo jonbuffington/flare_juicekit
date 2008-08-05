@@ -2,7 +2,7 @@ package flare.vis.legend
 {
 	import flare.display.RectSprite;
 	import flare.display.TextSprite;
-	import flare.vis.util.Shapes;
+	import flare.util.Shapes;
 	
 	import flash.display.Graphics;
 	import flash.display.Shape;

@@ -1,4 +1,4 @@
-package flare.vis.operator.layout
+package flare.util
 {
 	/**
 	 * Constants defining layout orientations.

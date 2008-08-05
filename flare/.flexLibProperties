@@ -11,12 +11,6 @@
     <classEntry path="flare.analytics.graph.ShortestPaths"/>
     <classEntry path="flare.analytics.graph.SpanningTree"/>
     <classEntry path="flare.analytics.optimization.AspectRatioBanker"/>
-    <classEntry path="flare.analytics.util.DenseMatrix"/>
-    <classEntry path="flare.analytics.util.FibonacciHeap"/>
-    <classEntry path="flare.analytics.util.HeapNode"/>
-    <classEntry path="flare.analytics.util.IMatrix"/>
-    <classEntry path="flare.analytics.util.MatrixUtil"/>
-    <classEntry path="flare.analytics.util.SparseMatrix"/>
     <classEntry path="flare.animate.Easing"/>
     <classEntry path="flare.animate.FunctionSequence"/>
     <classEntry path="flare.animate.ISchedulable"/>
@@ -49,8 +43,6 @@
     <classEntry path="flare.data.converters.IDataConverter"/>
     <classEntry path="flare.data.converters.JSONConverter"/>
     <classEntry path="flare.display.DirtySprite"/>
-    <classEntry path="flare.display.Displays"/>
-    <classEntry path="flare.display.IRenderable"/>
     <classEntry path="flare.display.LineSprite"/>
     <classEntry path="flare.display.RectSprite"/>
     <classEntry path="flare.display.TextSprite"/>
@@ -136,15 +128,28 @@
     <classEntry path="flare.util.Arrays"/>
     <classEntry path="flare.util.Colors"/>
     <classEntry path="flare.util.Dates"/>
+    <classEntry path="flare.util.Displays"/>
     <classEntry path="flare.util.Filter"/>
     <classEntry path="flare.util.Geometry"/>
     <classEntry path="flare.util.IEvaluable"/>
     <classEntry path="flare.util.IPredicate"/>
+    <classEntry path="flare.util.IValueProxy"/>
     <classEntry path="flare.util.Maths"/>
+    <classEntry path="flare.util.Orientation"/>
     <classEntry path="flare.util.Property"/>
+    <classEntry path="flare.util.Shapes"/>
     <classEntry path="flare.util.Sort"/>
     <classEntry path="flare.util.Stats"/>
     <classEntry path="flare.util.Strings"/>
+    <classEntry path="flare.util.heap.FibonacciHeap"/>
+    <classEntry path="flare.util.heap.HeapNode"/>
+    <classEntry path="flare.util.matrix.DenseMatrix"/>
+    <classEntry path="flare.util.matrix.IMatrix"/>
+    <classEntry path="flare.util.matrix.SparseMatrix"/>
+    <classEntry path="flare.util.palette.ColorPalette"/>
+    <classEntry path="flare.util.palette.Palette"/>
+    <classEntry path="flare.util.palette.ShapePalette"/>
+    <classEntry path="flare.util.palette.SizePalette"/>
     <classEntry path="flare.vis.Visualization"/>
     <classEntry path="flare.vis.axis.Axes"/>
     <classEntry path="flare.vis.axis.Axis"/>
@@ -170,6 +175,7 @@
     <classEntry path="flare.vis.data.ScaleBinding"/>
     <classEntry path="flare.vis.data.Tree"/>
     <classEntry path="flare.vis.data.TreeBuilder"/>
+    <classEntry path="flare.vis.data.render.ArrowType"/>
     <classEntry path="flare.vis.data.render.EdgeRenderer"/>
     <classEntry path="flare.vis.data.render.IRenderer"/>
     <classEntry path="flare.vis.data.render.ShapeRenderer"/>
@@ -210,19 +216,11 @@
     <classEntry path="flare.vis.operator.layout.IndentedTreeLayout"/>
     <classEntry path="flare.vis.operator.layout.Layout"/>
     <classEntry path="flare.vis.operator.layout.NodeLinkTreeLayout"/>
-    <classEntry path="flare.vis.operator.layout.Orientation"/>
     <classEntry path="flare.vis.operator.layout.PieLayout"/>
     <classEntry path="flare.vis.operator.layout.RadialTreeLayout"/>
     <classEntry path="flare.vis.operator.layout.RandomLayout"/>
     <classEntry path="flare.vis.operator.layout.StackedAreaLayout"/>
     <classEntry path="flare.vis.operator.layout.TreeMapLayout"/>
-    <classEntry path="flare.vis.palette.ColorPalette"/>
-    <classEntry path="flare.vis.palette.Palette"/>
-    <classEntry path="flare.vis.palette.ShapePalette"/>
-    <classEntry path="flare.vis.palette.SizePalette"/>
-    <classEntry path="flare.vis.util.Arrows"/>
-    <classEntry path="flare.vis.util.Shapes"/>
-    <classEntry path="flare.vis.util.Transforms"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

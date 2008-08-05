@@ -7,8 +7,8 @@ package flare.vis.operator.layout
 	import flare.scale.TimeScale;
 	import flare.util.Arrays;
 	import flare.util.Maths;
+	import flare.util.Orientation;
 	import flare.util.Stats;
-	import flare.vis.axis.Axis;
 	import flare.vis.axis.CartesianAxes;
 	import flare.vis.data.NodeSprite;
 	
@@ -221,7 +221,7 @@ package flare.vis.operator.layout
 	            } else {
 	            	obj.points = Arrays.copy(_poly, d.props.poly);
 	            }
-	        }, true);
+	        }, null, true);
 		}
 		
 		private function peaks():Number

@@ -449,9 +449,12 @@ package flare.vis.data
 		/** @private */
 		protected function onRemoveNode(evt:DataEvent):void
 		{
-			for each (var n:NodeSprite in evt.items)
-				n.visitEdges(removeEdge,
-					NodeSprite.GRAPH_LINKS | NodeSprite.REVERSE);
+			for each (var n:NodeSprite in evt.items) {
+				for (var i:uint=n.outDegree; --i>=0;)
+					removeEdge(n.getOutEdge(i));
+				for (i=n.inDegree; --i>=0;)
+					removeEdge(n.getInEdge(i));
+			}
 			fireEvent(evt);
 		}
 		
@@ -501,24 +504,24 @@ package flare.vis.data
 		 *  return true, the visitation is ended with an early exit
 		 * @param group the data group to visit (e.g., NODES or EDGES). If this
 		 *  value is null, both nodes and edges will be visited.
-		 * @param reverse an optional parameter indicating if the visitation
-		 *  traversal should be done in reverse (the default is false).
 		 * @param filter an optional predicate function indicating which
 		 *  elements should be visited. Only items for which this function
 		 *  returns true will be visited.
+  		 * @param reverse an optional parameter indicating if the visitation
+		 *  traversal should be done in reverse (the default is false).
 		 * @return true if the visitation was interrupted with an early exit
 		 */
 		public function visit(v:Function, group:String=null,
-			reverse:Boolean=false, filter:*=null):Boolean
+			filter:*=null, reverse:Boolean=false):Boolean
 		{
 			if (group == null) {
-				if (_edges.length > 0 && _edges.visit(v, reverse, filter))
+				if (_edges.length > 0 && _edges.visit(v, filter, reverse))
 					return true;
-				if (_nodes.length > 0 && _nodes.visit(v, reverse, filter))
+				if (_nodes.length > 0 && _nodes.visit(v, filter, reverse))
 					return true;
 			} else {
 				var list:DataList = _groups[group];
-				if (list.length > 0 && list.visit(v, reverse, filter))
+				if (list.length > 0 && list.visit(v, filter, reverse))
 					return true;
 			}
 			return false;

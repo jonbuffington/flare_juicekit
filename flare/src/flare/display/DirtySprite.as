@@ -31,7 +31,7 @@ package flare.display
 	 * <code>renderDirty()</code> method can be invoked to manually force
 	 * each dirty sprite to be redrawn.</p>
 	 */
-	public class DirtySprite extends Sprite implements IRenderable
+	public class DirtySprite extends Sprite
 	{
 		private static var __stage:Stage;
 		private static var __installed:Boolean = false;

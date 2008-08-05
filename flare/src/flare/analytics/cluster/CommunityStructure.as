@@ -1,16 +1,8 @@
 package flare.analytics.cluster
 {
-	import flare.analytics.util.IMatrix;
-	import flare.analytics.util.MatrixUtil;
 	import flare.animate.Transitioner;
-	import flare.util.Arrays;
-	import flare.util.Property;
-	import flare.util.Sort;
-	import flare.vis.data.Data;
-	import flare.vis.data.EdgeSprite;
-	import flare.vis.data.NodeSprite;
-	import flare.vis.data.Tree;
-	import flare.vis.operator.Operator;
+	import flare.util.matrix.IMatrix;
+	import flare.vis.data.DataList;
 	
 	/**
 	 * Hierarchically clusters a network based on inferred community structure.
@@ -38,21 +30,21 @@ package flare.analytics.cluster
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
-			calculate(visualization.data, edgeWeights);
+			calculate(visualization.data.group(group), edgeWeights);
 		}
 		
 		/**
 		 * Calculates the community structure clustering. As a result of this
 		 * method, a cluster tree will be computed and graph nodes will be
 		 * annotated with both community and sequence indices.
-		 * @param data the graph to cluster
+		 * @param list the data list to cluster
 		 * @param w an edge weighting function. If null, each edge will be
 		 *  given weight one.
 		 */
-		public function calculate(data:Data, w:Function=null):void
+		public function calculate(list:DataList, w:Function=null):void
 		{
-			compute(MatrixUtil.adjacencyMatrix(data, w));
-			_tree = buildTree(data);
+			compute(list.adjacencyMatrix(w));
+			_tree = buildTree(list);
 			labelNodes();
 		}
 		

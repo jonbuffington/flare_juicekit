@@ -7,6 +7,8 @@ package flare.vis.data
 	import flare.util.Property;
 	import flare.util.Sort;
 	import flare.util.Stats;
+	import flare.util.matrix.DenseMatrix;
+	import flare.util.matrix.IMatrix;
 	import flare.vis.events.DataEvent;
 	
 	import flash.events.Event;
@@ -173,6 +175,8 @@ package flare.vis.data
 			return true;
 		}
 		
+		// -- Data Representations --------------------------------------------
+		
 		/**
 		 * Returns an array of data objects for each item in this data list.
 		 * Data objects are retrieved from the "data" property for each item.
@@ -185,7 +189,80 @@ package flare.vis.data
 				a[i] = _list[i].data;
 			}
 			return a;
-		}				
+		}
+		
+		/**
+		 * Creates a new adjacency matrix representing the connections between
+		 * items in this DataList. This method should only be applied when the
+		 * items contained in this list are <code>NodeSprite</code> instances.
+		 * The method takes an optional function to compute edge weights.
+		 * @param w the edge weight function. This function should take an
+		 *  <code>EdgeSprite</code> as input and return a <code>Number</code>.
+		 * @param mat a matrix instance in which to store the adjacency matrix
+		 *  values. If this value is null, a new <code>DenseMatrix</code> will
+		 *  be constructed.
+		 * @return the adjacency matrix
+		 */
+		public function adjacencyMatrix(w:Function=null,
+			mat:IMatrix=null):IMatrix
+		{
+			var N:int = length, k:int = 0;
+			
+			// build dictionary of nodes
+			var idx:Dictionary = new Dictionary();
+			for (k=0; k<N; ++k) {
+				if (!(_list[k] is NodeSprite))
+					throw new Error("Only NodeSprites can be used to " + 
+							"create an adjacency matrix.");
+				idx[_list[k]] = k;
+			}
+			
+			// initialize matrix
+			if (mat) {
+				mat.init(N, N)
+			} else {
+				mat = new DenseMatrix(N, N);
+			}
+			
+			// build adjacency matrix
+			for each (var n:NodeSprite in _list) {
+				var i:int = idx[n];
+				n.visitEdges(function(e:EdgeSprite):void {
+					if (idx[e.target] == undefined) return;
+					var j:int = idx[e.target];
+					var v:Number = w==null ? 1 : w(e);
+					mat.$(i,j,v); mat.$(j,i,v);
+				}, NodeSprite.OUT_LINKS);
+			}
+			return mat;
+		}
+		
+		/**
+		 * Creates a new distance matrix based on a distance function.
+		 * @param d the distance function. This should take two
+		 *  <code>DataSprite</code> instances and return a <code>Number</code>
+		 * @param mat a matrix instance in which to store the adjacency matrix
+		 *  values. If this value is null, a new <code>DenseMatrix</code> will
+		 *  be constructed.
+		 * @return the distance matrix
+		 */
+		public function distanceMatrix(d:Function, mat:IMatrix=null):IMatrix
+		{
+			var N:int = length, i:uint, j:uint;
+			
+			if (mat) {
+				mat.init(N, N);
+			} else {
+				mat = new DenseMatrix(N, N);
+			}
+			for (i=0; i<N; ++i) {
+				for (j=i+1; j<N; ++j) {
+					var v:Number = d(_list[i], _list[j]);
+					mat.$(i,j,v); mat.$(j,i,v);
+				}
+			}
+			return mat;
+		}
 		
 
 		// -- Sort ------------------------------------------------------------
@@ -219,14 +296,14 @@ package flare.vis.data
 		 * on each element of the list. If the visitor function returns a
 		 * Boolean true value, the iteration will stop with an early exit.
 		 * @param visitor the visitor function to be invoked on each item
-		 * @param reverse optional flag indicating if the list should be
-		 *  visited in reverse order
 		 * @param filter an optional boolean-valued function indicating which
 		 *  items should be visited
+		 * @param reverse optional flag indicating if the list should be
+		 *  visited in reverse order
 		 * @return true if the visitation was interrupted with an early exit
 		 */		
-		public function visit(visitor:Function, reverse:Boolean=false,
-			filter:*=null):Boolean
+		public function visit(visitor:Function, filter:*=null,
+			reverse:Boolean=false):Boolean
 		{
 			_visiting++; // mark a visit in process
 			var a:Array = _list; // use our own reference to the list
@@ -353,19 +430,9 @@ package flare.vis.data
 		public function setProperty(name:String, value:*, t:*=null,
 			filter:*=null):Transitioner
 		{
-			var o:Object;
 			var trans:Transitioner = Transitioner.instance(t);
 			var f:Function = Filter.$(filter);
-			var v:Function = value is Function ? value as Function
-				 : value is IEvaluable ? IEvaluable(value).eval : null;
-			
-			if (v != null) {
-				for each (o in _list) if (f==null || f(o))
-					trans.setValue(o, name, v(trans.$(o)));
-			} else {
-				for each (o in _list) if (f==null || f(o))
-					trans.setValue(o, name, value);
-			}
+			Arrays.setProperty(_list, name, value, f, trans);
 			return trans;
 		}
 		
@@ -397,23 +464,10 @@ package flare.vis.data
 		public function setProperties(vals:Object, t:*=null,
 			filter:*=null):Transitioner
 		{
-			var o:Object;
 			var trans:Transitioner = Transitioner.instance(t);
 			var f:Function = Filter.$(filter);
-			
-			for (var name:String in vals) {
-				var value:* = vals[name];
-				var v:Function = value is Function ? value as Function
-					 : value is IEvaluable ? IEvaluable(value).eval : null;
-				
-				if (v != null) {
-					for each (o in _list) if (f==null || f(o))
-						trans.setValue(o, name, v(trans.$(o)));
-				} else {
-					for each (o in _list) if (f==null || f(o))
-						trans.setValue(o, name, value);
-				}
-			}
+			for (var name:String in vals)
+				Arrays.setProperty(_list, name, vals[name], f, trans);
 			return trans;
 		}
 		

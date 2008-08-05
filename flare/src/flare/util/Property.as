@@ -1,5 +1,5 @@
 package flare.util
-{	
+{		
 	/**
 	 * Utility class for accessing arbitrary property chains, allowing
 	 * nested property expressions (e.g., <code>x.a.b.c</code> or 
@@ -9,10 +9,11 @@ package flare.util
 	 */
 	public class Property implements IEvaluable, IPredicate
 	{
-		private static var DELIMITER:* = /[\.|\[(.*)\]]/;
+		private static const DELIMITER:* = /[\.|\[(.*)\]]/;
 		
 		private static var __cache:Object = {};
 		private static var __stack:Array = [];
+		private static var __proxy:IValueProxy;
 
 		/**
 		 * Requests a Property instance for the given property name. This is a
@@ -41,6 +42,13 @@ package flare.util
 			__cache = {};
 		}
 
+		/** A minimal <code>IValueProxy</code> instance that gets and sets
+		 *  property values through <code>Property</code> instances. */
+		public static function get proxy():IValueProxy {
+			if (__proxy == null) __proxy = new PropertyProxy();
+			return __proxy;
+		}
+		
 		// --------------------------------------------------------------------
 		
 		private var _field:String;
@@ -174,4 +182,25 @@ package flare.util
 		}
 		
 	} // end of class Property
+}
+
+import flare.util.IValueProxy;
+import flare.util.Property;
+
+/** A simple value proxy that uses Property instances to set and
+ *  get values for input objects. */
+class PropertyProxy implements IValueProxy
+{
+	public function setValue(o:Object, name:String, value:*):void
+	{
+		Property.$(name).setValue(o, value);
+	}
+	public function getValue(o:Object, name:String):*
+	{
+		Property.$(name).getValue(o);
+	}
+	public function $(o:Object):Object
+	{
+		return o;
+	}
 }

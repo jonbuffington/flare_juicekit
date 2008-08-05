@@ -1,7 +1,5 @@
 package flare.util
-{
-	import flash.utils.Dictionary;
-	
+{	
 	/**
 	 * Utility methods for creating filter functions. The static
 	 * <code>$()</code> method takes an arbitrary object and generates a

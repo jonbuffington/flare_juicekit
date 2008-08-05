@@ -1,7 +1,7 @@
 package flare.vis.data
 {
+	import flare.vis.data.render.ArrowType;
 	import flare.vis.data.render.EdgeRenderer;
-	import flare.vis.util.Arrows;
 	
 	/**
 	 * Visually represents a connection between two data elements. Examples
@@ -34,7 +34,7 @@ package flare.vis.data
 		public var directed:Boolean = false;
 		
 		/** The type of arrow to be used on the edge. Default is Arrows.NONE */
-		public var arrowType:String = Arrows.NONE;
+		public var arrowType:String = ArrowType.NONE;
 		/** The width of the arrow head. The default is -1, in which case the
 		 *  width is automatically determined based on the arrow height or
 		 *  the line width. */

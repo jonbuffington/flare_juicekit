@@ -1,7 +1,5 @@
-package flare.vis.util
-{
-	import flare.util.Arrays;
-	
+package flare.util
+{	
 	import flash.display.Graphics;
 	
 	/**

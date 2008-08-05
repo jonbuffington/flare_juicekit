@@ -77,13 +77,13 @@ package flare.vis.operator.filter
 					var visible:Boolean = predicate(d);
 					d.alpha = visible ? 1 : 0;
 					d.visible = visible;
-				}, group, false, filter);
+				}, group, filter);
 			} else {
 				visualization.data.visit(function(d:DataSprite):void {
 					var visible:Boolean = predicate(d);
 					t.$(d).alpha = visible ? 1 : 0;
 					t.$(d).visible = visible;
-				}, group, false, filter);
+				}, group, filter);
 			}
 		}
 		

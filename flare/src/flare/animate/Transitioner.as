@@ -1,6 +1,7 @@
 package flare.animate
 {
 	import flare.util.Property;
+	import flare.util.IValueProxy;
 	
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
@@ -79,7 +80,7 @@ package flare.animate
 	 * <code>dispose</code> method for more information.
 	 * </p>
 	 */
-	public class Transitioner extends Parallel
+	public class Transitioner extends Parallel implements IValueProxy
 	{
 		/** The default, immediate-mode transitioner instance. */
 		public static const DEFAULT:Transitioner = new Transitioner(NaN);
@@ -498,10 +499,11 @@ package flare.animate
 	} // end of class Transitioner
 }
 
-import flash.utils.Proxy;
-import flash.utils.flash_proxy;
 import flare.animate.Transitioner;
 import flare.util.Property;
+
+import flash.utils.flash_proxy;
+import flash.utils.Proxy;
 
 /**
  * Helper class that gets/sets values for a Transitioner.

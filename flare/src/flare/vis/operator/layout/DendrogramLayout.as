@@ -1,6 +1,6 @@
 package flare.vis.operator.layout
 {
-	import flare.animate.Transitioner;
+	import flare.util.Orientation;
 	import flare.util.Property;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;

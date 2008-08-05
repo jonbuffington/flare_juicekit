@@ -3,7 +3,7 @@ package flare.vis
 	import flare.animate.ISchedulable;
 	import flare.animate.Scheduler;
 	import flare.animate.Transitioner;
-	import flare.display.Displays;
+	import flare.util.Displays;
 	import flare.vis.axis.Axes;
 	import flare.vis.axis.CartesianAxes;
 	import flare.vis.controls.ControlList;
@@ -190,7 +190,7 @@ package flare.vis
 			_controls.visualization = this;
 			
 			Displays.addStageListener(this, Event.RENDER,
-				setHitArea, false, int.MIN_VALUE);
+				setHitArea, false, int.MIN_VALUE+1);
 		}
 		
 		/**
@@ -354,17 +354,23 @@ package flare.vis
 		 * Creates a sprite covering the bounds for this visualization and
 		 * sets it to be this visualization's hit area. Typically, this
 		 * method is triggered in response to a <code>RENDER</code> event.
+		 * <p>To disable automatic hit area calculation, use
+		 * <code>stage.removeEventListener(Event.RENDER, vis.setHitArea)</code>
+		 * <em>after</em> the visualization has been added to the stage.</p>
 		 * @param evt an event that triggered the hit area update
 		 */
-		protected function setHitArea(evt:Event=null):void
+		public function setHitArea(evt:Event=null):void
 		{
 			// get the union of the specified and actual bounds
-			var db:Rectangle = bounds;
 			var rb:Rectangle = getBounds(this);
-			var x1:Number = Math.min(db.left, rb.left);
-			var y1:Number = Math.min(db.top, rb.top);
-			var x2:Number = Math.max(db.right, rb.right);
-			var y2:Number = Math.max(db.bottom, rb.bottom);
+			var x1:Number = rb.left, x2:Number = rb.right;
+			var y1:Number = rb.top, y2:Number = rb.bottom;
+			if (bounds) {
+				x1 = Math.min(x1, bounds.left);
+				y1 = Math.min(y1, bounds.top);
+				x2 = Math.max(x2, bounds.right);
+				y2 = Math.max(y1, bounds.bottom);
+			}
 			
 			// create the hit area sprite
 			var hit:Sprite = getChildByName("_hitArea") as Sprite;

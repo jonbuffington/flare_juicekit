@@ -1,4 +1,4 @@
-package flare.analytics.util
+package flare.util.matrix
 {
 	import flash.utils.Dictionary;
 	
@@ -32,10 +32,7 @@ package flare.analytics.util
 		 * @param cols the number of columns
 		 */
 		public function SparseMatrix(rows:int, cols:int) {
-			_r = rows;
-			_c = cols;
-			_nnz = 0;
-			_v = new Dictionary();
+			init(rows, cols);
 		}
 		
 		/** @inheritDoc */
@@ -45,6 +42,14 @@ package flare.analytics.util
 				m._v[key] = _v[key];
 			}
 			return m;
+		}
+		
+		/** @inheritDoc */
+		public function init(rows:int, cols:int):void {
+			_r = rows;
+			_c = cols;
+			_nnz = 0;
+			_v = new Dictionary();
 		}
 		
 		/** @inheritDoc */

@@ -1,9 +1,9 @@
 package flare.vis.operator.encoder
 {
 	import flare.scale.ScaleType;
+	import flare.util.palette.Palette;
+	import flare.util.palette.ShapePalette;
 	import flare.vis.data.Data;
-	import flare.vis.palette.Palette;
-	import flare.vis.palette.ShapePalette;
 	
 	/**
 	 * Encodes a data field into shape values, using an ordinal scale.

@@ -1,4 +1,4 @@
-package flare.vis.palette
+package flare.util.palette
 {
 	/**
 	 * Palette for size values represeneted as scale factors. The SizePalette

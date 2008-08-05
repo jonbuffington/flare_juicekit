@@ -1,6 +1,7 @@
 package flare.vis.operator.layout
 {
 	import flare.util.Arrays;
+	import flare.util.Orientation;
 	import flare.vis.data.NodeSprite;
 	
 	import flash.geom.Point;

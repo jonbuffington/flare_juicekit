@@ -1,17 +1,9 @@
 package flare.analytics.cluster
 {
-	import flare.analytics.util.IMatrix;
-	import flare.analytics.util.MatrixUtil;
 	import flare.animate.Transitioner;
-	import flare.util.Arrays;
-	import flare.util.Property;
-	import flare.util.Sort;
+	import flare.util.matrix.IMatrix;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataList;
-	import flare.vis.data.EdgeSprite;
-	import flare.vis.data.NodeSprite;
-	import flare.vis.data.Tree;
-	import flare.vis.operator.Operator;
 	
 	/**
 	 * Hierarchically clusters a set of items using agglomerative clustering.
@@ -52,20 +44,20 @@ package flare.analytics.cluster
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
-			calculate(visualization.data, group, distance);
+			calculate(visualization.data.group(group), distance);
 		}
 		
 		/**
 		 * Calculates the community structure clustering. As a result of this
 		 * method, a cluster tree will be computed and graph nodes will be
 		 * annotated with both community and sequence indices.
-		 * @param data the graph to cluster
+		 * @param list a data list to cluster
 		 * @param d a distance function
 		 */
-		public function calculate(data:Data, group:String, d:Function):void
+		public function calculate(list:DataList, d:Function):void
 		{
-			compute(MatrixUtil.distanceMatrix(data.group(group), d));
-			_tree = buildTree(data);
+			compute(list.distanceMatrix(d));
+			_tree = buildTree(list);
 			labelNodes();
 		}
 		

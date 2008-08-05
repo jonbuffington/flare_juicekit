@@ -87,32 +87,6 @@ package flare.util
 			return a>b ? 1 : a<b ? -1 : 0;
 		}
 		
-		/**
-		 * Sorts the children of the given DisplayObjectContainer using
-		 * an optional comparator function.
-		 * @param d a display object container to sort. The sort may change the
-		 *  rendering order in which the contained display objects are drawn.
-		 * @param cmp an optional comparator Function or sort criteria. Sort
-		 *  criteria are expressed as an array of property names to sort on.
-		 *  These properties are accessed by sorting functions using the
-		 *  <code>Property</code> class. The default is to sort in ascending
-		 *  order. If the field name includes a "-" (negative sign) prefix,
-		 *  that variable will instead be sorted in descending order.
-		 */
-		public static function sortChildren(
-			d:DisplayObjectContainer, cmp:*=null):void
-		{
-			if (d==null) return;
-			var a:Array = new Array(d.numChildren);
-			for (var i:int=0; i<a.length; ++i) {
-				a[i] = d.getChildAt(i);
-			}
-			if (cmp==null) a.sort() else a.sort(getComparator(cmp));
-			for (i=0; i<a.length; ++i) {
-				d.setChildIndex(a[i], i);
-			}
-		}
-		
 		private static function getComparator(cmp:*):Function
 		{
 			var c:Function;
@@ -129,10 +103,10 @@ package flare.util
 		}
 		
 		/**
-		 * Creates a set of sorting functions using the specification given
-		 * in the input array. The resulting sorting functions can be used
+		 * Creates a comparator function using the specification given
+		 * by the input arguments. The resulting sorting function can be used
 		 * to sort objects based on their properties.
-		 * @param a A multi-parameter list of a single array containing a set
+		 * @param a A multi-parameter list or a single array containing a set
 		 * of data field names to sort on, in priority order. The default is
 		 * to sort in ascending order. If the field name includes a "-"
 		 * (negative sign) prefix, that variable will instead be sorted in

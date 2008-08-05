@@ -5,13 +5,13 @@ package flare.vis.legend
 	import flare.display.TextSprite;
 	import flare.scale.Scale;
 	import flare.scale.ScaleType;
-	import flare.util.IEvaluable;
+	import flare.util.Displays;
+	import flare.util.Orientation;
+	import flare.util.palette.ColorPalette;
+	import flare.util.palette.Palette;
+	import flare.util.palette.ShapePalette;
+	import flare.util.palette.SizePalette;
 	import flare.vis.data.ScaleBinding;
-	import flare.vis.operator.layout.Orientation;
-	import flare.vis.palette.ColorPalette;
-	import flare.vis.palette.Palette;
-	import flare.vis.palette.ShapePalette;
-	import flare.vis.palette.SizePalette;
 	
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
@@ -498,24 +498,8 @@ package flare.vis.legend
 		 */
 		public function setItemProperties(vals:Object, t:*=null):Transitioner
 		{
-			var o:Object, i:uint;
 			var trans:Transitioner = Transitioner.instance(t);
-			
-			for (var name:String in vals) {
-				var value:* = vals[name];
-				var v:Function = value is Function ? value as Function
-					 : value is IEvaluable ? IEvaluable(value).eval : null;
-				
-				if (v != null) {
-					for (i=0; i<items.numChildren; ++i) {
-						o = items.getChildAt(i);
-						trans.setValue(o, name, v(trans.$(o)));
-					}
-				} else {
-					for (i=0; i<items.numChildren; ++i)
-						trans.setValue(items.getChildAt(i), name, value);
-				}
-			}
+			Displays.setChildrenProperties(items, vals, trans);
 			return trans;
 		}
 		

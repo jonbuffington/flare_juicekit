@@ -1,9 +1,9 @@
 package flare.vis.operator.encoder
 {
 	import flare.scale.ScaleType;
+	import flare.util.palette.Palette;
+	import flare.util.palette.SizePalette;
 	import flare.vis.data.Data;
-	import flare.vis.palette.Palette;
-	import flare.vis.palette.SizePalette;
 	
 	/**
 	 * Encodes a data field into size values, using a scale transform and a
@@ -25,17 +25,26 @@ package flare.vis.operator.encoder
 		// --------------------------------------------------------------------
 		
 		/**
-		 * Creates a new SizeEncoder.
+		 * Creates a new SizeEncoder. By default, the scale type is set to
+		 * a quantile scale grouped into 5 bins. Adjust the values of the
+		 * <code>scale</code> property to change these defaults.
 		 * @param source the source property
 		 * @param group the data group to process
+		 * @param palette the size palette to use. If null, a default size
+		 *  palette will be used.
 		 */
-		public function SizeEncoder(source:String=null,group:String=Data.NODES)
+		public function SizeEncoder(source:String=null,
+			group:String=Data.NODES, palette:SizePalette=null)
 		{
 			super(source, "size", group);
 			_binding.scaleType = ScaleType.QUANTILE;
 			_binding.bins = 5;
-			_palette = new SizePalette();
-			_palette.is2D = (group != Data.EDGES);
+			if (palette) {
+				_palette = palette;
+			} else {
+				_palette = new SizePalette();
+				_palette.is2D = (group != Data.EDGES);
+			}
 		}
 		
 		/** @inheritDoc */

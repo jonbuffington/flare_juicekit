@@ -1,9 +1,9 @@
 package flare.analytics.graph
 {
-	import flare.analytics.util.FibonacciHeap;
-	import flare.analytics.util.HeapNode;
 	import flare.animate.Transitioner;
 	import flare.util.Property;
+	import flare.util.heap.FibonacciHeap;
+	import flare.util.heap.HeapNode;
 	import flare.vis.data.Data;
 	import flare.vis.data.EdgeSprite;
 	import flare.vis.data.NodeSprite;

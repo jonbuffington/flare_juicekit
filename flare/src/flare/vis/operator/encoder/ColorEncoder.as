@@ -2,9 +2,9 @@ package flare.vis.operator.encoder
 {
 	import flare.animate.Transitioner;
 	import flare.scale.ScaleType;
+	import flare.util.palette.ColorPalette;
+	import flare.util.palette.Palette;
 	import flare.vis.data.Data;
-	import flare.vis.palette.ColorPalette;
-	import flare.vis.palette.Palette;
 	
 	/**
 	 * Encodes a data field into color values, using a scale transform and
@@ -30,15 +30,17 @@ package flare.vis.operator.encoder
 		/**
 		 * Creates a new ColorEncoder.
 		 * @param source the source property
-		 * @param group the data group to encode
+		 * @param group the data group to encode ("nodes" by default)
 		 * @param target the target property ("lineColor" by default)
-		 * @param scaleType the type of scale to use (LINEAR by default)
+		 * @param scaleType the type of scale to use. If null, the scale type
+		 *  will be determined by the underlying <code>ScaleBinding</code>
+		 *  instance, based on the type of data.
 		 * @param palette the color palette to use. If null, a default color
-		 *  ramp will be used
+		 *  palette will be determined based on the scale type.
 		 */
 		public function ColorEncoder(source:String=null,
 			group:String=Data.NODES, target:String="lineColor",
-			scaleType:String="linear", palette:ColorPalette=null)
+			scaleType:String=null, palette:ColorPalette=null)
 		{
 			super(source, target, group);
 			_binding.scaleType = scaleType;
@@ -55,9 +57,8 @@ package flare.vis.operator.encoder
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
-			_ordinal = _binding.scaleType==ScaleType.CATEGORIES ||
-			           _binding.scaleType==ScaleType.ORDINAL;
 			_binding.updateBinding();
+			_ordinal = ScaleType.isOrdinal(_binding.scaleType);			
 			
 			// create a default color palette if none explicitly set
 			if (_setPalette) _palette = getDefaultPalette();

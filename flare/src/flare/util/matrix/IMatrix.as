@@ -1,4 +1,4 @@
-package flare.analytics.util
+package flare.util.matrix
 {
 	/**
 	 * Interface for a matrix of real-valued numbers.
@@ -14,6 +14,10 @@ package flare.analytics.util
 		
 		/** Creates a copy of this matrix. */
 		function clone():IMatrix;
+		
+		/** Initializes the matrix to desired dimensions. This method also
+		 *  resets all values in the matrix to zero. */
+		function init(rows:int, cols:int):void;
 		
 		/**
 		 * Returns the value at the given indices. 

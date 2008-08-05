@@ -214,8 +214,9 @@ package flare.util
 		public static function binarySearch(a:Array, key:Object,
 			prop:String=null, cmp:Function=null) : int
 		{
-			if (cmp==null) cmp = Sort.defaultComparator;
 			var p:Property = prop ? Property.$(prop) : null;
+			if (cmp == null)
+				cmp = function(a:*,b:*):int {return a>b ? 1 : a<b ? -1 : 0;}
 			
 			var x1:int = 0, x2:int = a.length, i:int = (x2>>1);
         	while (x1 < x2) {
@@ -230,6 +231,36 @@ package flare.util
             	i = x1 + ((x2 - x1)>>1);
         	}
         	return -1*(i+1);
+		}
+		
+		/**
+		 * Sets a named property value for items stored in an array.
+		 * The value can take a number of forms:
+		 * <ul>
+		 *  <li>If the value is a <code>Function</code>, it will be evaluated
+		 *      for each element and the result will be used as the property
+		 *      value for that element.</li>
+		 *  <li>If the value is an <code>IEvaluable</code> instance, it will be
+		 *      evaluated for each element and the result will be used as the
+		 *      property value for that element.</li>
+		 *  <li>In all other cases, the property value will be treated as a
+		 *      literal and assigned for all elements.</li>
+		 * </ul>
+		 * @param list the array to set property values for
+		 * @param name the name of the property to set
+		 * @param value the value of the property to set
+		 * @param filter a filter function determining which items
+		 *  in the array should be processed
+		 * @param p an optional <code>IValueProxy</code> for setting the values
+		 */
+		public static function setProperty(a:Array,
+			name:String, value:*, filter:Function, p:IValueProxy=null):void
+		{
+			if (p == null) p = Property.proxy;
+			var v:Function = value is Function ? value as Function :
+				value is IEvaluable ? IEvaluable(value).eval : null;
+			for each (var o:Object in a) if (filter==null || filter(o))
+				p.setValue(o, name, v!=null ? v(p.$(o)) : value);
 		}
 
 	} // end of class Arrays

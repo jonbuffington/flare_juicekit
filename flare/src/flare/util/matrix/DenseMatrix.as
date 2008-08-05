@@ -1,4 +1,4 @@
-package flare.analytics.util
+package flare.util.matrix
 {
 	/**
 	 * A matrix of numbers implemented using an array of values.
@@ -32,10 +32,7 @@ package flare.analytics.util
 		 * @param cols the number of columns
 		 */
 		public function DenseMatrix(rows:int, cols:int) {
-			_r = rows;
-			_c = cols;
-			_v = new Array(_r * _c);
-			for (var i:int=0; i<_v.length; ++i) _v[i]=0;
+			init(rows, cols);
 		}
 		
 		/** @inheritDoc */
@@ -46,6 +43,14 @@ package flare.analytics.util
 				v[i] = _v[i];
 			}
 			return m;
+		}
+		
+		/** @inheritDoc */
+		public function init(rows:int, cols:int):void {
+			_r = rows;
+			_c = cols;
+			_v = new Array(_r * _c);
+			for (var i:int=0; i<_v.length; ++i) _v[i]=0;
 		}
 		
 		/** @inheritDoc */

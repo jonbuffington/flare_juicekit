@@ -3,8 +3,8 @@ package flare.vis.data
 	import flare.animate.Transitioner;
 	import flare.util.Arrays;
 	import flare.util.Filter;
-	import flare.util.IEvaluable;
 	import flare.util.Sort;
+	import flare.util.IEvaluable;
 	
 	/**
 	 * Visually represents a data element, such as a data tuple or graph node.
