@@ -314,12 +314,18 @@ package flare.query
 		
 		private function applyAll(results:Array):Array
 		{
-			// TODO: generate results in new object first to avoid overlap?
-			for each (var pair:Object in _select) {
-				var p:Property = Property.$(pair.name);
-				var expr:Expression = pair.expression;
-				for each (var item:Object in results)
-					p.setValue(item, expr.eval(item));
+			var o:Object = {};
+			for each (var item:Object in results) {
+				for each (var pair:Object in _select) {
+					var name:String = pair.name;
+					var expr:Expression = pair.expression;
+					o[name] = expr.eval(item);
+				}
+				for each (pair in _select) {
+					name = pair.name;
+					var p:Property = Property.$(name);
+					p.setValue(item, o[name]);
+				}
 			}
 			return results;
 		}
@@ -382,11 +388,16 @@ package flare.query
 		
 		private function apply(item:Object):Object
 		{
-			// TODO: generate results in new object first to avoid overlap?
+			var o:Object = {};
 			for each (var pair:Object in _select) {
-				var p:Property = Property.$(pair.name);
+				var name:String = pair.name;
 				var expr:Expression = pair.expression;
-				p.setValue(item, expr.eval(item));
+				o[name] = expr.eval(item);
+			}
+			for each (pair in _select) {
+				name = pair.name;
+				var p:Property = Property.$(name);
+				p.setValue(item, o[name]);
 			}
 			return item;
 		}
