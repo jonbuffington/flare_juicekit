@@ -1,6 +1,5 @@
 package flare.vis.operator.layout
 {
-	import flare.animate.Transitioner;
 	import flare.scale.LinearScale;
 	import flare.scale.OrdinalScale;
 	import flare.scale.QuantitativeScale;
@@ -38,6 +37,7 @@ package flare.vis.operator.layout
 		private var _threshold:Number = 1.0;
 		
 		private var _scale:QuantitativeScale = new LinearScale(0,0,10,true);
+		private var _colScale:Scale;
 		
 		/** Array containing the column names. */
 		public function get columns():Array { return _columns; }
@@ -45,6 +45,7 @@ package flare.vis.operator.layout
 			_columns = Arrays.copy(cols);
 			_peaks = new Array(cols.length);
 			_poly = new Array(cols.length);
+			_colScale = getScale(_columns);
 		}
 		
 		/** Flag indicating if the visualization should be normalized. */		
@@ -90,36 +91,9 @@ package flare.vis.operator.layout
 		 */		
 		public function StackedAreaLayout(cols:Array=null, padding:Number=0.05)
 		{
-			if(cols != null){
-				_columns =  Arrays.copy(cols);
-				_peaks = new Array(cols.length);
-				_poly = new Array(cols.length);
-			}
 			layoutType = CARTESIAN;
-			
+			if (cols != null) this.columns = cols;
 			this.padding = padding;
-		}
-		
-		/** @inheritDoc */
-		public override function setup():void
-		{
-			initializeAxes();
-		}
-		
-		/**
-		 * Initializes the axes prior to layout.
-		 */
-		protected function initializeAxes():void
-		{
-			if (!_initAxes || visualization==null) return;
-			
-			var axes:CartesianAxes = super.xyAxes;
-			var axis1:Axis = _horiz ? axes.xAxis : axes.yAxis;
-			var axis2:Axis = _horiz ? axes.yAxis : axes.xAxis;
-			
-			axis1.axisScale = _scale;
-			axis2.showLines = false;
-			axis2.axisScale = getScale(_columns);
 		}
 		
 		private static function getScale(cols:Array):Scale
@@ -133,6 +107,30 @@ package flare.vis.operator.layout
 				case Stats.OBJECT:
 				default:
 					return new OrdinalScale(stats.distinctValues, true, false);
+			}
+		}
+		
+		/** @inheritDoc */
+		public override function setup():void
+		{
+			if (!_initAxes || visualization==null) return;
+			initializeAxes();
+			(_horiz ? xyAxes.yAxis : xyAxes.xAxis).showLines = false;
+		}
+		
+		/**
+		 * Initializes the axes prior to layout.
+		 */
+		protected function initializeAxes():void
+		{
+			if (!_initAxes || visualization==null) return;
+			var axes:CartesianAxes = xyAxes;
+			if (_horiz) {
+				axes.xAxis.axisScale = _scale;
+				axes.yAxis.axisScale = _colScale;
+			} else {
+				axes.xAxis.axisScale = _colScale;
+				axes.yAxis.axisScale = _scale;
 			}
 		}
 		
@@ -156,6 +154,7 @@ package flare.vis.operator.layout
 	                                 
 			// perform first walk to get the data distribution
 	        _scale.dataMax = peaks();
+	        initializeAxes();
 	        
 	        // initialize current polygon
 	        var axes:CartesianAxes = super.xyAxes;
