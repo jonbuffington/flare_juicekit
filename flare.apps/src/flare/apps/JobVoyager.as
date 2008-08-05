@@ -6,6 +6,8 @@ package flare.apps
 	import flare.display.TextSprite;
 	import flare.query.methods.eq;
 	import flare.query.methods.iff;
+	import flare.util.Orientation;
+	import flare.util.Shapes;
 	import flare.util.Strings;
 	import flare.vis.Visualization;
 	import flare.vis.controls.ClickControl;
@@ -20,9 +22,7 @@ package flare.apps
 	import flare.vis.legend.LegendItem;
 	import flare.vis.operator.filter.VisibilityFilter;
 	import flare.vis.operator.label.StackedAreaLabeler;
-	import flare.vis.operator.layout.Orientation;
 	import flare.vis.operator.layout.StackedAreaLayout;
-	import flare.vis.util.Shapes;
 	import flare.widgets.ProgressBar;
 	import flare.widgets.SearchBox;
 	
@@ -371,13 +371,13 @@ class SaturationEncoder extends Operator
 			} else {
 				f = Math.max(f, d.data.max);
 			}
-		}, false, "visible");
+		}, "visible");
 		
 		// second pass: set saturation
 		visualization.data.nodes.visit(function(d:DataSprite):void {
 			var s:Number = .3 + .3*d.data.max/((d.data.sex==1)?m:f);
 			t.$(d).fillSaturation = s;
-		}, false, "visible");
+		}, "visible");
 	}
 	
 } // end of class SaturationEncoder

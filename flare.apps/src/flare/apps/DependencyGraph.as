@@ -216,7 +216,7 @@ package flare.apps
 				e.visible = map[e.source] && map[e.target];
 			});
 			_vis.data.nodes.visit(function(n:NodeSprite):void {
-				n.alpha = map[n] ? 1 : 0.5;
+				n.alpha = map[n] ? 1 : 0.4;
 			});
 		}
 		
@@ -246,8 +246,8 @@ package flare.apps
 		{
 			_bounds = bounds;
 			if (_bar) {
-				_bar.x = bounds.width/2 - _bar.width/2;
-				_bar.y = bounds.height/2 - _bar.height/2;
+				_bar.x = _bounds.width/2 - _bar.width/2;
+				_bar.y = _bounds.height/2 - _bar.height/2;
 			}
 			if (_vis) {
 				// automatically size labels based on bounds
@@ -257,10 +257,10 @@ package flare.apps
 					null, eq("childDegree",0));
 				
 				// compute the visualization bounds
-				_vis.bounds.x = bounds.x;//15;//25
-				_vis.bounds.y = bounds.y + 25;//5;
-				_vis.bounds.width = bounds.width;// - 30;//50
-				_vis.bounds.height = bounds.height - 10;
+				_vis.bounds.x = _bounds.x;
+				_vis.bounds.y = _bounds.y + (0.06 * _bounds.height);
+				_vis.bounds.width = _bounds.width;
+				_vis.bounds.height = _bounds.height - (0.05 * _bounds.height);
 				// update
 				_vis.update();
 				
@@ -270,7 +270,7 @@ package flare.apps
 				_detail.y = _bounds.height - _detail.height - 5;
 				
 				// forcibly render to eliminate partial update bug, as
-				// the standard RENDER event routing can get delayed
+				// the standard RENDER event routing can get delayed.
 				// remove this line for faster but unsynchronized resizes
 				DirtySprite.renderDirty();
 			}

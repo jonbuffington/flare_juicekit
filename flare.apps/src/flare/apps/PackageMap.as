@@ -5,6 +5,7 @@ package flare.apps
 	import flare.display.TextSprite;
 	import flare.query.methods.eq;
 	import flare.query.methods.fn;
+	import flare.util.Shapes;
 	import flare.util.Strings;
 	import flare.vis.Visualization;
 	import flare.vis.controls.ClickControl;
@@ -18,7 +19,6 @@ package flare.apps
 	import flare.vis.operator.encoder.PropertyEncoder;
 	import flare.vis.operator.label.Labeler;
 	import flare.vis.operator.layout.TreeMapLayout;
-	import flare.vis.util.Shapes;
 	import flare.widgets.ProgressBar;
 	
 	import flash.display.StageQuality;
