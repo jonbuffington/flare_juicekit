@@ -7,6 +7,7 @@ package flare.demos
 	import flare.demos.util.GraphUtil;
 	import flare.demos.util.Link;
 	import flare.query.methods.add;
+	import flare.util.Shapes;
 	import flare.vis.Visualization;
 	import flare.vis.controls.DragControl;
 	import flare.vis.controls.ExpandControl;
@@ -27,7 +28,6 @@ package flare.demos
 	import flare.vis.operator.layout.Layout;
 	import flare.vis.operator.layout.NodeLinkTreeLayout;
 	import flare.vis.operator.layout.RadialTreeLayout;
-	import flare.vis.util.Shapes;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;

@@ -1,6 +1,7 @@
 package flare.demos
 {
 	import flare.demos.util.GraphUtil;
+	import flare.util.Shapes;
 	import flare.vis.Visualization;
 	import flare.vis.controls.HoverControl;
 	import flare.vis.data.EdgeSprite;
@@ -8,7 +9,6 @@ package flare.demos
 	import flare.vis.data.Tree;
 	import flare.vis.events.SelectionEvent;
 	import flare.vis.operator.layout.TreeMapLayout;
-	import flare.vis.util.Shapes;
 	
 	import flash.display.StageQuality;
 	

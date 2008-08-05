@@ -4,6 +4,7 @@ package flare.demos
 	import flare.demos.util.Link;
 	import flare.display.TextSprite;
 	import flare.scale.ScaleType;
+	import flare.util.Shapes;
 	import flare.util.Strings;
 	import flare.vis.Visualization;
 	import flare.vis.controls.TooltipControl;
@@ -12,7 +13,6 @@ package flare.demos
 	import flare.vis.events.TooltipEvent;
 	import flare.vis.operator.encoder.ColorEncoder;
 	import flare.vis.operator.layout.AxisLayout;
-	import flare.vis.util.Shapes;
 	
 	import flash.events.MouseEvent;
 	

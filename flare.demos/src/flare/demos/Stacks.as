@@ -4,11 +4,11 @@ package flare.demos
 	import flare.animate.Transitioner;
 	import flare.demos.util.Link;
 	import flare.util.Colors;
+	import flare.util.Shapes;
 	import flare.vis.Visualization;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataSprite;
 	import flare.vis.operator.layout.StackedAreaLayout;
-	import flare.vis.util.Shapes;
 	
 	import flash.display.Shape;
 	import flash.display.StageQuality;
