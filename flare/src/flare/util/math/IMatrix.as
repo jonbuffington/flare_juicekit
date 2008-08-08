@@ -1,4 +1,4 @@
-package flare.util.matrix
+package flare.util.math
 {
 	/**
 	 * Interface for a matrix of real-valued numbers.
@@ -11,12 +11,28 @@ package flare.util.matrix
 		function get cols():int;
 		/** The number of non-zero values. */
 		function get nnz():int;
+		/** The sum of all the entries in this matrix. */
+		function get sum():Number;
+		/** The sum of squares of all the entries in this matrix. */
+		function get sumsq():Number;
 		
 		/** Creates a copy of this matrix. */
 		function clone():IMatrix;
 		
-		/** Initializes the matrix to desired dimensions. This method also
-		 *  resets all values in the matrix to zero. */
+		/**
+		 * Creates a new matrix of the same type.
+		 * @param rows the number of rows in the new matrix
+		 * @param cols the number of columns in the new matrix
+		 * @return a new matrix
+		 */
+		function like(rows:int, cols:int):IMatrix;
+		
+		/** 
+		 * Initializes the matrix to desired dimensions. This method also
+		 * resets all values in the matrix to zero.
+		 * @param rows the number of rows in this matrix
+		 * @param cols the number of columns in this matrix
+		 */
 		function init(rows:int, cols:int):void;
 		
 		/**
@@ -25,7 +41,7 @@ package flare.util.matrix
 		 * @param j the column index
 		 * @return the value at position i,j
 		 */
-		function _(i:int, j:int):Number;
+		function get(i:int, j:int):Number;
 		
 		/**
 		 * Sets the value at the given indices. 
@@ -34,7 +50,22 @@ package flare.util.matrix
 		 * @param v the value to set
 		 * @return the input value v
 		 */
-		function $(i:int, j:int, v:Number):Number;
+		function set(i:int, j:int, v:Number):Number;
+		
+		/**
+		 * Multiplies all values in this matrix by the input scalar.
+		 * @param s the scalar to multiply by.
+		 */
+		function scale(s:Number):void;
+		
+		/**
+		 * Multiplies this matrix by another. The number of rows in this matrix
+		 * must match the number of columns in the input matrix.
+		 * @param b the matrix to multiply by.
+		 * @return a new matrix that is the product of this matrix with the
+		 *  input matrix. The new matrix will be of the same type as this one.
+		 */
+		function multiply(b:IMatrix):IMatrix;
 		
 		/**
 		 * Visit all non-zero values in the matrix.

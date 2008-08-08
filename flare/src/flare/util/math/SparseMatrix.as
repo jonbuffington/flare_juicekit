@@ -1,4 +1,4 @@
-package flare.util.matrix
+package flare.util.math
 {
 	import flash.utils.Dictionary;
 	
@@ -19,9 +19,25 @@ package flare.util.matrix
 		/** @inheritDoc */
 		public function get nnz():int {
 			var count:int = 0;
-			for (var name:String in _v)
+			for (var key:String in _v)
 				++count;
 			return count;
+		}
+		/** @inheritDoc */
+		public function get sum():Number {
+			var sum:Number = 0;
+			for (var key:String in _v)
+				sum += _v[key];
+			return sum;
+		}
+		/** @inheritDoc */
+		public function get sumsq():Number {
+			var sumsq:Number = 0, v:Number;
+			for (var key:String in _v) {
+				v = _v[key];
+				sumsq += v*v;
+			}
+			return sumsq;
 		}
 		
 		// --------------------------------------------------------------------
@@ -38,10 +54,14 @@ package flare.util.matrix
 		/** @inheritDoc */
 		public function clone():IMatrix {
 			var m:SparseMatrix = new SparseMatrix(_r, _c);
-			for each (var key:Object in _v) {
+			for (var key:String in _v)
 				m._v[key] = _v[key];
-			}
 			return m;
+		}
+		
+		/** @inheritDoc */
+		public function like(rows:int, cols:int):IMatrix {
+			return new SparseMatrix(rows, cols);
 		}
 		
 		/** @inheritDoc */
@@ -53,13 +73,13 @@ package flare.util.matrix
 		}
 		
 		/** @inheritDoc */
-		public function _(i:int, j:int):Number {
+		public function get(i:int, j:int):Number {
 			var v:* = _v[i*_c + j];
 			return (v ? Number(v) : 0);
 		}
 		
 		/** @inheritDoc */
-		public function $(i:int, j:int, v:Number):Number {
+		public function set(i:int, j:int, v:Number):Number {
 			var key:int = i*_c + j;
 			if (v==0) {
 				delete _v[key];
@@ -67,6 +87,28 @@ package flare.util.matrix
 				_v[key] = v;
 			}
 			return v;
+		}
+		
+		/** @inheritDoc */
+		public function scale(s:Number):void {
+			for (var key:String in _v) _v[key] *= s;
+		}
+		
+		/** @inheritDoc */
+		public function multiply(b:IMatrix):IMatrix {
+			if (cols != b.rows)
+				throw new Error("Incompatible matrix dimensions.");
+			var z:IMatrix = like(rows, b.cols);
+			for (var i:uint=0; i<z.rows; ++i) {
+				for (var j:uint=0; j<z.cols; ++j) {
+					var v:Number = 0;
+					for (var k:uint=0; k<cols; ++k)
+						v += get(i,k) * b.get(k,j);
+					if (v != 0)
+						z.set(i, j, v);
+				}
+			}
+			return z;
 		}
 		
 		/** @inheritDoc */
@@ -79,9 +121,9 @@ package flare.util.matrix
 				v = _v[k];
 				v = f(i,j,v);
 				if (v==0) {
-					delete _v[k];
+					delete _v[key];
 				} else {
-					_v[k] = v;
+					_v[key] = v;
 				}
 			}
 		}

@@ -67,8 +67,8 @@ package flare.vis.operator.label
 				label.origin = d.origin;
 				o = _t.$(d);
 				if (o.shape == Shapes.WEDGE) {
-					a = o.u + o.w/2;
 					r = o.h;
+					a = o.u + o.w/2;
 				} else {
 					r = o.radius;
 					a = o.angle;
@@ -87,14 +87,12 @@ package flare.vis.operator.label
 				o.radius = radiusOffset;
 				o.angle  = a + angleOffset;
 			}
-			if (rotateLabels) rotate(d);
+			if (rotateLabels) rotate(d, label);
+			label.render();
 		}
 		
-		private function rotate(d:DataSprite):void
+		private function rotate(d:DataSprite, label:TextSprite):void
 		{
-			var label:TextSprite = d.props.label as TextSprite;
-			if (!label) return;
-			
 			var a:Number = _t.$(d).angle;
 			while (a >  Math.PI) a -= 2*Math.PI;
 			while (a < -Math.PI) a += 2*Math.PI;

@@ -7,8 +7,8 @@ package flare.vis.data
 	import flare.util.Property;
 	import flare.util.Sort;
 	import flare.util.Stats;
-	import flare.util.matrix.DenseMatrix;
-	import flare.util.matrix.IMatrix;
+	import flare.util.math.DenseMatrix;
+	import flare.util.math.IMatrix;
 	import flare.vis.events.DataEvent;
 	
 	import flash.events.Event;
@@ -231,7 +231,7 @@ package flare.vis.data
 					if (idx[e.target] == undefined) return;
 					var j:int = idx[e.target];
 					var v:Number = w==null ? 1 : w(e);
-					mat.$(i,j,v); mat.$(j,i,v);
+					mat.set(i,j,v); mat.set(j,i,v);
 				}, NodeSprite.OUT_LINKS);
 			}
 			return mat;
@@ -258,7 +258,7 @@ package flare.vis.data
 			for (i=0; i<N; ++i) {
 				for (j=i+1; j<N; ++j) {
 					var v:Number = d(_list[i], _list[j]);
-					mat.$(i,j,v); mat.$(j,i,v);
+					mat.set(i,j,v); mat.set(j,i,v);
 				}
 			}
 			return mat;

@@ -1,7 +1,7 @@
 package flare.analytics.cluster
 {
 	import flare.animate.Transitioner;
-	import flare.util.matrix.IMatrix;
+	import flare.util.math.IMatrix;
 	import flare.vis.data.Data;
 	import flare.vis.data.DataList;
 	
@@ -78,7 +78,7 @@ package flare.analytics.cluster
 			var idx:/*int*/Array = new Array(N);
 			for (i=0; i<N; ++i) {
 				idx[i] = i;
-				Z.$(i,i,Number.POSITIVE_INFINITY);
+				Z.set(i,i,Number.POSITIVE_INFINITY);
 			}
 			
 			// run the clustering algorithm
@@ -89,7 +89,7 @@ package flare.analytics.cluster
 					i = idx[ii];
 					for (jj=ii+1; jj<idx.length; ++jj) {
 						j = idx[jj];
-						v = Z._(i,j);
+						v = Z.get(i,j);
 						if (v < min) {
 							min = v;
 							a = i;
@@ -102,16 +102,16 @@ package flare.analytics.cluster
 				// perform merge on graph
 				for (k=0; k<N; ++k) {
 					if (minLink) {
-						v = Math.min(Z._(i,k), Z._(j,k)); // min link
+						v = Math.min(Z.get(i,k), Z.get(j,k)); // min link
 					} else {
-						v = Math.max(Z._(i,k), Z._(j,k)); // max link
+						v = Math.max(Z.get(i,k), Z.get(j,k)); // max link
 					}
-					Z.$(i, k, v);
-					Z.$(k, i, v);
+					Z.set(i, k, v);
+					Z.set(k, i, v);
 				}
 				for (k=0; k<N; ++k) {
-					Z.$(j, k, Number.POSITIVE_INFINITY);
-					Z.$(k, j, Number.POSITIVE_INFINITY);
+					Z.set(j, k, Number.POSITIVE_INFINITY);
+					Z.set(k, j, Number.POSITIVE_INFINITY);
 				}
 				idx.splice(jj, 1);
 				

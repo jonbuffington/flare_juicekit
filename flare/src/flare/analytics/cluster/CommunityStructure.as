@@ -1,7 +1,7 @@
 package flare.analytics.cluster
 {
 	import flare.animate.Transitioner;
-	import flare.util.matrix.IMatrix;
+	import flare.util.math.IMatrix;
 	import flare.vis.data.DataList;
 	
 	/**
@@ -53,18 +53,13 @@ package flare.analytics.cluster
 		{
 			_merges = new MergeEdge(-1, -1); _qvals = [];
 			_size = G.rows;
-			var i:int, j:int, k:int, s:int, t:int, v:Number, sum:Number=0;
+			var i:int, j:int, k:int, s:int, t:int, v:Number;
 			var Q:Number=0, Qmax:Number=0, dQ:Number, dQmax:Number=0, imax:int;
 			
 			// initialize normalized matrix
-			var N:int = G.rows, Z:IMatrix = G.clone();// z:Array = Z.values;
-			for (i=0; i<N; ++i) Z.$(i,i,0);
-			Z.visitNonZero(function(i:int, j:int, v:Number):Number {
-				sum += v; return v;
-			});
-			Z.visitNonZero(function(i:int, j:int, v:Number):Number {
-				return v / sum;
-			});
+			var N:int = G.rows, Z:IMatrix = G.clone();
+			for (i=0; i<N; ++i) Z.set(i,i,0); // clear diagonal
+			Z.scale(1 / Z.sum); // normalize matrix
 			
 			// initialize column sums and edge list
 			var E:MergeEdge = new MergeEdge(-1,-1);
@@ -75,7 +70,7 @@ package flare.analytics.cluster
 			for (i=0; i<N; ++i) {
 				A[i] = 0;
 				for (j=0; j<N; ++j) {
-					if ((v=Z._(i,j)) != 0) {
+					if ((v=Z.get(i,j)) != 0) {
 						A[i] += v;
 						e = e.add(new MergeEdge(i,j));
 					}
@@ -91,7 +86,7 @@ package flare.analytics.cluster
 				for (e=E.next; e!=null; e=e.next) {
 					i = e.i; j = e.j;
 					if (i==j) continue;
-					dQ = Z._(i,j) + Z._(j,i) - 2*A[i]*A[j];
+					dQ = Z.get(i,j) + Z.get(j,i) - 2*A[i]*A[j];
 					if (dQ > dQmax) {
 						dQmax = dQ; eMax.update(i,j);
 					}
@@ -101,15 +96,15 @@ package flare.analytics.cluster
 				i = eMax.i; j = eMax.j; if (j<i) { i=eMax.j; j=eMax.i; }
 				var na:Number = 0;
 				for (k=0; k<N; ++k) {
-					v = Z._(i,k) + Z._(j,k);
+					v = Z.get(i,k) + Z.get(j,k);
 					if (v != 0) {
-						na += v; Z.$(i,k,v); Z.$(j,k,0);
+						na += v; Z.set(i,k,v); Z.set(j,k,0);
 					}
 				}
 				for (k=0; k<N; ++k) {
-					v = Z._(k,i) + Z._(k,j);
+					v = Z.get(k,i) + Z.get(k,j);
 					if (v != 0) {
-						Z.$(k,i,v); Z.$(k,j,0);
+						Z.set(k,i,v); Z.set(k,j,0);
 					}
 				}
 				A[i] = na;

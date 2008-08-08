@@ -1,4 +1,4 @@
-package flare.util.matrix
+package flare.util.math
 {
 	/**
 	 * A matrix of numbers implemented using an array of values.
@@ -18,10 +18,24 @@ package flare.util.matrix
 		/** @inheritDoc */
 		public function get nnz():int {
 			var nz:int = 0;
-			for (var i:int=0; i<_v.length; ++i) {
+			for (var i:uint=0; i<_v.length; ++i) {
 				if (_v[i] != 0) ++nz;
 			}
 			return nz;
+		}
+		/** @inheritDoc */
+		public function get sum():Number {
+			var sum:Number = 0;
+			for (var i:uint=0; i<_v.length; ++i)
+				sum += _v[i];
+			return sum;
+		}
+		/** @inheritDoc */
+		public function get sumsq():Number {
+			var sumsq:Number = 0;
+			for (var i:uint=0; i<_v.length; ++i)
+				sumsq += _v[i]*_v[i];
+			return sumsq;
 		}
 		
 		// --------------------------------------------------------------------
@@ -39,10 +53,15 @@ package flare.util.matrix
 		public function clone():IMatrix {
 			var m:DenseMatrix = new DenseMatrix(_r, _c);
 			var v:Array = m.values;
-			for (var i:int=0; i<_v.length; ++i) {
+			for (var i:uint=0; i<_v.length; ++i) {
 				v[i] = _v[i];
 			}
 			return m;
+		}
+		
+		/** @inheritDoc */
+		public function like(rows:int, cols:int):IMatrix {
+			return new DenseMatrix(rows, cols);
 		}
 		
 		/** @inheritDoc */
@@ -50,26 +69,47 @@ package flare.util.matrix
 			_r = rows;
 			_c = cols;
 			_v = new Array(_r * _c);
-			for (var i:int=0; i<_v.length; ++i) _v[i]=0;
+			for (var i:uint=0; i<_v.length; ++i) _v[i]=0;
 		}
 		
 		/** @inheritDoc */
-		public function _(i:int, j:int):Number {
+		public function get(i:int, j:int):Number {
 			return _v[i*_c + j];
 		}
 		
 		/** @inheritDoc */
-		public function $(i:int, j:int, v:Number):Number {
+		public function set(i:int, j:int, v:Number):Number {
 			_v[i*_c + j] = v;
 			return v;
 		}
 		
 		/** @inheritDoc */
+		public function scale(s:Number):void {
+			for (var i:uint=0; i<_v.length; ++i) _v[i] *= s;
+		}
+		
+		/** @inheritDoc */
+		public function multiply(b:IMatrix):IMatrix {
+			if (cols != b.rows)
+				throw new Error("Incompatible matrix dimensions.");
+			var z:IMatrix = like(rows, b.cols);
+			for (var i:uint=0; i<z.rows; ++i) {
+				for (var j:uint=0; j<z.cols; ++j) {
+					var v:Number = 0;
+					for (var k:uint=0; k<cols; ++k)
+						v += get(i,k) * b.get(k,j);
+					z.set(i, j, v);
+				}
+			}
+			return z;
+		}
+		
+		/** @inheritDoc */
 		public function visitNonZero(f:Function):void {
 			var k0:int, k:int;
-			for (var i:int=0; i<_r; ++i) {
+			for (var i:uint=0; i<_r; ++i) {
 				k0 = i*_c;
-				for (var j:int=0; j<_c; ++j) {
+				for (var j:uint=0; j<_c; ++j) {
 					k = k0 + j;
 					if (_v[k] != 0) _v[k] = f(i, j, _v[k]);
 				}
@@ -79,9 +119,9 @@ package flare.util.matrix
 		/** @inheritDoc */
 		public function visit(f:Function):void {
 			var k0:int, k:int;
-			for (var i:int=0; i<_r; ++i) {
+			for (var i:uint=0; i<_r; ++i) {
 				k0 = i*_c;
-				for (var j:int=0; j<_c; ++j) {
+				for (var j:uint=0; j<_c; ++j) {
 					k = k0 + j;
 					_v[k] = f(i, j, _v[k]);
 				}

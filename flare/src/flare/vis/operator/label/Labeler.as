@@ -203,6 +203,7 @@ package flare.vis.operator.label
 				o.x = xOffset;
 				o.y = yOffset;
 			}
+			label.render();
 		}
 		
 		/**
