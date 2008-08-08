@@ -211,6 +211,8 @@
         <exclude name="build/**"/>
         <exclude name="**/.*"/>
         <exclude name="**/bin/**"/>
+        <exclude name="**/bin-debug/**"/>
+        <exclude name="**/bin-release/**"/>
       </fileset>
       <fileset dir="${basedir}" casesensitive="yes">
         <include name="**/.project"/>
