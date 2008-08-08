@@ -1,8 +1,8 @@
 package flare.tests
 {
-	import flare.util.matrix.DenseMatrix;
-	import flare.util.matrix.IMatrix;
-	import flare.util.matrix.SparseMatrix;
+	import flare.util.math.DenseMatrix;
+	import flare.util.math.IMatrix;
+	import flare.util.math.SparseMatrix;
 	
 	import unitest.TestCase;
 
@@ -16,16 +16,36 @@ package flare.tests
 		
 		private static function testMatrix(mat:IMatrix):void
 		{
-			var i:int, j:int, c:int = 7;
+			var i:int, j:int, c:int = 7, v:Number;
 			
 			// populate matrix
-			for (i=0; i<mat.cols; ++i) mat.$(1,i,c);
-			for (i=0; i<mat.rows; ++i) mat.$(i,1,c);
-			for (i=0; i<mat.rows; ++i) mat.$(i,i,i+1);
+			for (i=0; i<mat.cols; ++i) mat.set(1,i,c);
+			for (i=0; i<mat.rows; ++i) mat.set(i,1,c);
+			for (i=0; i<mat.rows; ++i) mat.set(i,i,i+1);
 			
+			// test properties
 			assertEquals(5, mat.rows);
 			assertEquals(5, mat.cols);
 			assertEquals(13, mat.nnz);
+			
+			var s:Number=0, ss:Number=0;
+			for (i=0; i<mat.rows; ++i) {
+				for (j=0; j<mat.cols; ++j) {
+					v = mat.get(i,j);
+					s += v;
+					ss += v*v;
+				}
+			}
+			assertEquals(s, mat.sum);
+			assertEquals(ss, mat.sumsq);
+			
+			// test copy and scale
+			var like:IMatrix = mat.clone(); like.scale(1 / s);
+			for (i=0; i<mat.rows; ++i) {
+				for (j=0; j<mat.cols; ++j) {
+					assertEquals(mat.get(i,j)*(1/s), like.get(i,j));
+				}
+			}
 			
 			// test matrix access
 			var test:Function = function(i:int, j:int, v:Number):Number {
@@ -40,14 +60,14 @@ package flare.tests
 			};
 			
 			for (i=0; i<mat.rows; ++i) {
-				for (j=0; j<mat.cols; ++j) test(i, j, mat._(i,j));
+				for (j=0; j<mat.cols; ++j) test(i, j, mat.get(i,j));
 			}
 			mat.visit(test);
 			mat.visitNonZero(test);
 			mat.visitNonZero(nonZero);
 			
 			for (i=0; i<mat.rows; ++i) {
-				mat.$(i,i,0);
+				mat.set(i,i,0);
 			}
 			assertEquals(8, mat.nnz);
 			mat.visitNonZero(nonZero);
