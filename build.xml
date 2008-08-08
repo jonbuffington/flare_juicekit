@@ -144,7 +144,7 @@
   <!-- =================================================================== -->
   <!-- Build all in ./build                                                -->
   <!-- =================================================================== -->
-  <target name="all" depends="flare,demos"/>
+  <target name="all" depends="flare,demos,tests"/>
 
 
   <!-- =================================================================== -->
@@ -163,7 +163,6 @@
       <arg value="-package=flare.analytics.cluster,${doc.flare.analytics.cluster}"/>
       <arg value="-package=flare.analytics.graph,${doc.flare.analytics.graph}"/>
       <arg value="-package=flare.analytics.optimization,${doc.flare.analytics.optimization}"/>
-      <arg value="-package=flare.analytics.util,${doc.flare.analytics.util}"/>
 	<arg value="-package=flare.animate,${doc.flare.animate}"/>
       <arg value="-package=flare.animate.interpolate,${doc.flare.animate.interpolate}"/>
       <arg value="-package=flare.data,${doc.flare.data}"/>
@@ -175,6 +174,9 @@
       <arg value="-package=flare.query.methods,${doc.flare.query.methods}"/>
       <arg value="-package=flare.scale,${doc.flare.scale}"/>
       <arg value="-package=flare.util,${doc.flare.util}"/>
+      <arg value="-package=flare.util.heap,${doc.flare.util.heap}"/>
+      <arg value="-package=flare.util.math,${doc.flare.util.math}"/>
+      <arg value="-package=flare.util.palette,${doc.flare.util.palette}"/>
       <arg value="-package=flare.vis,${doc.flare.vis}"/>
       <arg value="-package=flare.vis.axis,${doc.flare.vis.axis}"/>
       <arg value="-package=flare.vis.controls,${doc.flare.vis.controls}"/>
@@ -188,8 +190,6 @@
       <arg value="-package=flare.vis.operator.encoder,${doc.flare.vis.operator.encoder}"/>
       <arg value="-package=flare.vis.operator.label,${doc.flare.vis.operator.label}"/>
       <arg value="-package=flare.vis.operator.layout,${doc.flare.vis.operator.layout}"/>
-      <arg value="-package=flare.vis.palette,${doc.flare.vis.palette}"/>
-      <arg value="-package=flare.vis.util,${doc.flare.vis.util}"/>
      </exec>
   </target>
 
