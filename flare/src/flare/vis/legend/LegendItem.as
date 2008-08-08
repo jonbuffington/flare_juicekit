@@ -140,7 +140,6 @@ package flare.vis.legend
 				g.endFill();
 			}
 			
-			_w = innerWidth;
 			_h = innerHeight;
 			super.render();
 		}

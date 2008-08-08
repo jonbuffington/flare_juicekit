@@ -392,15 +392,22 @@ package flare.vis.legend
 			var vert:Boolean = Orientation.isVertical(_orient);
 			var rev:Boolean = _orient == Orientation.RIGHT_TO_LEFT ||
 							  _orient == Orientation.BOTTOM_TO_TOP;
-			var x:Number = 0;
-			var y:Number = 0;
-			var item:LegendItem;
-			var o:Object;
-			var bw:Number = vert && bounds? bounds.width : NaN;
+			var x:Number = 0, y:Number = 0, i:uint, j:uint;
+			var item:LegendItem, o:Object;
+			var bw:Number = vert && bounds ? bounds.width : NaN;
+			
+			// if needed, compute shared width for legend items
+			if (vert && isNaN(bw)) {
+				bw = Number.MIN_VALUE;
+				for (i=0; i<_items.numChildren; ++i) {
+					item = _items.getChildAt(i) as LegendItem;
+					bw = Math.max(bw, item.innerWidth);
+				}
+			}
 			
 			_iw = _ih = 0;
-			for (var i:uint=0; i<_items.numChildren; ++i) {
-				var j:uint = rev ? _items.numChildren-i-1 : i;
+			for (i=0; i<_items.numChildren; ++i) {
+				j = rev ? _items.numChildren-i-1 : i;
 				// layout the item
 				item = _items.getChildAt(j) as LegendItem;
 				o = t.$(item);
