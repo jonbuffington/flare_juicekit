@@ -92,12 +92,8 @@ package flare.animate
 		 */
 		public function add(item:ISchedulable) : void
 		{
-			if (item.id) {
-				var s:ISchedulable = _ids[item.id];
-				if (s != null) {
-					remove(s);
-					s.cancelled();
-				}
+			if (item.id && _ids[item.id] != item) {
+				cancel(item.id);
 				_ids[item.id] = item;
 			}
 			_scheduled.push(item);
@@ -114,9 +110,51 @@ package flare.animate
 			var idx:int = _scheduled.indexOf(item);
 			if (idx >= 0) {
 				_scheduled.splice(idx,1);
-				if (item.id) delete _ids[item.id];
+				if (item.id && _ids[item.id] == item) {
+					if (_scheduled.indexOf(item) < 0)
+						delete _ids[item.id];
+				}
 			}
 			return (idx >= 0);
+		}
+		
+		/**
+		 * Indicates if an object with the given id is currently in the
+		 * scheduler queue. 
+		 * @param id the id to check for
+		 * @return true if an object with that id is currently scheduled,
+		 *  false otherwise
+		 */
+		public function isScheduled(id:String) : Boolean
+		{
+			return _ids[id] != undefined;
+		}
+		
+		/**
+		 * Looks up the scheduled object indicated by the given id, if any.
+		 * @param id the id to lookup
+		 * @return the scheduled object with matching id, of null if none
+		 */
+		public function lookup(id:String) : ISchedulable
+		{
+			return id==null ? null : _ids[id];
+		}
+		
+		/**
+		 * Cancels any scheduled object with a matching id. 
+		 * @param id the id to cancel
+		 * @return true if an object was found and cancelled, false otherwise
+		 */
+		public function cancel(id:String) : Boolean
+		{
+			var s:ISchedulable = _ids[id];
+			if (s != null) {
+				remove(s);
+				s.cancelled();
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		/**

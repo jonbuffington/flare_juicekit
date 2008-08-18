@@ -27,7 +27,7 @@ package flare.scale
 		
 		/** @inheritDoc */
 		public override function get scaleType():String {
-			return ScaleType.ROOT;
+			return ScaleType.LOG;
 		}
 		
 		/** @inheritDoc */

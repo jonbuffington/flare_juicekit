@@ -198,9 +198,9 @@ package flare.animate
 		internal function doStep(frac:Number):void
 		{
 			_frac = frac;
-			var f:Number = delay==0 ? frac
-				 : Maths.invLinearInterp(frac, delay/totalDuration, 1);
-			if (f >= 0) { step(_easing(f)); }
+			var f:Number = delay==0 || frac==0 ? frac :
+				Maths.invLinearInterp(frac, delay/totalDuration, 1);
+			if (f >= 0) step(_easing(f));
 			if (hasEventListener(TransitionEvent.STEP)) {
 				dispatchEvent(new TransitionEvent(TransitionEvent.STEP, this));
 			}

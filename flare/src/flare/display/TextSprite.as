@@ -95,7 +95,8 @@ package flare.display
 			setMode(mode);
 		}
 		
-		/** Sets the text format. */
+		/** The default text format for this text sprite. */
+		public function get textFormat():TextFormat { return _fmt; }
 		public function set textFormat(fmt:TextFormat):void {
 			_tf.defaultTextFormat = (_fmt = fmt);
 			_tf.setTextFormat(_fmt);

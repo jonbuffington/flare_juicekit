@@ -133,9 +133,10 @@ package flare.animate.interpolate
 		
 		/**
 		 * Adds a rule to the interpolator factory. The input function should
-		 * take a target object, property name string, and target value as
-		 * arguments and either return a fully qualified class name for the
-		 * type of interpolator to use, or null if this rule does not apply.
+		 * take 4 arguments -- a target object, property name string, a
+		 * starting value, and a target value -- and either return a fully
+		 * qualified class name for the type of interpolator to use, or null if
+		 * this rule does not apply.
 		 * @param f the rule function for supplying custom interpolator types
 		 *  based on contextual conditions
 		 */

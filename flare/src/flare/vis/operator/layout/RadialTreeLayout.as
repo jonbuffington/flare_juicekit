@@ -151,7 +151,7 @@ package flare.vis.operator.layout
 		private function setScale(bounds:Rectangle):void
 		{
 	        var r:Number = Math.min(bounds.width, bounds.height)/2.0;
-	        if (_maxDepth > 0) _radiusInc = r / (_maxDepth+1);
+	        if (_maxDepth > 0) _radiusInc = r / _maxDepth;
 	    }
 		
 	    /**

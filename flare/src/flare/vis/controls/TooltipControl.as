@@ -52,8 +52,12 @@ package flare.vis.controls
 		private var _t:Tween;
 		
 		/** The tooltip delay, in milliseconds. */
-		public function get delay():Number { return _showTimer.delay; }
-		public function set delay(d:Number):void { _showTimer.delay = d; }
+		public function get showDelay():Number { return _showTimer.delay; }
+		public function set showDelay(d:Number):void { _showTimer.delay = d; }
+		
+		/** The delay before hiding a tooltip, in milliseconds. */
+		public function get hideDelay():Number { return _hideTimer.delay; }
+		public function set hideDelay(d:Number):void { _hideTimer.delay = d; }
 		
 		/** The legal bounds for the tooltip in stage coordinates.
 		 *  If null (the default), the full stage bounds are used. */

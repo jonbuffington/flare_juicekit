@@ -169,14 +169,17 @@ package flare.animate
 		 * @param optimize boolean flag indicating if the transitioner should
 		 *  attempt to optimize tween construction. See the documentation
 		 *  for the <code>optimize</code> property for mode details.
+		 * @param id an optional id. If non-null, any other running transition
+		 *  with the same id will be canceled when this transitioner is played.
 		 */
 		public function Transitioner(duration:Number=1, easing:Function=null,
-									 optimize:Boolean=false)
+									 optimize:Boolean=false, id:String=null)
 		{
 			super.easing = easing==null ? DEFAULT_EASING : easing;
 			_subdur = duration;
 			_optimize = optimize;
 			_immediate = isNaN(duration);
+			if (id!=null) this.id = id;
 			if (!_immediate) _proxy = new ValueProxy(this);
 		}
 		
@@ -187,7 +190,7 @@ package flare.animate
 		 */
 		public function hasTweenFor(o:Object):Boolean
 		{
-			return _immediate ? false : (_lookup[0] != undefined);
+			return _immediate ? false : (_lookup[o] != undefined);
 		}
 		
 		/**

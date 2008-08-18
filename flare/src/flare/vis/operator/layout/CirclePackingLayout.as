@@ -44,6 +44,10 @@ package flare.vis.operator.layout
 		private var _order:int;
 		private var _b:Rectangle = new Rectangle();
 		
+		/** The data group to process. This setting will be ignored if tree mode
+		 *  is set to true. */
+		public var group:String = Data.NODES;
+		
 		/** The amount of spacing between neighboring circles.
 		 *  The default value is 4 pixels. */
 		public var spacing:Number = 4;
@@ -53,7 +57,8 @@ package flare.vis.operator.layout
 		public var fitInBounds:Boolean = true;
 		
 		/** Indicates if a tree layout (circles nested within circles) should
-		 *  be computed. The default is false. */
+		 *  be computed. The default is false. Any data group settings will
+		 *  be ignored if this operator uses a tree layout. */
 		public var treeLayout:Boolean = false;
 		
 		/** A sort criteria for ordering nodes in this layout.
@@ -111,11 +116,11 @@ package flare.vis.operator.layout
 				shiftTree(root, cn.x, cn.y);
 			} else {
 				// perform flat layout
-				var list:Array = []; data.nodes.visit(list.push);
+				var list:Array = []; data.group(group).visit(list.push);
 				if (_sort) _sort.sort(list);
 				for (var i:int=0; i<list.length; ++i)
 					list[i] = getChainNode(list[i]);
-				radius = packCircle(list, data.nodes.length);
+				radius = packCircle(list, list.length);
 			}
 			
 			var dr:Number = Math.max(2*radius/bounds.width, 2*radius/bounds.height);
@@ -126,7 +131,7 @@ package flare.vis.operator.layout
 				layoutHelper(root, _anchor.x, _anchor.y, scale);
 			} else {
 				// layout all circles directly
-				for each (var n:NodeSprite in visualization.data.nodes) {	
+				for each (var n:NodeSprite in visualization.data.group(group)) {	
 					cn = n.props.chainNode;
 					update(n, _anchor.x + scale*cn.x,
 					          _anchor.y + scale*cn.y, scale, 1);

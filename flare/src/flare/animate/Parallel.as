@@ -1,7 +1,6 @@
 package flare.animate
 {
 	import flare.util.Arrays;
-	import flare.util.Maths;
 	
 	/**
 	 * Transition that runs multiple transitions simultaneously (in parallel).
@@ -79,6 +78,32 @@ package flare.animate
 			var rem:Boolean = Arrays.remove(_trans, t) >= 0;
 			if (rem) _dirty = true;
 			return rem;
+		}
+		
+		/**
+		 * Staggers the start of each sub-transition by a given interval. This
+		 * method will overwrite the delay settings for each sub-transition.
+		 * @param delay the delay between the start of each sub-transition.
+		 * @param reverse if true, staggering will be applied in the reverse
+		 *  order in which sub-transitions were added.
+		 * @return returns this parallel transition
+		 */
+		public function stagger(delay:Number=0.05, reverse:Boolean=false):Parallel
+		{
+			var d:Number = 0, i:uint = 0;
+			if (reverse) {
+				for (i=_trans.length; --i>=0;) {
+					_trans[i].delay = d;
+					d += delay;
+				}
+			} else {
+				for each (var t:Transition in _trans) {
+					t.delay = d;
+					d += delay;
+				}
+			}
+			_dirty = true;
+			return this;
 		}
 		
 		/**

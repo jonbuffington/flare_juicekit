@@ -44,7 +44,7 @@ package flare.vis.operator.encoder
 		{
 			super(source, target, group);
 			_binding.scaleType = scaleType;
-			_palette = palette;
+			this.palette = palette;
 		}
 		
 		/** @inheritDoc */
