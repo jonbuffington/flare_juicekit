@@ -47,6 +47,8 @@ package flare.animate
 		protected var _running:Boolean = false;
 		/** Flag indicating this Transition is running in reverse. */
 		protected var _reverse:Boolean = false;
+		/** Flag indicating if step events should be processed. */
+		public var enabled:Boolean = true;
 		
 		/** @inheritDoc */
 		public function get id():String { return _id; }
@@ -178,12 +180,14 @@ package flare.animate
 			_state = RUN;
 		}
 
+		/** @private */
 		internal function doSetup():void
 		{
 			setup();
 			_state = INIT;
 		}
 
+		/** @private */
 		internal function doStart(reverse:Boolean):void
 		{
 			_reverse = reverse;
@@ -195,8 +199,10 @@ package flare.animate
 			}
 		}
 		
+		/** @private */
 		internal function doStep(frac:Number):void
 		{
+			if (!enabled) return;
 			_frac = frac;
 			var f:Number = delay==0 || frac==0 ? frac :
 				Maths.invLinearInterp(frac, delay/totalDuration, 1);
@@ -206,6 +212,7 @@ package flare.animate
 			}
 		}
 		
+		/** @private */
 		internal function doEnd(evtType:String=TransitionEvent.END):void
 		{
 			_frac = _reverse ? 0 : 1;

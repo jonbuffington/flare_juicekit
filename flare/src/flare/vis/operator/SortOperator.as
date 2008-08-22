@@ -35,15 +35,15 @@ package flare.vis.operator
 		
 		/**
 		 * Creates a new SortOperator.
-		 * @param group the data group to sort
 		 * @param criteria the sorting criteria. Sort criteria are expressed as
 		 *  an array of property names to sort on. These properties are
 		 *  accessed by sorting functions using the <code>Property</code>
 		 *  class. The default is to sort in ascending order. If the field name
 		 *  includes a "-" (negative sign) prefix, that variable will instead
 		 *  be sorted in descending order.
+		 * @param group the data group to sort
 		 */
-		public function SortOperator(group:String=Data.NODES, ...criteria)
+		public function SortOperator(criteria:Array, group:String=Data.NODES)
 		{
 			this.group = group;
 			this.criteria = criteria;

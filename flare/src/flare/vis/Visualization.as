@@ -74,6 +74,9 @@ package flare.vis
 		private var _controls:ControlList;    // interactive controls
 		private var _rec:ISchedulable; // for running continuous updates
 		
+		/** An object storing extra properties for the visualziation. */
+		public var props:Object = {};
+		
 		/** The layout bounds of the visualization. This determines the layout
 		 *  region for data elements. For example, with an axis layout, the
 		 *  bounds determined the data layout region--this does not include

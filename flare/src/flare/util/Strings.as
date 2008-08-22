@@ -117,7 +117,7 @@ package flare.util
 		public static function format(fmt:String, ...args):String
 		{
 			var b:ByteArray = new ByteArray(), a:Array;
-			var esc:Boolean = false;
+			var esc:Boolean = false, val:*;
 			var c:Number, idx:int, ialign:int;
 			var idx0:int, idx1:int, idx2:int;
 			var s:String, si:String, sa:String, sf:String;
@@ -154,7 +154,12 @@ package flare.util
 						
 						try {
 							if (sa != null) { ialign = int(sa); }
-							pattern(b, sf, args[uint(si)]);
+							if ((idx0=uint(si))==0 && si!="0") {
+								val = Property.$(si).getValue(args[0]);
+							} else {
+								val = args[idx0];
+							}
+							pattern(b, sf, val);
 						} catch (x:*) {
 							throw new ArgumentError("Invalid format string.");
 						}

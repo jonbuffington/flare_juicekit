@@ -486,6 +486,7 @@ package flare.animate
 				tw = _tweenPool.pop();
 				tw.target = o;
 				tw.duration = duration;
+				tw.enabled = true;
 			} else {
 				tw = new Tween(o, duration);
 			}

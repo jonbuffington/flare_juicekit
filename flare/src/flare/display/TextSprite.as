@@ -75,16 +75,15 @@ package flare.display
 		private var _bmap:Bitmap;
 		private var _tf:TextField;
 		private var _fmt:TextFormat;
-		private var _locked:Boolean = false;
-		private var _maskColor:uint = 0xFFFFFF;
 		
 		private var _hAnchor:int = LEFT;
 		private var _vAnchor:int = TOP;
 		
-		/**
-		 * The TextField instance backing this TextSprite.
-		 */
+		/** The TextField instance backing this TextSprite. */
 		public function get textField():TextField { return _tf; }
+		
+		/** The bitmap of the text, if in BITMAP mode. */
+		public function get bitmap():Bitmap { return _bmap; }
 		
 		/**
 		 * The text rendering mode for this TextSprite, one of BITMAP,
@@ -335,7 +334,6 @@ package flare.display
 		/** @private */
 		protected function rasterize():void
 		{
-			if (_locked) return;
 			var tw:Number = _tf.width + 1;
 			var th:Number = _tf.height + 1;
 			var bd:BitmapData = _bmap.bitmapData;
@@ -346,28 +344,6 @@ package flare.display
 				bd.fillRect(new Rectangle(0,0,tw,th), 0x00ffffff);
 			}
 			bd.draw(_tf);
-		}
-		
-		/**
-		 * Locks this TextSprite, such that no re-rendering of the text is
-		 * performed until the <code>unlock</code> method is called. This
-		 * method can be used if a number of sequential updates are to be made.
-		 */
-		public function lock():void
-		{
-			_locked = true;
-		}
-		
-		/**
-		 * Unlocks this TextSprite, allowing re-rendering to resume if the
-		 * sprite has been locked using the <code>lock</code> method.
-		 */
-		public function unlock():void
-		{
-			if (_locked) {
-				_locked = false;
-				if (_mode == BITMAP) rasterize();
-			}
 		}
 		
 	} // end of class TextSprite

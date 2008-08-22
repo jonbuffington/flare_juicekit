@@ -197,7 +197,7 @@ class PropertyProxy implements IValueProxy
 	}
 	public function getValue(o:Object, name:String):*
 	{
-		Property.$(name).getValue(o);
+		return Property.$(name).getValue(o);
 	}
 	public function $(o:Object):Object
 	{
