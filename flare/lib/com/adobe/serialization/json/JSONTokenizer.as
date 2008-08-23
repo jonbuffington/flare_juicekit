@@ -337,6 +337,14 @@ package com.adobe.serialization.json {
 					input += ch;
 					nextChar();
 				}
+			} else if ( ch == 'x' || ch == 'X' ) {
+				input += 'x';
+				nextChar();
+				// read more numbers to get the hexadecimal value
+				while ( isHexDigit( ch ) ) {
+					input += ch;
+					nextChar();
+				}
 			}
 			
 			//Application.application.show( "number = " + input );
