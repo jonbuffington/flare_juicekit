@@ -62,8 +62,9 @@ package flare.vis.controls
 
 				_cur.stage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
 				_cur.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+				
+				event.stopPropagation();
 			}
-			event.stopPropagation();
 		}
 		
 		private function onDrag(event:Event) : void {
