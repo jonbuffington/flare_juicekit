@@ -66,14 +66,21 @@ package flare.vis.operator.filter
 				}
 				// -- end fix
 				depths[xn] = d;
-				if (d == distance) continue; // stop traversal at max distance
 				
-				xn.visitEdges(function(e:EdgeSprite):void {
-					if (depths[e] == undefined) {
-						depths[e] = d+1;
-						q.push(e);
-					}
-				}, links);
+				if (d == distance) {
+					xn.visitEdges(function(e:EdgeSprite):void {
+						if (depths[e.target]==d && depths[e.source]==d) {
+							depths[e] = d+1;
+						}
+					}, links);
+				} else {
+					xn.visitEdges(function(e:EdgeSprite):void {
+						if (depths[e] == undefined) {
+							depths[e] = d+1;
+							q.push(e);
+						}
+					}, links);
+				}
 			}
 			
 			// now set visibility based on traversal results
