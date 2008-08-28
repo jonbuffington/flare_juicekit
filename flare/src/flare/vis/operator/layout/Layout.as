@@ -192,21 +192,12 @@ package flare.vis.operator.layout
 		 * @param a2 the target angle value
 		 * @return an angle that minimizes the distance
 		 */
-		protected static function minAngle(a1:Number, a2:Number):Number
-	    {
-	    	var d1:Number = a2 - a1;
-	    	var d2:Number = Math.abs(d1 - 2*Math.PI);
-	    	var d3:Number = Math.abs(d1 + 2*Math.PI);
-	    	d1 = Math.abs(d1);
-	    	
-	    	if (d1 < d2 && d1 < d3) {
-	    		return a2;
-	    	} else if (d1 < d3) {
-	    		return a2 - 2*Math.PI;
-	    	} else {
-	    		return a2 + 2*Math.PI;
-	    	}
-	    }
+	    protected function minAngle(a1:Number, a2:Number):Number
+		{
+			var inc:Number = 2*Math.PI*(a1 > a2 ? 1 : -1);
+			for (; Math.abs(a1-a2) > Math.PI; a2 += inc);
+			return a2;
+		}
 		
 		// -- Edge Helpers ----------------------------------------------------
 		
