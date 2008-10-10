@@ -106,6 +106,8 @@ package flare.vis.controls
 		private function onMouseDown(event:MouseEvent) : void
 		{
 			if (_stage == null) return;
+			if (_hit == _object && event.target != _hit) return;
+
 			_stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			_stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			
