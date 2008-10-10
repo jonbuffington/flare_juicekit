@@ -431,7 +431,11 @@ package flare.util
 				
 				if (s == 'c') {
 					digits = p.length==1 ? 2 : digits;
-					numberPattern(b, _STD_NUM[s]+repeat("0",digits), x);
+					if (digits == 0) {
+						numberPattern(b, _STD_NUM[s], x);
+					} else {
+						numberPattern(b, _STD_NUM[s]+"."+repeat("0",digits), x);
+					}
 				}
 				else if (s == 'd') {
 					b.writeUTFBytes(pad(Math.round(x), digits));

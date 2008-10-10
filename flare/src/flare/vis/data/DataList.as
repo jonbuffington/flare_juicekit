@@ -14,9 +14,9 @@ package flare.vis.data
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
-	import flash.utils.flash_proxy;
 	import flash.utils.Dictionary;
 	import flash.utils.Proxy;
+	import flash.utils.flash_proxy;
 
 	[Event(name="add",    type="flare.vis.events.DataEvent")]
 	[Event(name="remove", type="flare.vis.events.DataEvent")]
@@ -307,29 +307,29 @@ package flare.vis.data
 		{
 			_visiting++; // mark a visit in process
 			var a:Array = _list; // use our own reference to the list
-			var i:uint, b:Boolean = false;
+			var i:uint, n:uint=a.length, b:Boolean = false;
 			var f:Function = Filter.$(filter);
 			
 			if (reverse && f==null) {
-				for (i=a.length; --i>=0;)
+				for (i=n; --i>=0;)
 					if (visitor(a[i]) as Boolean) {
 						b = true; break;
 					}
 			}
 			else if (reverse) {
-				for (i=a.length; --i>=0;)
+				for (i=n; --i>=0;)
 					if (f(a[i]) && (visitor(a[i]) as Boolean)) {
 						b = true; break;
 					}
 			}
 			else if (f==null) {
-				for (i=0; i<a.length; ++i)
+				for (i=0; i<n; ++i)
 					if (visitor(a[i]) as Boolean) {
 						b = true; break;
 					}
 			}
 			else {
-				for (i=0; i<a.length; ++i)
+				for (i=0; i<n; ++i)
 					if (f(a[i]) && (visitor(a[i]) as Boolean)) {
 						b = true; break;
 					}

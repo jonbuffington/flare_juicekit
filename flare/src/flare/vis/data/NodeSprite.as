@@ -3,8 +3,8 @@ package flare.vis.data
 	import flare.animate.Transitioner;
 	import flare.util.Arrays;
 	import flare.util.Filter;
-	import flare.util.Sort;
 	import flare.util.IEvaluable;
+	import flare.util.Sort;
 	
 	/**
 	 * Visually represents a data element, such as a data tuple or graph node.
@@ -390,14 +390,14 @@ package flare.vis.data
 		private function visitEdgeHelper(f:Function, a:Array, r:Boolean,
 			ff:Function):Boolean
 		{
-			var i:uint, v:*;
+			var i:uint, n:uint=a.length, v:*;
 			if (r) {
-				for (i=a.length; --i>=0;) {
+				for (i=n; --i>=0;) {
 					if ((ff==null || ff(a[i])) && f(a[i]) as Boolean)
 						return true;
 				}
 			} else {
-				for (i=0; i<a.length; ++i) {
+				for (i=0; i<n; ++i) {
 					if ((ff==null || ff(a[i])) && f(a[i]) as Boolean)
 						return true;
 				}
@@ -437,13 +437,13 @@ package flare.vis.data
 		private function visitNodeHelper(f:Function, a:Array, r:Boolean,
 			ff:Function):Boolean
 		{
-			var i:uint;
+			var i:uint, n:uint=a.length;
 			if (r) {
-				for (i=a.length; --i>=0;)
+				for (i=n; --i>=0;)
 					if ((ff==null||ff(a[i])) && f(a[i].other(this)) as Boolean)
 						return true;
 			} else {
-				for (i=0; i<a.length; ++i)
+				for (i=0; i<n; ++i)
 					if ((ff==null||ff(a[i])) && f(a[i].other(this)) as Boolean)
 						return true;
 			}
