@@ -21,6 +21,7 @@ package flare.tests
 			addTest("removeEdges");
 			addTest("createWithDefaults");
 			addTest("visit");
+			addTest("clear");
 		}
 		
 		// --------------------------------------------------------------------
@@ -273,6 +274,14 @@ package flare.tests
 			count = 0;
 			data.visit(counter, null, EdgeSprite);
 			assertEquals(data.edges.length, count);
+		}
+		
+		public function clear():void
+		{
+			createEdges();
+			data.clear();
+			assertEquals(data.nodes.length, 0);
+			assertEquals(data.edges.length, 0);
 		}
 		
 	} // end of class DataTests
