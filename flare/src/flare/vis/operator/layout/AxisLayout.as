@@ -1,6 +1,5 @@
 package flare.vis.operator.layout
 {
-	import flare.animate.Transitioner;
 	import flare.scale.ScaleType;
 	import flare.util.Property;
 	import flare.vis.axis.CartesianAxes;
@@ -119,22 +118,26 @@ package flare.vis.operator.layout
 			var x0:Number = axes.originX;
 			var y0:Number = axes.originY;
 
-			var xmap:Object = _xStacks ? new Object() : null;
-			var ymap:Object = _yStacks ? new Object() : null;
+			var xmapPos:Object = _xStacks ? new Object() : null;
+			var xmapNeg:Object = _xStacks ? new Object() : null;
+			var ymapPos:Object = _yStacks ? new Object() : null;
+			var ymapNeg:Object = _yStacks ? new Object() : null;
 			
 			visualization.data.nodes.visit(function(d:DataSprite):void {
 				var dx:Object, dy:Object, x:Number, y:Number, s:Number, z:Number;
 				var o:Object = _t.$(d);
 				dx = _xField.getValue(d); dy = _yField.getValue(d);
 				
+				var map:Object;
 				if (_xField != null) {
 					x = axes.xAxis.X(dx);
 					if (_xStacks) {
+						map = (dx < 0 ? xmapNeg : xmapPos);
 						z = x - x0;
-						s = z + (isNaN(s=xmap[dy]) ? 0 : s);
+						s = z + (isNaN(s=map[dy]) ? 0 : s);
 						o.x = x0 + s;
 						o.w = z;
-						xmap[dy] = s;
+						map[dy] = s;
 					} else {
 						o.x = x;
 						o.w = x - x0;
@@ -143,11 +146,12 @@ package flare.vis.operator.layout
 				if (_yField != null) {
 					y = axes.yAxis.Y(dy);
 					if (_yStacks) {
+						map = (dy < 0 ? ymapNeg : ymapPos);
 						z = y - y0;
-						s = z + (isNaN(s=ymap[dx]) ? 0 : s);
+						s = z + (isNaN(s=map[dx]) ? 0 : s);
 						o.y = y0 + s;
 						o.h = z;
-						ymap[dx] = s;
+						map[dx] = s;
 					} else {
 						o.y = y;
 						o.h = y - y0;
@@ -158,10 +162,14 @@ package flare.vis.operator.layout
 		
 		/** @private */
 		protected function rescale():void {
-			var xmap:Object = _xStacks ? new Object() : null;
-			var ymap:Object = _yStacks ? new Object() : null;
+			var xmapPos:Object = _xStacks ? new Object() : null;
+			var xmapNeg:Object = _xStacks ? new Object() : null;
+			var ymapPos:Object = _yStacks ? new Object() : null;
+			var ymapNeg:Object = _yStacks ? new Object() : null;
 			var xmax:Number = 0;
+			var xmin:Number = 0;
 			var ymax:Number = 0;
+			var ymin:Number = 0;
 			
 			visualization.data.nodes.visit(function(d:DataSprite):void {
 				var x:Object = _xField.getValue(d);
@@ -169,25 +177,38 @@ package flare.vis.operator.layout
 				var v:Number;
 				
 				if (_xStacks) {
-					v = isNaN(xmap[y]) ? 0 : xmap[y];
-					xmap[y] = v = (Number(x) + v);
-					if (v > xmax) xmax = v;
+					if (x < 0) { 
+						v = isNaN(xmapNeg[y]) ? 0 : xmapNeg[y];
+						xmapNeg[y] = v = (Number(x) + v);
+						if (v < xmin) xmin = v;
+					} else {
+						v = isNaN(xmapPos[y]) ? 0 : xmapPos[y];
+						xmapPos[y] = v = (Number(x) + v);
+						if (v > xmax) xmax = v;
+					}
 				}
 				if (_yStacks) {
-					v = isNaN(ymap[x]) ? 0 : ymap[x];
-					ymap[x] = v = (Number(y) + v);
-					if (v > ymax) ymax = v;
+					if (y < 0) {
+						v = isNaN(ymapNeg[x]) ? 0 : ymapNeg[x];
+						ymapNeg[x] = v = (Number(y) + v);
+						if (v < ymin) ymin = v;
+						
+					} else {
+						v = isNaN(ymapPos[x]) ? 0 : ymapPos[x];
+						ymapPos[x] = v = (Number(y) + v);
+						if (v > ymax) ymax = v;
+					}
 				}
 			});
 			
 			if (_xStacks) {
 				_xBinding.scaleType = ScaleType.LINEAR;
-				_xBinding.preferredMin = 0;
+				_xBinding.preferredMin = xmin;
 				_xBinding.preferredMax = xmax;
 			}
 			if (_yStacks) {
 				_yBinding.scaleType = ScaleType.LINEAR;
-				_yBinding.preferredMin = 0;
+				_yBinding.preferredMin = ymin;
 				_yBinding.preferredMax = ymax;
 			}
 		}

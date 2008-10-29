@@ -61,6 +61,8 @@ package flare.vis.operator.label
 		protected var _source:Property;
 		/** @private */
 		protected var _access:Property = Property.$("props.label");
+		/** @private */
+		protected var _cacheText:Boolean = true;
 		
 		/** @private */
 		protected var _t:Transitioner;
@@ -87,6 +89,13 @@ package flare.vis.operator.label
 		public function get filter():Function { return _filter; }
 		public function set filter(f:*):void { _filter = Filter.$(f); }
 		
+		/** Boolean function indicating whether label text values should be
+		 *  cached or not.  If set to true then the label text is calculated
+		 *  only the first time it's needed and re-used from them on.  If set
+		 *  to false then the label is recalculated at each update. */
+		public function get cacheText():Boolean { return _cacheText; }
+		public function set cacheText(c:Boolean):void { _cacheText = c; }
+
 		/** A sprite containing the labels, if a layer policy is used. */
 		public function get labels():Sprite { return _labels; }
 		
@@ -184,7 +193,7 @@ package flare.vis.operator.label
 			var o:Object, x:Number, y:Number, a:Number, v:Boolean;
 			if (_policy == LAYER) {
 				o = _t.$(d);
-				if (o.shape == Shapes.BLOCK) {
+				if (o.shape == Shapes.BLOCK) { 	
 					x = o.u + o.w/2;
 					y = o.v + o.h/2;
 				} else {
@@ -252,6 +261,9 @@ package flare.vis.operator.label
 					label.x = xOffset;
 					label.y = yOffset;
 				}
+			} else if (label && !cacheText) {
+				var o:Object = _t.$(label);
+				o.text = getLabelText(d); 				
 			}
 			label.textMode = textMode;
 			label.horizontalAnchor = horizontalAnchor;
