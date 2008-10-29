@@ -14,6 +14,7 @@ package flare.vis
 	import flare.vis.operator.IOperator;
 	import flare.vis.operator.OperatorList;
 	
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
@@ -412,10 +413,12 @@ package flare.vis
 		 */
 		protected function dataAdded(evt:DataEvent):void
 		{
-			if (evt.node != null) {
-				_marks.addChild(evt.node);
+			if (evt.node) {
+				for each (var d:DisplayObject in evt.items)
+					_marks.addChild(d);
 			} else {
-				_marks.addChildAt(evt.item, 0);
+				for each (d in evt.items)
+					_marks.addChildAt(d, 0);
 			}
 		}
 		
@@ -426,7 +429,8 @@ package flare.vis
 		 */
 		protected function dataRemoved(evt:DataEvent):void
 		{
-			_marks.removeChild(evt.item);
+			for each (var d:DisplayObject in evt.items)
+				_marks.removeChild(d);
 		}
 
 	} // end of class Visualization
