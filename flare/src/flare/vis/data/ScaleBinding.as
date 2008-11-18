@@ -73,6 +73,9 @@ package flare.vis.data
 				_scale.min = _pmin;
 				if (_zeroBased) zeroAlignScale(_scale);
 			}
+			else if (_scale && _pmin === null) {
+			  _scale = null;
+			}
 		}
 		
 		/** The preferred maximum data value for the scale. If null, the scale
@@ -83,6 +86,9 @@ package flare.vis.data
 			if (_scale && _pmax) {
 				_scale.max = _pmax;
 				if (_zeroBased) zeroAlignScale(_scale);
+			}
+			else if (_scale && _pmax === null) {
+			  _scale = null;
 			}
 		}
 		
@@ -350,8 +356,8 @@ package flare.vis.data
 					break;
 			}
 			
-			if (_pmin) scale.min = _pmin;
-			if (_pmax) scale.max = _pmax;
+			if (_pmin !== null) scale.min = _pmin;
+			if (_pmax !== null) scale.max = _pmax;
 			if (_zeroBased) zeroAlignScale(scale);
 			
 			return scale;

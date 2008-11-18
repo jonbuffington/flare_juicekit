@@ -91,7 +91,7 @@ package flare.vis.operator.encoder
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
-			if (visualization == null) return;
+			if (!canBindToData()) return;
 			
 			_t = (t!=null ? t : Transitioner.DEFAULT);
 			var p:Property = Property.$(_binding.property);
@@ -115,5 +115,21 @@ package flare.vis.operator.encoder
 			return null;
 		}
 		
+		/**
+		 * Verifies the encoder is attached to a <code>Visualization</code>
+		 * instance that currently has data. As a side effect, this method
+		 * will attempt to establish the data binding.
+		 * @return Returns true if a <code>Visualization</code>
+ 		 * instance's <code>data</code> property is non-null.
+		 */
+		protected function canBindToData():Boolean {
+		  if (visualization && visualization.data) {
+		    if (visualization.data !== _binding.data) {
+		      _binding.data = visualization.data;
+		    }
+	      return true;
+		  }
+		  return false;
+		}
 	} // end of class Encoder
 }
