@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.prefuse.flare</groupId>
+  <artifactId>flare</artifactId>
+  <packaging>swc</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>prefuse Flare (Juice, Inc.)</name>
+
+  <repositories>
+    <repository>
+      <id>flex-mojos-repository</id>
+      <url>http://svn.sonatype.org/flexmojos/repository/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>flex-mojos-repository</id>
+      <url>http://svn.sonatype.org/flexmojos/repository/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  <build>
+    <sourceDirectory>flare/src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>info.flex-mojos</groupId>
+        <artifactId>flex-compiler-mojo</artifactId>
+        <version>2.0M8</version>
+        <extensions>true</extensions>
+        <configuration>
+          <headlessServer>true</headlessServer>
+          <includeSources>
+            <source>${project.build.sourceDirectory}/../lib</source>
+            <source>${project.build.sourceDirectory}</source>
+          </includeSources>
+          <locales>
+            <locale>en_US</locale>
+          </locales>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>info.flex-mojos</groupId>
+        <artifactId>asdoc-mojo</artifactId>
+        <version>2.0M8</version>
+        <configuration>
+          <docSources>
+            <docSource>
+              ${project.build.sourceDirectory}/../lib
+            </docSource>
+            <docSource>${project.build.sourceDirectory}</docSource>
+          </docSources>
+          <headlessServer>true</headlessServer>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <dependencies>
+    <!-- Flex SDK dependencies -->
+    <dependency>
+      <groupId>com.adobe.flex.framework</groupId>
+      <artifactId>flex-framework</artifactId>
+      <version>3.1.0.2710</version>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
+</project>
