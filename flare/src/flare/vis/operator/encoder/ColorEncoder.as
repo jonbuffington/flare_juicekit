@@ -48,13 +48,6 @@ package flare.vis.operator.encoder
 		}
 		
 		/** @inheritDoc */
-		public override function setup():void
-		{
-			if (visualization==null) return;
-			super.setup();
-		}
-		
-		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
 			_binding.updateBinding();

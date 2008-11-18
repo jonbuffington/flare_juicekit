@@ -8,7 +8,7 @@ package flare.vis.data
 	
 	/**
 	 * Visually represents a data element, such as a data tuple or graph node.
-	 * By default, NodeSprites are drawn using a <codeShapeRenderer<code>.
+	 * By default, NodeSprites are drawn using a <code>ShapeRenderer</code>.
 	 * NodeSprites are typically managed by a <code>Data</code> object.
 	 * 
 	 * <p>NodeSprites can separately maintain adjacency lists for both a

@@ -9,7 +9,7 @@ package flare.query
 	 * Queries can perform filtering, sorting, grouping, and aggregation
 	 * operations over a data collection. Arbitrary data collections can
 	 * be queried by providing a visitor function similar to the
-	 * <code>Array.forEach<code> method to the query <code>eval</code> method.
+	 * <code>Array.forEach</code> method to the query <code>eval</code> method.
 	 * 
 	 * <p>The <code>select</code> and <code>where</code> methods in the
 	 * <code>flare.query.methods</code> package are useful shorthands

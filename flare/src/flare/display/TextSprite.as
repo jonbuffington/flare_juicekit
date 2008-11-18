@@ -39,17 +39,17 @@ package flare.display
 		// horizontal anchors
 		/**
 		 * Constant for horizontally aligning the left of the text field
-		 * to a TextSprite's y-coordinate.
+		 * to a TextSprite's x-coordinate.
 		 */
 		public static const LEFT:int = 0;
 		/**
 		 * Constant for horizontally aligning the center of the text field
-		 * to a TextSprite's y-coordinate.
+		 * to a TextSprite's x-coordinate.
 		 */
 		public static const CENTER:int = 1;
 		/**
 		 * Constant for horizontally aligning the right of the text field
-		 * to a TextSprite's y-coordinate.
+		 * to a TextSprite's x-coordinate.
 		 */
 		public static const RIGHT:int = 2;
 		

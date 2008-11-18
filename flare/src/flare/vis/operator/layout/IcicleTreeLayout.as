@@ -11,7 +11,7 @@ package flare.vis.operator.layout
 	 * the nodes <code>shape</code> property to <code>Shapes.BLOCK</code> and
 	 * hide all edges. By default, this operator will attempt to scale the
 	 * layout to fit within the display bounds. By setting
-	 * <code>fitToBounds</code> false, the current <code>depthSpacing<code>
+	 * <code>fitToBounds</code> false, the current <code>depthSpacing</code>
 	 * will be preserved, allowing the layout to exceed the bounds along
 	 * the depth dimension.
 	 */
