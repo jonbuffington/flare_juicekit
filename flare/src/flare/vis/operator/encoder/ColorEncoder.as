@@ -50,6 +50,8 @@ package flare.vis.operator.encoder
 		/** @inheritDoc */
 		public override function operate(t:Transitioner=null):void
 		{
+		  if (!canBindToData()) return;
+
 			_binding.updateBinding();
 			_ordinal = ScaleType.isOrdinal(_binding.scaleType);			
 			
