@@ -55,6 +55,11 @@
           </locales>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-8</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -86,4 +91,8 @@
       <type>pom</type>
     </dependency>
   </dependencies>
+
+  <scm>
+    <connection>scm:git:ssh://sol.juiceanalytics.com//Volumes/farms/Developer/repos/flare-juice</connection>
+  </scm>
 </project>
