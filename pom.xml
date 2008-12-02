@@ -93,7 +93,7 @@
   </dependencies>
 
   <scm>
-    <connection>scm:git:ssh://sol.juiceanalytics.com//Volumes/farms/Developer/repos/flare-juice</connection>
+    <connection>scm:git:file:///Volumes/Developer/repos/flare.git</connection>
   </scm>
 
   <distributionManagement>
