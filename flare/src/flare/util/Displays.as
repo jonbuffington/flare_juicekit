@@ -200,7 +200,7 @@ package flare.util
 				height = hasH ? height : (bd ? bd.height : r.height);
 			}
 			// create bitmap data as needed
-			bd = bd ? bd : new BitmapData(width, height);
+			bd = bd ? bd : new BitmapData(width, height, true, 0);
 			
 			// determine object transformation
 			var mat:Matrix = new Matrix();
