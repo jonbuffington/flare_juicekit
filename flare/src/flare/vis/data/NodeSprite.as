@@ -356,7 +356,11 @@ package flare.vis.data
 			var s:Function = Sort.$(sort);
 			if (opt & IN_LINKS    && _inEdges    != null) _inEdges.sort(s);
 			if (opt & OUT_LINKS   && _outEdges   != null) _outEdges.sort(s);
-			if (opt & CHILD_LINKS && _childEdges != null) _childEdges.sort(s);
+			if (opt & CHILD_LINKS && _childEdges != null) {
+				_childEdges.sort(s);
+				for (var i:uint=0; i<_childEdges.length; ++i)
+					_childEdges[i].other(this).parentIndex = i;
+			}
 		}
 		
 		/**
@@ -437,15 +441,19 @@ package flare.vis.data
 		private function visitNodeHelper(f:Function, a:Array, r:Boolean,
 			ff:Function):Boolean
 		{
-			var i:uint, n:uint=a.length;
+			var i:uint, n:uint=a.length, u:NodeSprite;
 			if (r) {
-				for (i=n; --i>=0;)
-					if ((ff==null||ff(a[i])) && f(a[i].other(this)) as Boolean)
+				for (i=n; --i>=0;) {
+					u = a[i].other(this);
+					if ((ff==null || ff(u)) && f(u) as Boolean)
 						return true;
+				}
 			} else {
-				for (i=0; i<n; ++i)
-					if ((ff==null||ff(a[i])) && f(a[i].other(this)) as Boolean)
+				for (i=0; i<n; ++i) {
+					u = a[i].other(this);
+					if ((ff==null || ff(u)) && f(u) as Boolean)
 						return true;
+				}
 			}
 			return false;
 		}

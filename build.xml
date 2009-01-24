@@ -22,6 +22,7 @@
 
   <property name="flare.src" value="${basedir}/flare/src"/>
   <property name="flare.lib" value="${basedir}/flare/lib"/>
+  <property name="apps.src"  value="${basedir}/flare.apps/src"/>
   <property name="demos.src" value="${basedir}/flare.demos/src"/>
   <property name="tests.src" value="${basedir}/flare.tests/src"/>
   <property name="tests.lib" value="${basedir}/flare.tests/lib"/>
@@ -47,6 +48,7 @@
     <echo message=""/>
     <echo message="   all        --> builds flare and demos in ./build}"/>
     <echo message="   flare      --> builds the flare libraries in ./build"/>
+    <echo message="   apps       --> builds the apps project in ./build"/>
     <echo message="   demos      --> builds the demos app in ./build"/>
     <echo message="   tests      --> builds the tests app in ./build"/>
     <echo message="   docs       --> builds reference documentation in ./docs/api"/>
@@ -99,25 +101,41 @@
 
 
   <!-- =================================================================== -->
+  <!-- Compile apps                                                        -->
+  <!-- =================================================================== -->
+  <target name="apps" depends="flare">
+    <mxmlc file="${apps.src}/flare/apps/JobVoyager.as"
+      output="${build.dir}/JobVoyager.swf">
+      <source-path path-element="${apps.src}"/>
+      <compiler.library-path dir="${build.dir}">
+        <include name="flare.swc"/>
+      </compiler.library-path>
+    </mxmlc>
+    <mxmlc file="${apps.src}/flare/apps/PackageMap.as"
+      output="${build.dir}/PackageMap.swf">
+      <source-path path-element="${apps.src}"/>
+      <compiler.library-path dir="${build.dir}">
+        <include name="flare.swc"/>
+      </compiler.library-path>
+    </mxmlc>
+    <mxmlc file="${apps.src}/flare/apps/DependencyGraph.as"
+      output="${build.dir}/DependencyGraph.swf">
+      <source-path path-element="${apps.src}"/>
+      <compiler.library-path dir="${build.dir}">
+        <include name="flare.swc"/>
+      </compiler.library-path>
+      <compiler.library-path dir="${FLEX_HOME}frameworks/libs">
+        <include name="framework.swc"/>
+      </compiler.library-path>
+    </mxmlc>
+
+  </target>
+
+
+  <!-- =================================================================== -->
   <!-- Compile demos                                                       -->
   <!-- =================================================================== -->
   <target name="demos" depends="flare">
-    <path id="demos.files">
-      <fileset dir="${demos.src}">
-        <include name="**/**"/>
-      </fileset>
-    </path>
-    <pathconvert 
-      property="demos.classes" 
-      pathsep=" " 
-      dirsep="." 
-      refid="demos.files">
-      <map from="${demos.src}/" to=""/>
-      <mapper>
-         <chainedmapper><globmapper from="*.as" to="*"/></chainedmapper>
-      </mapper>
-    </pathconvert>
-
     <mxmlc file="${demos.src}/demos.as" output="${build.dir}/flare.demos.swf">
       <compiler.library-path dir="${build.dir}">
         <include name="flare.swc"/>
@@ -144,7 +162,7 @@
   <!-- =================================================================== -->
   <!-- Build all in ./build                                                -->
   <!-- =================================================================== -->
-  <target name="all" depends="flare,demos,tests"/>
+  <target name="all" depends="flare,demos,apps,tests"/>
 
 
   <!-- =================================================================== -->
@@ -206,6 +224,7 @@
         <include name="flare/**"/>
         <include name="flare.tests/**"/>
         <include name="flare.demos/**"/>
+        <include name="flare.apps/**"/>
         <include name="etc/**"/>
         <include name="*"/>
         <exclude name="build/**"/>

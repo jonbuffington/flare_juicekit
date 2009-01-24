@@ -34,7 +34,7 @@ package flare.apps
 	public class DependencyGraph extends App
 	{
 		/** We will be rotating text, so we embed the font. */
-		[Embed(source="C:\\windows\\fonts\\Verdana.ttf", fontName="Verdana")]
+		[Embed(source="verdana.TTF", fontName="Verdana")]
 		private static var _font:Class;
 		
 		private var _url:String = 
