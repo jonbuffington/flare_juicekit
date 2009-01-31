@@ -247,6 +247,21 @@ package flare.util
 		
 		// -- Inverse Interpolation Routines ----------------------------------
 		
+		
+		/*
+		 * Prevent values from ranging beyond the min and max.
+		 */
+		private static function clampValue(v:Number, min:Number, max:Number):Number {
+      if (v < min) {
+        v = min;
+      }
+      else if (v > max) {
+        v = max;
+      }
+      return v;
+		}
+		
+		
 		/**
 		 * Computes an inverse linear interpolation, returning an interpolation
 		 * fraction. Returns 0.5 if the min and max values are the same.
@@ -257,6 +272,7 @@ package flare.util
 		 */
         public static function invLinearInterp(x:Number, min:Number, max:Number):Number
         {
+            x = clampValue(x, min, max);
             var denom:Number = (max - min);
             return (denom < EPSILON && denom > -EPSILON ? 0 : (x - min) / denom);
         }
@@ -273,6 +289,7 @@ package flare.util
 		 */
         public static function invLogInterp(x:Number, min:Number, max:Number, b:Number):Number
         {
+            x = clampValue(x, min, max);
             min = symLog(min, b);
             var denom:Number = symLog(max, b) - min;
             return (denom < EPSILON && denom > -EPSILON ? 0 : (symLog(x, b) - min) / denom);
@@ -290,6 +307,7 @@ package flare.util
 		 */
         public static function invAdjLogInterp(x:Number, min:Number, max:Number, b:Number):Number
         {
+            x = clampValue(x, min, max);
             min = adjLog(min, b);
             var denom:Number = adjLog(max, b) - min;
             return (denom < EPSILON && denom > -EPSILON ? 0 : (adjLog(x, b) - min) / denom);
@@ -306,6 +324,7 @@ package flare.util
 		 */
         public static function invSqrtInterp(x:Number, min:Number, max:Number):Number
         {
+            x = clampValue(x, min, max);
             min = symSqrt(min);
             var denom:Number = symSqrt(max) - min;
             return (denom < EPSILON && denom > -EPSILON ? 0 : (symSqrt(x) - min) / denom);
@@ -323,6 +342,7 @@ package flare.util
 		 */
         public static function invRootInterp(x:Number, min:Number, max:Number, p:Number):Number
         {
+            x = clampValue(x, min, max);
             min = symRoot(min,p);
             var denom:Number = symRoot(max,p) - min;
             return (denom < EPSILON  && denom > -EPSILON ? 0 : (symRoot(x,p) - min) / denom);
