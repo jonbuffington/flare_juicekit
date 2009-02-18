@@ -94,6 +94,9 @@ package flare.vis.operator.layout
 	        root.visitTreeDepthFirst(function(n:NodeSprite):void {
 	        	if (n.childDegree == 0) {
 	        		var sz:Number = _size.getValue(_t.$(n));
+              // Guard against possible negative values for area calculations.
+              if (sz < 0)
+                sz = 0;
 	        		n.props[AREA] = sz;
 	        		var p:NodeSprite = n.parentNode;
 	        		for (; p != null; p=p.parentNode)
