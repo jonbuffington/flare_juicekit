@@ -251,7 +251,8 @@ package flare.util
 		/*
 		 * Prevent values from ranging beyond the min and max.
 		 */
-		private static function clampValue(v:Number, min:Number, max:Number):Number {
+		public static function clampValue(v:Number, min:Number, max:Number):Number
+		{
       if (v < min) {
         v = min;
       }
