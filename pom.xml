@@ -4,7 +4,7 @@
   <groupId>com.juicekit</groupId>
   <artifactId>flare</artifactId>
   <packaging>swc</packaging>
-  <version>1.1.8</version>
+  <version>1.1.9-SNAPSHOT</version>
   <name>prefuse Flare (Juice, Inc.)</name>
   <url>http://www.juiceanalytics.com/</url>
 
