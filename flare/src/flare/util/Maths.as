@@ -248,10 +248,17 @@ package flare.util
 		// -- Inverse Interpolation Routines ----------------------------------
 		
 		
-		/*
-		 * Prevent values from ranging beyond the min and max.
+		/**
+		 * Restrict a numeric value from ranging beyond a minimum and maximum.
+		 *
+		 * @param v Is the numeric value to restrict.
+		 * @param min Is the minimum acceptable value.
+		 * @param min Is the minimum acceptable value.
+		 *
+		 * @return Returns v, min, or max.
 		 */
-		private static function clampValue(v:Number, min:Number, max:Number):Number {
+		public static function clampValue(v:Number, min:Number, max:Number):Number
+		{
       if (v < min) {
         v = min;
       }
