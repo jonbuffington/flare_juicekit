@@ -8,6 +8,11 @@
   <name>prefuse Flare (Juice, Inc.)</name>
   <url>http://www.juiceanalytics.com/</url>
 
+  <properties>
+    <flexmojos.version>3.2.0</flexmojos.version>
+    <flex.sdk.version>3.2.0.3958</flex.sdk.version>
+  </properties>
+
   <repositories>
     <repository>
       <id>flex-mojos-repository</id>
@@ -38,9 +43,9 @@
     <sourceDirectory>flare/src</sourceDirectory>
     <plugins>
       <plugin>
-        <groupId>info.flex-mojos</groupId>
-        <artifactId>flex-compiler-mojo</artifactId>
-        <version>2.0M9</version>
+        <groupId>org.sonatype.flexmojos</groupId>
+        <artifactId>flexmojos-maven-plugin</artifactId>
+        <version>${flexmojos.version}</version>
         <extensions>true</extensions>
         <configuration>
           <headlessServer>true</headlessServer>
@@ -64,9 +69,9 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>info.flex-mojos</groupId>
-        <artifactId>asdoc-mojo</artifactId>
-        <version>2.0M9</version>
+        <groupId>org.sonatype.flexmojos</groupId>
+        <artifactId>flexmojos-maven-plugin</artifactId>
+        <version>${flexmojos.version}</version>
         <configuration>
           <docSources>
             <docSource>
@@ -85,24 +90,26 @@
     <dependency>
       <groupId>com.adobe.flex.framework</groupId>
       <artifactId>flex-framework</artifactId>
-      <version>3.2.0.3958</version>
+      <version>${flex.sdk.version}</version>
       <type>pom</type>
     </dependency>
   </dependencies>
 
   <scm>
-    <connection>scm:git:file:///Volumes/Developer/repos/flare.git</connection>
+    <connection>scm:git:git://github.com/jonbuffington/flare_juicekit.git</connection>
+    <developerConnection>scm:git:git@github.com:jonbuffington/flare_juicekit.git</developerConnection>
+    <url>http://github.com/jonbuffington/flare_juicekit/tree/master</url>
   </scm>
 
   <distributionManagement>
     <snapshotRepository>
       <id>snapshots</id>
-      <url>http://sol:8081/nexus/content/repositories/snapshots</url>
+      <url>http://juicekit.org/nexus/content/repositories/snapshots</url>
       <uniqueVersion>false</uniqueVersion>
     </snapshotRepository>
     <repository>
       <id>releases</id>
-      <url>http://sol:8081/nexus/content/repositories/releases</url>
+      <url>http://juicekit.org/nexus/content/repositories/releases</url>
     </repository>
   </distributionManagement>
 </project>
